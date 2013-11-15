@@ -3,6 +3,8 @@ package me.lumpchen.sledge.pdf.reader;
 import java.io.File;
 import java.io.IOException;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -15,5 +17,9 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		byte[] bs = new byte[]{'a', '\n', '(', 'b'};
+		PLiteralString ps = new PLiteralString(bs);
+		System.err.println(ps.toString());
 	}
 }

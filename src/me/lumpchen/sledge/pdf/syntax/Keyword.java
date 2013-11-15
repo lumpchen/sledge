@@ -1,8 +1,8 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-public class PDFKeyword {
+public class Keyword {
 
-	private PDFKeyword() {
+	private Keyword() {
 	}
 
 	public static byte[] trailer = { 't', 'r', 'a', 'i', 'l', 'e', 'r' };

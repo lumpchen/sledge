@@ -1,10 +1,10 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-public class PDFLong extends PDFNumber {
+public class PLong extends PNumber {
 
 	private long value;
 
-	public PDFLong(long value) {
+	public PLong(long value) {
 		this.value = value;
 	}
 	

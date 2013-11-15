@@ -1,33 +1,33 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PDFArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDFDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PDFInteger;
-import me.lumpchen.sledge.pdf.syntax.basic.PDFLong;
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
+import me.lumpchen.sledge.pdf.syntax.basic.PLong;
 
 public class PDFTrailer {
 
 	public static byte[] TRAILER = { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
 	public static byte[] STARTXREF = {'s', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f'};
 	
-	private PDFInteger size;
-	private PDFInteger prev;
-	private PDFDictionary root;
-	private PDFDictionary encrypt;
-	private PDFDictionary info;
-	private PDFArray id;
+	private PInteger size;
+	private PInteger prev;
+	private PDictionary root;
+	private PDictionary encrypt;
+	private PDictionary info;
+	private PArray id;
 	
-	private PDFLong startxref;
+	private PLong startxref;
 
 	public PDFTrailer() {
 
 	}
 
-	public void setStartxref(PDFLong pos) {
+	public void setStartxref(PLong pos) {
 		this.startxref = pos;
 	}
 	
-	public PDFLong getStartxref() {
+	public PLong getStartxref() {
 		return this.startxref;
 	}
 }
