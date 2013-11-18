@@ -45,6 +45,10 @@ public class PDFReader {
 		this.readTrailer();
 	}
 
+	private void readt() throws IOException {
+		
+	}
+	
 	private void readTrailer() throws IOException {
 		ByteBuffer buf = this.segmentedByteBuffer.readTrailerBytes();
 		buf.position(buf.position() + buf.remaining() - 1);

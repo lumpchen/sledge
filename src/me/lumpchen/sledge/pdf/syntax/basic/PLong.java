@@ -11,7 +11,12 @@ public class PLong extends PNumber {
 	public long getValue() {
 		return this.value;
 	}
-	
+
+	protected boolean readObj(byte[] data) {
+
+		return false;
+	}
+
 	public String toString() {
 		return Long.toString(this.value);
 	}

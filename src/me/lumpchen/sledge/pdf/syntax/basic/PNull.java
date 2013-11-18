@@ -2,6 +2,6 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.syntax.PObject;
 
-public class PDFNull extends PObject {
+public class PNull extends PObject {
 
 }
