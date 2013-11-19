@@ -12,6 +12,8 @@ public class Line {
 	private byte[] source;
 	private ByteBuffer byteBuffer;
 	
+	private int lineNo;
+	
 	public Line(byte[] data) {
 		this.source = data;
 		this.byteBuffer = ByteBuffer.wrap(source);

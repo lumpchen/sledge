@@ -1,22 +1,20 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 
+
 public class PHexString extends PString {
 
-	private char[] charSequence;
-
+	public static final byte BEGIN = '<';
+	public static final byte END = '>';
+	
+	public PHexString() {
+		super();
+	}
+	
 	public PHexString(byte[] data) {
 		encode(data);
 	}
 
-	private void encode(byte[] data) {
-		int size = data.length;
-		char[] cs = new char[size];
-		for (int i = 0; i < size; i++) {
-			byte b = data[i];
-			if (b == CR || b == LF || b == TAB || b == FF || b == SPACE) {
-				continue;
-			}
-		}
+	protected void encode(byte[] data) {
 	}
 }

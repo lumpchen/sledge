@@ -3,17 +3,22 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 public class PLiteralString extends PString {
 
-	public static final char BEGIN_TAG = '(';
-	public static final char END_TAG = ')';
+	public static final byte BEGIN = '(';
+	public static final byte END = ')';
+	
+	public PLiteralString() {
+		super();
+	}
 	
 	public PLiteralString(byte[] bytes) {
+		encode(bytes);
+	}
+
+	@Override
+	protected void encode(byte[] bytes) {
 		escape(bytes);
 	}
-
-	public String toString() {
-		return new String(this.charSequence);
-	}
-
+	
 	private void escape(byte[] bytes) {
 		int size = bytes.length;
 		char[] chars = new char[size];

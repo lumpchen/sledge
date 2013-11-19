@@ -3,6 +3,8 @@ package me.lumpchen.sledge.pdf.syntax;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
+
 public class IndirectObject extends PObject {
 	
 	public static final String OBJ_BEGIN = "obj";
@@ -16,11 +18,22 @@ public class IndirectObject extends PObject {
 
 	private List<PObject> objList;
 
+	public IndirectObject() {
+	}
+	
 	public IndirectObject(int objectNumber, int generationNumber) {
 		this.objNum = objectNumber;
 		this.genNum = generationNumber;
 
 		this.objList = new ArrayList<PObject>();
+	}
+	
+	public int getObjNum() {
+		return this.objNum;
+	}
+	
+	public int getGenNumb() {
+		return this.genNum;
 	}
 
 	public void addObj(PObject obj) {
@@ -29,5 +42,10 @@ public class IndirectObject extends PObject {
 
 	public void removeObj(PObject obj) {
 		this.objList.remove(obj);
+	}
+
+	@Override
+	public void read(ObjectReader reader) {
+		
 	}
 }

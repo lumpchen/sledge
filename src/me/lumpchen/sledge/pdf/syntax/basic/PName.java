@@ -1,28 +1,29 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import me.lumpchen.sledge.pdf.reader.InvalidTagException;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.PObject;
 
-public abstract class PName extends PObject {
-	
-	byte[] name;
-	PObject value;
-	
-	void parse() {
-		
-	}
-}
+public class PName extends PObject {
 
-class PDFSize extends PName {
+	public static final byte BEGIN = '/';
 	
-	public static final byte[] NAME = {'S', 'i', 'z', 'e'};
-	
-	private PInteger size;
-	
-	public void read(byte[] data) {
-		
+	private byte[] name;
+
+	public PName() {
+	}
+
+	@Override
+	public void read(ObjectReader reader) {
+		byte tag = reader.readByte();
+		if (tag != BEGIN) {
+			throw new InvalidTagException();
+		}
+		byte[] bytes = reader.readToSpace();
+		this.name = bytes;
 	}
 	
 	public String toString() {
-		return "";
+		return "/" + new String(this.name);
 	}
 }
