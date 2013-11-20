@@ -19,54 +19,68 @@ public class LineReader {
 		}
 	}
 	
-	public Line getNextLine() {
-		byte[] data = readLine();
-		if (data != null) {
-			return new Line(data);
+	public LineData getLine() {
+		byte[] data = null;
+		if (this.reverse) {
+			data = this.readPrevLine();
+		} else {
+			data = readNextLine();
 		}
-		return null;
+		return new LineData(data);
 	}
 
-	private byte[] readLine() {
-		if (reverse) {
-			int run = 0;
-			int end = buf.position();
-			while (true) {
-				byte c = buf.get(end);
-				buf.position(end);
-				if ('\r' == c || '\n' == c) {
-					if (run != 0) {
-						buf.position(end + 1);
-						break;
-					}
-				} else {
-					run++;
+	private byte[] readNextLine() {
+		boolean cr = false;
+		int run = this.buf.position();
+		while (true) {
+			byte b = buf.get(run);
+			if (b == '\n') {
+				if (cr) {
+					run--;
 				}
-				end--;
+				break;
 			}
-			if (run > 0) {
-				byte[] dst = new byte[run];
-				buf.get(dst, 0, run);
-				buf.position(buf.position() - run - 1);
-				return dst;
+			if (b == '\r') {
+				cr = true;
 			}
-		} else {
-			int run = 0;
-			int start = buf.position();
-			while (true) {
-				byte c = buf.get();
-				if ('\r' == c || '\n' == c) {
-					break;
-				} else {
-					++run;
-				}
-			}
-			if (run > 0) {
-				byte[] dst = new byte[run];
-				buf.get(dst, start, run);
-				return dst;
-			}
+			run++;
 		}
-		return null;
+		
+		byte[] name = new byte[run - this.buf.position()];
+		buf.get(name);
+		
+		int newPos = run + 1 + (cr ? 1 : 0);
+		buf.position(newPos);
+		return name;
+	}
+	
+	private byte[] readPrevLine() {
+		int pos = this.buf.position();
+		while (true) {
+			byte b = this.buf.get(pos);
+			if (b != '\r' && b != '\n') {
+				break;
+			}
+			pos--;
+		}
+		this.buf.position(pos);
+		
+		int run = 0;
+		while (true) {
+			byte b = this.buf.get(pos);
+			if (b == '\n') {
+				break;
+			}
+			run++;
+			pos--;
+		}
+		
+		this.buf.position(pos + 1);
+		byte[] line = new byte[run];
+		this.buf.get(line);
+		
+		this.buf.position(pos);
+		
+		return line;
 	}
 }

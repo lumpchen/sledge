@@ -1,10 +1,13 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
-import me.lumpchen.sledge.pdf.reader.Line;
+import me.lumpchen.sledge.pdf.reader.InvalidElementException;
+import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
@@ -18,9 +21,9 @@ public class PDFTrailer {
 	
 	private PInteger size;
 	private PInteger prev;
-	private PDictionary root;
+	private IndirectRef root;
 	private PDictionary encrypt;
-	private PDictionary info;
+	private IndirectRef info;
 	private PArray id;
 
 	private PDictionary dict;
@@ -38,21 +41,38 @@ public class PDFTrailer {
 		return this.startxref;
 	}
 	
-	public void read(ByteBuffer buf) throws IOException {
-		LineReader reader = new LineReader(buf, true);
-		Line line = reader.getNextLine();
-		while (line != null) {
-			if (line.startsWith(PDictionary.BEGIN)) {
-				this.dict = line.redDict();
-				continue;
+	public void read(LineReader lineReader) {
+		boolean found = false;
+		List<LineData> lineArr = new ArrayList<LineData>();
+		while (true) {
+			LineData line = lineReader.getLine();
+			System.out.println(new String(line.getData()));
+			if (line.startsWith(TRAILER)) {
+				found = true;
+				break;
+			}
+			lineArr.add(0, line);
+		}
+		
+		if (!found) {
+			throw new ReadException();
+		}
+		
+		for (int i = 0, n = lineArr.size(); i < n;  i++) {
+			LineData line = lineArr.get(i);
+			if (line.startsWith(STARTXREF)) {
+				line = lineArr.get(i++);
+				this.startxref = new PLong(line.readAsLong());
+			} else if (line.startsWith(PDictionary.BEGIN)) {
+				ObjectReader objReader = new ObjectReader(line.getData());
+				PObject obj = objReader.readNextObj();
+				if (obj == null || !(obj instanceof PDictionary)) {
+					throw new InvalidElementException();
+				}
+				this.dict = (PDictionary) obj;
 			}
 			
-			if (line.startsWith(STARTXREF)) {
-				line = reader.getNextLine();
-				this.startxref = line.readLong();
-				continue;
-			}
-			line = reader.getNextLine();
 		}
+		
 	}
 }

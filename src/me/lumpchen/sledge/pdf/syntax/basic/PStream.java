@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.PObject;
 
@@ -14,8 +15,16 @@ public class PStream extends PObject {
 	public PStream() {
 	}
 	
+	public void setDict(PDictionary dict) {
+		this.dict = dict;
+	}
+	
 	@Override
 	public void read(ObjectReader reader) {
+		if (null == this.dict) {
+			throw new NotMatchObjectException();
+		}
+		
 		
 	}
 }

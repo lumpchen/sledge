@@ -11,14 +11,19 @@ import me.lumpchen.sledge.pdf.syntax.basic.PBoolean;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PHexString;
 import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
-import me.lumpchen.sledge.pdf.syntax.basic.PLong;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class ObjectReader {
 
 	private ByteBuffer buf;
 	private Stack<Byte> tagStack;
 
+	public ObjectReader(byte[] data) {
+		this.buf = ByteBuffer.wrap(data);
+		this.tagStack = new Stack<Byte>();
+	}
+	
 	public ObjectReader(ByteBuffer buf) {
 		this.buf = buf;
 		this.tagStack = new Stack<Byte>();
@@ -35,7 +40,10 @@ public class ObjectReader {
 
 		switch (first) {
 		case PName.BEGIN: {
-			obj = new PName();
+			// read name here, '/'
+			this.buf.get();	// skip '/'
+			byte[] name = this.readToSpace();
+			obj = PName.instance(name);
 			break;
 		}
 		case PArray.BEGIN: {
@@ -50,7 +58,7 @@ public class ObjectReader {
 			break;
 		}
 		case '<': {
-			byte next = buf.get(0);
+			byte next = buf.get(1);
 			if (next == PDictionary.BEGIN[1]) {
 				// Dictionary
 				this.pushTag(PDictionary.BEGIN);
@@ -94,6 +102,12 @@ public class ObjectReader {
 				if (!this.popTag(IndirectObject.BEGIN)) {
 					throw new NotMatchedTagException();
 				}
+			} else if (this.match(PStream.BEGIN)) {
+				obj = new PStream();
+			} else if (this.match(PStream.END)) {
+				if (!this.popTag(PStream.BEGIN)) {
+					throw new NotMatchedTagException();
+				}
 			} else {
 				// 9 0 obj || 9 0 R
 				int currPos = this.buf.position();
@@ -118,7 +132,9 @@ public class ObjectReader {
 		}
 
 		if (obj != null) {
-			obj.read(this);
+			if (!(obj instanceof PStream) && !(obj instanceof PName)) {
+				obj.read(this);				
+			}
 		}
 		return obj;
 	}
@@ -174,21 +190,17 @@ public class ObjectReader {
 		return bytes;
 	}
 
-	public byte[] readString() {
-
-		return null;
-	}
-
-	protected byte getByteNoSpace(ByteBuffer buf) {
-		byte b = buf.get();
-
-		while (isSpace(b)) {
-			b = buf.get();
+	public int readInt() {
+		byte[] bytes = this.readToSpace();
+		int len = bytes.length;
+		int value = 0;
+		for (int i = 0, n = bytes.length; i < n; i++) {
+			int c = Character.digit(bytes[i], 10);
+			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);
 		}
-
-		return b;
+		return value;
 	}
-
+	
 	private boolean isSpace(byte b) {
 		if (b == ' ' || b == '\r' || b == '\n') {
 			return true;
@@ -218,15 +230,4 @@ public class ObjectReader {
 		this.buf.get(bytes, 0, run);
 		return bytes;
 	}
-	
-	public static PLong readIAsLong(byte[] bytes) {
-		int len = bytes.length;
-		long value = 0;
-		for (int i = 0, n = bytes.length; i < n; i++) {
-			int c = Character.digit(bytes[i], 10);
-			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);
-		}
-		return new PLong(value);
-	}
-
 }
