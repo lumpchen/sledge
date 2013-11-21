@@ -6,8 +6,15 @@ import me.lumpchen.sledge.pdf.syntax.PObject;
 public class PNumber extends PObject {
 
 	@Override
-	public void read(ObjectReader reader) {
-		
+	protected void readBeginTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
 	}
 
 }

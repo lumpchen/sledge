@@ -22,16 +22,42 @@ public class PArray extends PObject {
 		this.objList.add(child);
 	}
 	
-	public void read(ObjectReader reader) {
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append((char) BEGIN);
+		for (PObject obj : this.objList) {
+			buf.append(obj.toString());
+			buf.append(" ");
+		}
+		buf.append((char) END);
+		return buf.toString();
+	}
+	
+	@Override
+	public void readBeginTag(ObjectReader reader) {
 		byte tag = reader.readByte();
 		if (tag != BEGIN) {
 			throw new InvalidTagException();
 		}
-		
-		PObject child = reader.readNextObj();
-		while (null != child) {
+	}
+
+	@Override
+	public void readBody(ObjectReader reader) {
+		while (true) {
+			PObject child = reader.readNextObj();
+			if (null == child) {
+				break;
+			}
 			child.setParent(this);
 			this.appendChild(child);
+		}
+	}
+
+	@Override
+	public void readEndTag(ObjectReader reader) {
+		byte tag = reader.readByte();
+		if (tag != END) {
+			throw new InvalidTagException();
 		}
 	}
 }

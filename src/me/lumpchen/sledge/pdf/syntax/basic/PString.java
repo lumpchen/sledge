@@ -1,9 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.PObject;
 
 public abstract class PString extends PObject {
@@ -20,32 +16,9 @@ public abstract class PString extends PObject {
 	
 	protected char[] charSequence;
 
-	public PString() {
+	protected PString() {
 	}
 
-	public void read(ObjectReader reader) {
-		List<Byte> byteArr = new ArrayList<>();
-		byte prev = 0;
-		
-		while (true) {
-			byte b = reader.readByte();
-			if (b == RIGHT_PARENTHESIS) {
-				if (prev != BACKSLASH) {
-					break;
-				}
-			}
-			byteArr.add(b);
-			prev = b;
-		}
-
-		byte[] bytes = new byte[byteArr.size()];
-		for (int i = 0, n = byteArr.size(); i < n; i++) {
-			bytes[i] = byteArr.get(i);
-		}
-		
-		encode(bytes);
-	}
-	
 	abstract protected void encode(byte[] bytes);
 	
 	public String toString() {

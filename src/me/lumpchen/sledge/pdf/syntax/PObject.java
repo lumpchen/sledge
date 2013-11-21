@@ -17,5 +17,16 @@ public abstract class PObject {
 		this.parent = parent;
 	}
 
-	abstract public void read(ObjectReader reader);
+	public void read(ObjectReader reader) {
+		this.readBeginTag(reader);
+		this.readBody(reader);
+		this.readEndTag(reader);
+	}
+
+	abstract protected void readBeginTag(ObjectReader reader);
+
+	abstract protected void readBody(ObjectReader reader);
+
+	abstract protected void readEndTag(ObjectReader reader);
+
 }

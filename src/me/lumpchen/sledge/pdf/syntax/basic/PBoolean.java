@@ -34,7 +34,11 @@ public class PBoolean extends PObject {
 	}
 
 	@Override
-	public void read(ObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
 		byte b0 = reader.readByte();
 		byte b1 = reader.readByte();
 		byte b2 = reader.readByte();
@@ -49,6 +53,10 @@ public class PBoolean extends PObject {
 				return;
 			}
 		}
-		throw new InvalidTagException();
+		throw new InvalidTagException();		
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
 	}
 }

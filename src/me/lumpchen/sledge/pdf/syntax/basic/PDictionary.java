@@ -1,7 +1,9 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
@@ -35,12 +37,34 @@ public class PDictionary extends PObject {
 		return this.dict.remove(key);
 	}
 
-	public void read(ObjectReader reader) {
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append("<<");
+		Iterator<Entry<PName, PObject>>  it = this.dict.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<PName, PObject> entry = it.next();
+			PObject key = entry.getKey();
+			buf.append(key.toString());
+			
+			buf.append(" ");
+			PObject value = entry.getValue();
+			buf.append(value.toString());
+		}
+		buf.append(">>");
+		
+		return buf.toString();
+	}
+
+	@Override
+	protected void readBeginTag(ObjectReader reader) {
 		byte[] tag = reader.readBytes(BEGIN.length);
 		if (tag[0] != BEGIN[0] || tag[1] != BEGIN[1]) {
 			throw new InvalidTagException();
 		}
-		
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
 		while (true) {
 			PObject key = reader.readNextObj();
 			if (key == null) {
@@ -51,7 +75,15 @@ public class PDictionary extends PObject {
 				this.dict.put((PName) key, value);
 			} else {
 				throw new NotMatchObjectException();
-			}			
+			}
+		}
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
+		byte[] tag = reader.readBytes(BEGIN.length);
+		if (tag[0] != END[0] || tag[1] != END[1]) {
+			throw new InvalidTagException();
 		}
 	}
 }

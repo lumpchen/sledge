@@ -13,5 +13,5 @@ public class Main {
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
 		System.out.println(bb.getShort());
 	}
-
 }
+

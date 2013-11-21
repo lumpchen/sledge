@@ -11,7 +11,7 @@ public class LineData {
 	
 	public long readAsLong() {
 		int len = source.length;
-		int value = 0;
+		long value = 0;
 		for (int i = 0, n = source.length; i < n; i++) {
 			int c = Character.digit(source[i], 10);
 			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);

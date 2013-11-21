@@ -47,5 +47,6 @@ public class PDFReader {
 		LineReader lineReader = new LineReader(buf, true);
 		PDFTrailer trailer = new PDFTrailer();
 		trailer.read(lineReader);
+		System.err.println(trailer.toString());
 	}
 }

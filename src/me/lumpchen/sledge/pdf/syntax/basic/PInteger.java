@@ -1,9 +1,14 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
+
 public class PInteger extends PNumber {
 
 	private int value;
 
+	public PInteger() {
+	}
+	
 	public PInteger(int value) {
 		this.value = value;
 	}
@@ -18,6 +23,11 @@ public class PInteger extends PNumber {
 
 	public String toString() {
 		return this.value + "";
+	}
+	
+	@Override
+	protected void readBody(ObjectReader reader) {
+		this.value = reader.readInt();
 	}
 	
 	public boolean equals(Object obj) {

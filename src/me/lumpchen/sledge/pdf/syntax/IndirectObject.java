@@ -58,9 +58,24 @@ public class IndirectObject extends PObject {
 		}
 		return this.objList.get(this.objList.size() - 1);
 	}
+	
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(this.objNum + " " + this.genNum + " " + "obj");
+		
+		buf.append('\n');
+		for (PObject obj : this.objList) {
+			buf.append(obj.toString());
+		}
+		
+		buf.append('\n');
+		buf.append("endobj");
+		buf.append('\n');
+		return buf.toString();
+	}
 
 	@Override
-	public void read(ObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
 		int iobj = reader.readInt();
 		int igen = reader.readInt();
 
@@ -73,7 +88,10 @@ public class IndirectObject extends PObject {
 
 		this.objNum = iobj;
 		this.genNum = igen;
+	}
 
+	@Override
+	protected void readBody(ObjectReader reader) {
 		while (true) {
 			PObject next = reader.readNextObj();
 			if (null == next) {
@@ -89,6 +107,16 @@ public class IndirectObject extends PObject {
 				next.read(reader);
 			} else {
 				this.addObj(next);
+			}
+		}
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
+		byte[] obj = reader.readBytes(END.length);
+		for (int i = 0; i < END.length; i++) {
+			if (obj[i] != END[i]) {
+				throw new InvalidTagException();
 			}
 		}
 	}

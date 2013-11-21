@@ -1,32 +1,66 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import me.lumpchen.sledge.pdf.reader.InvalidTagException;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 
 public class PLiteralString extends PString {
 
 	public static final byte BEGIN = '(';
 	public static final byte END = ')';
-	
+
 	public PLiteralString() {
 		super();
 	}
-	
+
 	public PLiteralString(byte[] bytes) {
 		encode(bytes);
 	}
 
-	@Override
-	protected void encode(byte[] bytes) {
-		escape(bytes);
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append("(");
+		if (charSequence != null) {
+			buf.append(new String(charSequence));
+		}
+		buf.append(")");
+		return buf.toString();
 	}
 	
-	private void escape(byte[] bytes) {
-		int size = bytes.length;
+	@Override
+	protected void readBeginTag(ObjectReader reader) {
+		byte tag = reader.readByte();
+		if (tag != BEGIN) {
+			throw new InvalidTagException();
+		}		
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
+		byte[] data = reader.readToFlag(END);
+		this.encode(data);		
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
+		byte tag = reader.readByte();
+		if (tag != END) {
+			throw new InvalidTagException();
+		}			
+	}
+
+	@Override
+	protected void encode(byte[] data) {
+		escape(data);
+	}
+
+	private void escape(byte[] data) {
+		int size = data.length;
 		char[] chars = new char[size];
 
 		boolean bsFound = false;
 		int skip = 0;
 		for (int i = 0; i < size; i++) {
-			byte b = bytes[i];
+			byte b = data[i];
 			switch (b) {
 			case BACKSLASH: {
 				if (bsFound) {

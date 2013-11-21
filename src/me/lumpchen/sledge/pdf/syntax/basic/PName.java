@@ -15,11 +15,23 @@ public class PName extends PObject {
 	protected String name;
 
 	public static final String SIZE = "Size";
-	public static final PName Size = new PName(SIZE);
-
+	public static final PName size = new PName(SIZE);
+	
+	public static final String ROOT = "Root";
+	public static final PName root = new PName(ROOT);
+	
+	public static final String ID = "ID";
+	public static final PName id = new PName(ID);
+	
+	public static final String INFO = "Info";
+	public static final PName info = new PName(INFO);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
-		nameMap.put(SIZE, Size);
+		nameMap.put(ID, id);
+		nameMap.put(INFO, info);
+		nameMap.put(ROOT, root);
+		nameMap.put(SIZE, size);
 	}
 
 	private PName(byte[] name) {
@@ -61,6 +73,18 @@ public class PName extends PObject {
 	}
 
 	public String toString() {
-		return BEGIN + this.name;
+		return "/" + this.name;
+	}
+
+	@Override
+	protected void readBeginTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
 	}
 }

@@ -19,12 +19,32 @@ public class PStream extends PObject {
 		this.dict = dict;
 	}
 	
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		if (this.dict != null) {
+			buf.append(this.dict.toString());
+		}
+		buf.append("stream");
+		buf.append('\n');
+		buf.append(new String(stream));
+		buf.append('\n');
+		buf.append("endstream");
+		buf.append('\n');
+		return buf.toString();
+	}
+	
 	@Override
-	public void read(ObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
 		if (null == this.dict) {
 			throw new NotMatchObjectException();
 		}
-		
-		
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
 	}
 }
