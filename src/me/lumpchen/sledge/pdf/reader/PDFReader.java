@@ -6,11 +6,11 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import me.lumpchen.sledge.pdf.syntax.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.PDFTrailer;
 
 public class PDFReader {
 
-	private SegmentedByteBuffer segmentedByteBuffer;
 	private RandomAccessFile raf;
 	private FileChannel fc;
 
@@ -34,19 +34,14 @@ public class PDFReader {
 		}
 	}
 
-	public void read(File file) throws IOException {
+	public PDFDocument read(File file) throws IOException {
 		raf = new RandomAccessFile(file, "r");
 		fc = raf.getChannel();
-		this.segmentedByteBuffer = new SegmentedByteBuffer(fc);
+		SegmentedFileReader reader = new SegmentedFileReader(fc);
 
-		this.readTrailer();
-	}
+		PDFDocument pdfDoc = new PDFDocument();
+		pdfDoc.read(reader);
 
-	private void readTrailer() throws IOException {
-		ByteBuffer buf = this.segmentedByteBuffer.readTrailerBytes();
-		LineReader lineReader = new LineReader(buf, true);
-		PDFTrailer trailer = new PDFTrailer();
-		trailer.read(lineReader);
-		System.err.println(trailer.toString());
+		return pdfDoc;
 	}
 }

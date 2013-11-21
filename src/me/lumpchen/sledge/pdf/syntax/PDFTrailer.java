@@ -9,7 +9,9 @@ import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PLong;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public class PDFTrailer {
 
@@ -21,6 +23,22 @@ public class PDFTrailer {
 	private PLong startxref;
 
 	public PDFTrailer() {
+	}
+	
+	public int getSize() {
+		PObject size = this.dict.get(PName.size);
+		if (size == null || !(size instanceof PInteger)) {
+			throw new InvalidElementException(PName.SIZE);
+		}
+		return ((PInteger) size).getValue();
+	}
+	
+	public void setStartxref(long pos) {
+		this.startxref = new PLong(pos);
+	}
+	
+	public long getStartxref() {
+		return this.startxref.getValue();
 	}
 	
 	public String toString() {
@@ -39,14 +57,6 @@ public class PDFTrailer {
 		return buf.toString();
 	}
 
-	public void setStartxref(PLong pos) {
-		this.startxref = pos;
-	}
-
-	public PLong getStartxref() {
-		return this.startxref;
-	}
-	
 	public void read(LineReader lineReader) {
 		boolean found = false;
 		List<LineData> lineArr = new ArrayList<LineData>();

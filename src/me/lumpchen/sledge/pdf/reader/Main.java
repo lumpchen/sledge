@@ -3,7 +3,7 @@ package me.lumpchen.sledge.pdf.reader;
 import java.io.File;
 import java.io.IOException;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
+import me.lumpchen.sledge.pdf.syntax.PDFDocument;
 
 public class Main {
 
@@ -12,14 +12,10 @@ public class Main {
 		
 		File f = new File("c:/itext.pdf");
 		try {
-			reader.read(f);
+			PDFDocument doc = reader.read(f);
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		byte[] bs = new byte[]{'a', '\n', '(', 'b'};
-		PLiteralString ps = new PLiteralString(bs);
-		System.err.println(ps.toString());
 	}
 }

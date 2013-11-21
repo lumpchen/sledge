@@ -30,7 +30,7 @@ public class PDictionary extends PObject {
 	}
 
 	public PObject get(PName key) {
-		return this.get(key);
+		return this.dict.get(key);
 	}
 
 	public PObject remove(PName key) {

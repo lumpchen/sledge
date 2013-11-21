@@ -26,32 +26,38 @@ public class LineReader {
 		} else {
 			data = readNextLine();
 		}
+		if (data == null) {
+			return null;
+		}
 		return new LineData(data);
 	}
 
 	private byte[] readNextLine() {
-		boolean cr = false;
-		int run = this.buf.position();
+		int pos = this.buf.position();
+		int run = 0;
+		int remain = this.buf.remaining();
 		while (true) {
-			byte b = buf.get(run);
-			if (b == '\n') {
-				if (cr) {
-					run--;
-				}
+			if (run == remain) {
 				break;
 			}
-			if (b == '\r') {
-				cr = true;
+			byte b = buf.get(pos + run);
+			if (b == '\n') {
+				run++;
+				break;
 			}
 			run++;
 		}
+
+		if (run == 0) {
+			return null;
+		}
 		
-		byte[] name = new byte[run - this.buf.position()];
-		buf.get(name);
+		byte[] data = new byte[run];
+		buf.get(data);
 		
-		int newPos = run + 1 + (cr ? 1 : 0);
-		buf.position(newPos);
-		return name;
+		buf.position(pos + run);
+		
+		return data;
 	}
 	
 	private byte[] readPrevLine() {
@@ -66,7 +72,7 @@ public class LineReader {
 		this.buf.position(pos);
 		
 		int run = 0;
-		while (true) {
+		while (pos >= 0) {
 			byte b = this.buf.get(pos);
 			if (b == '\n') {
 				break;

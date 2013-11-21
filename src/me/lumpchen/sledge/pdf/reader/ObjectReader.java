@@ -183,6 +183,26 @@ public class ObjectReader {
 		return value;
 	}
 	
+	public long readLong() {
+		List<Integer> num = new ArrayList<Integer>();
+		while (true) {
+			byte b = this.buf.get();
+			if (!Character.isDigit(b)) {
+				if (!this.isSpace(b)) {
+					this.buf.position(this.buf.position() - 1);					
+				}
+				break;
+			}
+			num.add(Character.digit(b, 10));
+		}
+		
+		long value = 0;
+		for (int i = 0, n = num.size(); i < n; i++) {
+			value += num.get(i) * (int) (Math.pow(10, n - i - 1) + 0.5);
+		}
+		return value;
+	}
+	
 	private boolean isSpace(byte b) {
 		if (b == ' ' || b == '\r' || b == '\n') {
 			return true;
