@@ -6,24 +6,50 @@ import java.nio.channels.FileChannel;
 
 public class SegmentedFileReader {
 
+	public static final int SEGMETN_SIZE = 4096;
 	private FileChannel channel;
 	private long fileSize;
+	private long position;
+	private int segmentSize;
 	
 	public SegmentedFileReader(FileChannel channel) throws IOException {
 		this.channel = channel;
 		this.fileSize = this.channel.size();
 	}
-
-	public ByteBuffer readBufferFromTrailer(int size) throws IOException {
-		long position = this.fileSize - size;
-		ByteBuffer buf = this.channel.map(FileChannel.MapMode.READ_ONLY, position, size);
-		return buf;
+	
+	public long position() {
+		return this.position;
 	}
 	
-	public ByteBuffer readBuffer(long offset, long size) throws IOException {
-		long remain = this.fileSize - size;
-		size = remain > size ? size : remain;
-		ByteBuffer buf = this.channel.map(FileChannel.MapMode.READ_ONLY, offset, size);
+	public void setPosition(long offset) {
+		if (offset > this.fileSize) {
+			throw new ReadException("");
+		}
+		this.setPosition(offset, false);
+	}
+
+	public void setPosition(long offset, boolean fromTrailer) {
+		if (fromTrailer) {
+			this.position = this.fileSize - offset;
+		} else {
+			this.position = offset;
+		}
+	}
+
+	public void setSegmentSize(int size) {
+		this.segmentSize = size;
+	}
+	
+	public ByteBuffer readSegment() throws IOException {
+		return this.readSegment(this.segmentSize);
+	}
+	
+	public ByteBuffer readSegment(int size) throws IOException {
+		if (position + size > this.fileSize) {
+			return null;
+		}
+		ByteBuffer buf = this.channel.map(FileChannel.MapMode.READ_ONLY, position, size);
+		this.position += size;
 		return buf;
 	}
 }

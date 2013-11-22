@@ -9,6 +9,10 @@ public class LineData {
 		this.source = data;
 	}
 	
+	public String toString() {
+		return new String(this.source);
+	}
+	
 	public long readAsLong() {
 		int len = source.length;
 		long value = 0;
@@ -19,7 +23,7 @@ public class LineData {
 		return value;
 	}
 	
-	public byte[] getData() {
+	public byte[] getBytes() {
 		return this.source;
 	}
 	

@@ -33,6 +33,14 @@ public class PDFTrailer {
 		return ((PInteger) size).getValue();
 	}
 	
+	public IndirectRef getInfo() {
+		PObject info = this.dict.get(PName.info);
+		if (info == null || !(info instanceof IndirectRef)) {
+			throw new InvalidElementException(PName.INFO);
+		}
+		return (IndirectRef) info;
+	}
+	
 	public void setStartxref(long pos) {
 		this.startxref = new PLong(pos);
 	}
@@ -61,16 +69,20 @@ public class PDFTrailer {
 		boolean found = false;
 		List<LineData> lineArr = new ArrayList<LineData>();
 		while (true) {
-			LineData line = lineReader.getLine();
-			if (line.startsWith(TRAILER)) {
-				found = true;
+			LineData line = lineReader.readLine();
+			if (line == null) {
 				break;
 			}
-			lineArr.add(0, line);
+			if (line.startsWith(TRAILER)) {
+				found = true;
+			}
+			if (found) {
+				lineArr.add(line);				
+			}
 		}
 		
 		if (!found) {
-			throw new ReadException();
+			throw new ReadException("not found trailer.");
 		}
 		
 		for (int i = 0, n = lineArr.size(); i < n;  i++) {
@@ -79,7 +91,7 @@ public class PDFTrailer {
 				line = lineArr.get(++i);
 				this.startxref = new PLong(line.readAsLong());
 			} else if (line.startsWith(PDictionary.BEGIN)) {
-				ObjectReader objReader = new ObjectReader(line.getData());
+				ObjectReader objReader = new ObjectReader(new LineReader(line));
 				PObject obj = objReader.readNextObj();
 				if (obj == null || !(obj instanceof PDictionary)) {
 					throw new InvalidElementException();

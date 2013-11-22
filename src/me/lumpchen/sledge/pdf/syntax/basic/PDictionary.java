@@ -81,7 +81,7 @@ public class PDictionary extends PObject {
 
 	@Override
 	protected void readEndTag(ObjectReader reader) {
-		byte[] tag = reader.readBytes(BEGIN.length);
+		byte[] tag = reader.readBytes(END.length);
 		if (tag[0] != END[0] || tag[1] != END[1]) {
 			throw new InvalidTagException();
 		}

@@ -1,9 +1,5 @@
 package me.lumpchen.sledge.pdf.reader;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.PObject;
@@ -18,17 +14,22 @@ import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class ObjectReader {
 
-	private ByteBuffer buf;
-
-	public ObjectReader(byte[] data) {
-		this.buf = ByteBuffer.wrap(data);
-	}
+	private LineReader lineReader;
+	private BytesReader bytesReader;
 	
-	public ObjectReader(ByteBuffer buf) {
-		this.buf = buf;
+	public ObjectReader(LineReader reader) {
+		this.lineReader = reader;
 	}
 
 	public PObject readNextObj() {
+		if (this.bytesReader == null || this.bytesReader.remaining() == 0) {
+			LineData data = this.lineReader.readLine();
+			if (null == data) {
+				throw new ReadException();
+			}
+			this.bytesReader = new BytesReader(data.getBytes());
+		}
+		
 		PObject next = read();
 		return next;
 	}
@@ -36,14 +37,14 @@ public class ObjectReader {
 	private PObject read() {
 		PObject obj = null;
 		
-		this.skipSpace();
-		byte first = this.buf.get(this.buf.position());
+		this.bytesReader.skipSpace();
+		byte first = this.bytesReader.getByte(this.bytesReader.position());
 
 		switch (first) {
 		case PName.BEGIN: {
 			// read name here, '/'
-			this.buf.get();	// skip '/'
-			byte[] name = this.readToSpace();
+			this.bytesReader.readByte();	// skip '/'
+			byte[] name = this.bytesReader.readToSpace();
 			obj = PName.instance(name);
 			break;
 		}
@@ -52,7 +53,7 @@ public class ObjectReader {
 			break;
 		}
 		case '<': {
-			byte next = buf.get(this.buf.position() + 1);
+			byte next = this.bytesReader.getByte(this.bytesReader.position() + 1);
 			if (next == PDictionary.BEGIN[1]) {
 				// Dictionary
 				obj = new PDictionary();
@@ -73,20 +74,20 @@ public class ObjectReader {
 				obj = new PStream();
 			} else {
 				// 9 0 obj || 9 0 R
-				byte[] num0 = this.peekToSpace(0);
-				if (this.isNumber(num0)) {
+				byte[] num0 = this.bytesReader.peekToSpace(0);
+				if (BytesReader.isNumber(num0)) {
 					int run = num0.length + 1;
-					byte[] num1 = this.peekToSpace(run);
-					if (this.isNumber(num1)) {
+					byte[] num1 = this.bytesReader.peekToSpace(run);
+					if (BytesReader.isNumber(num1)) {
 						run += num1.length + 1;
-						byte tag = this.buf.get(this.buf.position() + run);
+						byte tag = this.bytesReader.getByte(this.bytesReader.position() + run);
 						if (tag == IndirectObject.BEGIN[0]) {
 							obj = new IndirectObject();
 						} else if (tag == IndirectRef.BEGIN) {
 							obj = new IndirectRef();
 						}
 					}
-				} else if (this.isNumber(first)) {
+				} else if (BytesReader.isNumber(first)) {
 					obj = new PInteger();
 				}
 			}
@@ -101,145 +102,32 @@ public class ObjectReader {
 	}
 
 	private boolean match(byte... tag) {
-		int pos = this.buf.position();
+		int pos = this.bytesReader.position();
 		for (int i = 0, n = tag.length; i < n; i++) {
-			if (this.buf.get(pos + i) != tag[i]) {
+			if (this.bytesReader.getByte(pos + i) != tag[i]) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	private void skipSpace() {
-		while (true) {
-			byte b = this.buf.get();
-			if (!this.isSpace(b)) {
-				break;
-			}
-		}
-		this.buf.position(this.buf.position() - 1);
-	}
-	
-	public byte[] readToSpace() {
-		int i = 0;
-		while (true) {
-			if (isSpace(buf.get(this.buf.position() + i))) {
-				break;
-			}
-			i++;
-		}
-		byte[] bytes = new byte[i];
-		buf.get(bytes);
-		
-		this.skipSpace();
-		return bytes;
 	}
 
 	public byte readByte() {
-		return this.buf.get();
+		return this.bytesReader.readByte();
 	}
 
 	public byte[] readToFlag(byte flag) {
-		int pos = this.buf.position();
-		int run = 0;
-		while (true) {
-			byte next = this.buf.get(pos + run);
-			if (next == flag) {
-				break;
-			}
-			run++;
-		}
-		
-		byte[] bytes = new byte[run];
-		this.buf.get(bytes);
-		
-		return bytes;
+		return this.bytesReader.readToFlag(flag);
 	}
 	
 	public byte[] readBytes(int size) {
-		byte[] bytes = new byte[size];
-		this.buf.get(bytes);
-//		this.buf.position(this.buf.position() + size);
-		return bytes;
+		return this.bytesReader.readBytes(size);
 	}
 
 	public int readInt() {
-		List<Integer> num = new ArrayList<Integer>();
-		while (true) {
-			byte b = this.buf.get();
-			if (!Character.isDigit(b)) {
-				if (!this.isSpace(b)) {
-					this.buf.position(this.buf.position() - 1);					
-				}
-				break;
-			}
-			num.add(Character.digit(b, 10));
-		}
-		
-		int value = 0;
-		for (int i = 0, n = num.size(); i < n; i++) {
-			value += num.get(i) * (int) (Math.pow(10, n - i - 1) + 0.5);
-		}
-		return value;
+		return this.bytesReader.readInt();
 	}
 	
 	public long readLong() {
-		List<Integer> num = new ArrayList<Integer>();
-		while (true) {
-			byte b = this.buf.get();
-			if (!Character.isDigit(b)) {
-				if (!this.isSpace(b)) {
-					this.buf.position(this.buf.position() - 1);					
-				}
-				break;
-			}
-			num.add(Character.digit(b, 10));
-		}
-		
-		long value = 0;
-		for (int i = 0, n = num.size(); i < n; i++) {
-			value += num.get(i) * (int) (Math.pow(10, n - i - 1) + 0.5);
-		}
-		return value;
-	}
-	
-	private boolean isSpace(byte b) {
-		if (b == ' ' || b == '\r' || b == '\n') {
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isNumber(byte... bytes) {
-		for (byte b : bytes) {
-			if (!Character.isDigit(b)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private byte[] peekToSpace(int offset) {
-		int pos = this.buf.position();
-		int remain = this.buf.remaining();
-		
-		int run = 0;
-		while (true) {
-			if (remain - offset == run) {
-				break;
-			}
-			byte next = this.buf.get(pos + offset + run);
-			if (this.isSpace(next)) {
-				break;
-			}
-			run++;
-		}
-
-		this.buf.position(pos + offset);
-		byte[] bytes = new byte[run];
-		this.buf.get(bytes, 0, run);
-
-		this.buf.position(pos); // back to original position
-		return bytes;
+		return this.bytesReader.readLong();
 	}
 }

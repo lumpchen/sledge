@@ -14,6 +14,7 @@ public class Main {
 		try {
 			PDFDocument doc = reader.read(f);
 			
+			System.out.println(doc.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

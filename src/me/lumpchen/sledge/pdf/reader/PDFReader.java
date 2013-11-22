@@ -3,11 +3,9 @@ package me.lumpchen.sledge.pdf.reader;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import me.lumpchen.sledge.pdf.syntax.PDFDocument;
-import me.lumpchen.sledge.pdf.syntax.PDFTrailer;
 
 public class PDFReader {
 

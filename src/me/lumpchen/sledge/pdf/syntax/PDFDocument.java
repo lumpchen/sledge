@@ -1,7 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
@@ -22,6 +21,20 @@ public class PDFDocument {
 	public PDFTrailer getTrailer() {
 		return this.trailer;
 	}
+	
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		if (this.xref != null) {
+			buf.append(this.xref.toString());
+		}
+		buf.append('\n');
+		if (this.trailer != null) {
+			buf.append(this.trailer.toString());
+		}
+		buf.append('\n');
+		
+		return buf.toString();
+	}
 
 	public void read(SegmentedFileReader reader) throws IOException {
 		this.readTrailer(reader);
@@ -29,8 +42,9 @@ public class PDFDocument {
 	}
 
 	private void readTrailer(SegmentedFileReader reader) throws IOException {
-		ByteBuffer buf = reader.readBufferFromTrailer(2048);
-		LineReader lineReader = new LineReader(buf, true);
+		reader.setPosition(1024, true);
+		reader.setSegmentSize(1024);
+		LineReader lineReader = new LineReader(reader);
 		this.trailer = new PDFTrailer();
 		trailer.read(lineReader);
 	}
@@ -41,12 +55,13 @@ public class PDFDocument {
 		}
 		
 		long fp = this.trailer.getStartxref();
-		int size = this.trailer.getSize();
+		reader.setPosition(fp);
+
+//		int size = this.trailer.getSize();
+//		int bufSize = (size + 2) * 20;
+//		reader.readSegment(bufSize);
 		
-		int bufSize = (size + 2) * 20;
-		ByteBuffer buf = reader.readBuffer(fp, bufSize);
-		
-		LineReader lineReader = new LineReader(buf);
+		LineReader lineReader = new LineReader(reader);
 		this.xref = new PDFXRef();
 		this.xref.read(lineReader);
 	}

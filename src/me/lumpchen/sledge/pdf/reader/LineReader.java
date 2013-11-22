@@ -1,48 +1,79 @@
 package me.lumpchen.sledge.pdf.reader;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class LineReader {
 
+	public static final byte LF = '\n'; 
 	private ByteBuffer buf;
-	private boolean reverse = false;
+	private SegmentedFileReader segmentedFileReader;
+	private int rollbackBytes = 0;
 	
-	public LineReader(ByteBuffer buf) {
-		this(buf, false);
+	public LineReader(SegmentedFileReader reader) {
+		this.segmentedFileReader = reader;
 	}
 	
-	public LineReader(ByteBuffer buf, boolean reverse) {
-		this.buf = buf;
-		this.reverse = reverse;
-		if (reverse) {
-			buf.position(buf.position() + buf.remaining() - 1);
+	public LineReader(LineData data) {
+		byte[] bytes = data.getBytes();
+		this.buf = ByteBuffer.wrap(bytes);
+		if (bytes[bytes.length - 1] != '\n') {
+			this.buf.put(bytes.length - 1, LF);
+			this.buf.position(0);
 		}
 	}
 	
-	public LineData getLine() {
-		byte[] data = null;
-		if (this.reverse) {
-			data = this.readPrevLine();
-		} else {
-			data = readNextLine();
+	public LineData readLine() {
+		if (this.buf == null) {
+			if (this.segmentedFileReader != null) {
+				this.readSegment();
+			}
 		}
+		byte[] data = readNextLine();
+		if (data == null) {
+			if (this.segmentedFileReader != null) {
+				this.readSegment();
+			}
+			data = this.readNextLine();
+		}
+		
 		if (data == null) {
 			return null;
 		}
 		return new LineData(data);
 	}
+	
+	private void readSegment() {
+		long pos = this.segmentedFileReader.position() - this.rollbackBytes;
+		this.segmentedFileReader.setPosition(pos);
+		try {
+			this.buf = this.segmentedFileReader.readSegment();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private byte[] readNextLine() {
+		if (this.buf == null || this.buf.remaining() == 0) {
+			return null;
+		}
 		int pos = this.buf.position();
 		int run = 0;
 		int remain = this.buf.remaining();
+		int eol = 0;
 		while (true) {
 			if (run == remain) {
+				// not a valid line, need back position to \n
+				this.rollbackBytes = run;
+				run = 0;
 				break;
 			}
 			byte b = buf.get(pos + run);
+			if (b == '\r') {
+				eol++;
+			}
 			if (b == '\n') {
-				run++;
+				eol++;
 				break;
 			}
 			run++;
@@ -55,38 +86,8 @@ public class LineReader {
 		byte[] data = new byte[run];
 		buf.get(data);
 		
-		buf.position(pos + run);
+		buf.position(pos + run + eol);
 		
 		return data;
-	}
-	
-	private byte[] readPrevLine() {
-		int pos = this.buf.position();
-		while (true) {
-			byte b = this.buf.get(pos);
-			if (b != '\r' && b != '\n') {
-				break;
-			}
-			pos--;
-		}
-		this.buf.position(pos);
-		
-		int run = 0;
-		while (pos >= 0) {
-			byte b = this.buf.get(pos);
-			if (b == '\n') {
-				break;
-			}
-			run++;
-			pos--;
-		}
-		
-		this.buf.position(pos + 1);
-		byte[] line = new byte[run];
-		this.buf.get(line);
-		
-		this.buf.position(pos);
-		
-		return line;
 	}
 }
