@@ -45,8 +45,11 @@ public class SegmentedFileReader {
 	}
 	
 	public ByteBuffer readSegment(int size) throws IOException {
-		if (position + size > this.fileSize) {
+		if (this.position >= this.fileSize) {
 			return null;
+		}
+		if (this.position + size > this.fileSize) {
+			size = (int) (this.fileSize - this.position);
 		}
 		ByteBuffer buf = this.channel.map(FileChannel.MapMode.READ_ONLY, position, size);
 		this.position += size;

@@ -37,7 +37,7 @@ public class PLiteralString extends PString {
 	@Override
 	protected void readBody(ObjectReader reader) {
 		byte[] data = reader.readToFlag(END);
-		this.encode(data);		
+		this.encode(data);
 	}
 
 	@Override

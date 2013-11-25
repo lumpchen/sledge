@@ -41,6 +41,14 @@ public class PDFTrailer {
 		return (IndirectRef) info;
 	}
 	
+	public IndirectRef getRoot() {
+		PObject root = this.dict.get(PName.root);
+		if (root == null || !(root instanceof IndirectRef)) {
+			throw new InvalidElementException(PName.ROOT);
+		}
+		return (IndirectRef) root;
+	}
+	
 	public void setStartxref(long pos) {
 		this.startxref = new PLong(pos);
 	}
@@ -91,7 +99,7 @@ public class PDFTrailer {
 				line = lineArr.get(++i);
 				this.startxref = new PLong(line.readAsLong());
 			} else if (line.startsWith(PDictionary.BEGIN)) {
-				ObjectReader objReader = new ObjectReader(new LineReader(line));
+				ObjectReader objReader = new ObjectReader(line);
 				PObject obj = objReader.readNextObj();
 				if (obj == null || !(obj instanceof PDictionary)) {
 					throw new InvalidElementException();

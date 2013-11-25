@@ -43,14 +43,45 @@ public class BytesReader {
 		return bytes;
 	}
 
+	public byte[] readToStop() {
+		int i = 0;
+		while (true) {
+			if (isKeyword(buf.get(this.buf.position() + i))) {
+				break;
+			}
+			i++;
+		}
+		byte[] bytes = new byte[i];
+		buf.get(bytes);
+		
+		this.skipSpace();
+		return bytes;
+	}
+	
+	private boolean isKeyword(byte b) {
+		if (b == '/' 
+				|| b == '[' || b == ']' 
+				|| b == ' ' 
+				|| b == '<' || b == '>'
+				|| b == '(' || b == ')') {
+			return true;
+		}
+		return false;
+	}
+	
 	public byte[] readToFlag(byte flag) {
 		int pos = this.buf.position();
 		int run = 0;
+		byte last = 0;
 		while (true) {
 			byte next = this.buf.get(pos + run);
 			if (next == flag) {
-				break;
+				if (!(last == '\\' && isKeyword(next))) {
+					break;
+				}
 			}
+			
+			last = next;
 			run++;
 		}
 		
@@ -63,13 +94,12 @@ public class BytesReader {
 	public byte[] readBytes(int size) {
 		byte[] bytes = new byte[size];
 		this.buf.get(bytes);
-//		this.buf.position(this.buf.position() + size);
 		return bytes;
 	}
 
 	public int readInt() {
 		List<Integer> num = new ArrayList<Integer>();
-		while (true) {
+		while (this.buf.remaining() > 0) {
 			byte b = this.buf.get();
 			if (!Character.isDigit(b)) {
 				if (!isSpace(b)) {
@@ -89,7 +119,7 @@ public class BytesReader {
 	
 	public long readLong() {
 		List<Integer> num = new ArrayList<Integer>();
-		while (true) {
+		while (this.remaining() > 0) {
 			byte b = this.buf.get();
 			if (!Character.isDigit(b)) {
 				if (!isSpace(b)) {
@@ -108,10 +138,7 @@ public class BytesReader {
 	}
 	
 	public static boolean isSpace(byte b) {
-		if (b == ' ' || b == '\r' || b == '\n') {
-			return true;
-		}
-		return false;
+		return Character.isWhitespace(b);
 	}
 
 	public static boolean isNumber(byte... bytes) {

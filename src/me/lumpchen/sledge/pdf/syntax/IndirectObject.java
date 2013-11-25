@@ -1,12 +1,10 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class IndirectObject extends PObject {
@@ -20,7 +18,8 @@ public class IndirectObject extends PObject {
 	private int objNum;
 	private int genNum;
 
-	private List<PObject> objList;
+	private PObject insideObj;
+	private PStream stream;
 
 	public IndirectObject() {
 	}
@@ -28,10 +27,8 @@ public class IndirectObject extends PObject {
 	public IndirectObject(int objectNumber, int generationNumber) {
 		this.objNum = objectNumber;
 		this.genNum = generationNumber;
-
-		this.objList = new ArrayList<PObject>();
 	}
-
+	
 	public int getObjNum() {
 		return this.objNum;
 	}
@@ -40,23 +37,15 @@ public class IndirectObject extends PObject {
 		return this.genNum;
 	}
 
-	public void addObj(PObject obj) {
-		this.objList.add(obj);
+	public PObject getValue(PName key) {
+		return this.dict().get(key);
 	}
-
-	public void removeObj(PObject obj) {
-		this.objList.remove(obj);
-	}
-
-	public int getChildrenCount() {
-		return this.objList.size();
-	}
-
-	public PObject getLastChild() {
-		if (this.objList.size() == 0) {
-			return null;
+	
+	private PDictionary dict() {
+		if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
+			throw new InvalidElementException();
 		}
-		return this.objList.get(this.objList.size() - 1);
+		return (PDictionary) this.insideObj;
 	}
 	
 	public String toString() {
@@ -64,9 +53,7 @@ public class IndirectObject extends PObject {
 		buf.append(this.objNum + " " + this.genNum + " " + "obj");
 		
 		buf.append('\n');
-		for (PObject obj : this.objList) {
-			buf.append(obj.toString());
-		}
+		buf.append(this.insideObj.toString());
 		
 		buf.append('\n');
 		buf.append("endobj");
@@ -98,15 +85,14 @@ public class IndirectObject extends PObject {
 				break;
 			}
 			if (next instanceof PStream) {
-				PObject streamDict = this.getLastChild();
-				if (null == streamDict || !(streamDict instanceof PDictionary)) {
+				this.stream = new PStream();
+				if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
 					throw new InvalidElementException();
 				}
-				((PStream) next).setDict((PDictionary) streamDict);
-				this.removeObj(streamDict);
-				next.read(reader);
+				this.stream.setDict((PDictionary) this.insideObj);
+				this.stream.read(reader);
 			} else {
-				this.addObj(next);
+				this.insideObj = next;
 			}
 		}
 	}

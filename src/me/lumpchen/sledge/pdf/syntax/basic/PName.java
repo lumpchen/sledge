@@ -26,12 +26,63 @@ public class PName extends PObject {
 	public static final String INFO = "Info";
 	public static final PName info = new PName(INFO);
 	
+	// document infomation
+	public static final String TITLE = "Title";
+	public static final PName title = new PName(TITLE);
+	
+	public static final String AUTHOR = "Author";
+	public static final PName author = new PName(AUTHOR);
+	
+	public static final String SUBJECT = "Subject";
+	public static final PName subject = new PName(SUBJECT);
+	
+	public static final String KEYWORDS = "Keywords";
+	public static final PName keywords = new PName(KEYWORDS);
+	
+	public static final String CREATOR = "Creator";
+	public static final PName creator = new PName(CREATOR);
+	
+	public static final String PRODUCER = "Producer";
+	public static final PName producer = new PName(PRODUCER);
+	
+	public static final String CREATIONDATA = "CreationDate";
+	public static final PName creationDate = new PName(CREATIONDATA);
+	
+	public static final String MODDATE = "ModDate";
+	public static final PName modDate = new PName(MODDATE);
+	
+	public static final String TRAPPED = "Trapped";
+	public static final PName trapped = new PName(TRAPPED);
+	
+	public static final String TYPE = "Type";
+	public static final PName type = new PName(TYPE);
+	
+	public static final String CATALOG = "Catalog";
+	public static final PName catalog = new PName(CATALOG);
+	
+	public static final String PAGES = "Pages";
+	public static final PName pages = new PName(PAGES);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(ID, id);
 		nameMap.put(INFO, info);
 		nameMap.put(ROOT, root);
 		nameMap.put(SIZE, size);
+
+		nameMap.put(TITLE, title);
+		nameMap.put(AUTHOR, author);
+		nameMap.put(SUBJECT, subject);
+		nameMap.put(KEYWORDS, keywords);
+		nameMap.put(CREATOR, creator);
+		nameMap.put(PRODUCER, producer);
+		nameMap.put(CREATIONDATA, creationDate);
+		nameMap.put(MODDATE, modDate);
+		nameMap.put(TRAPPED, trapped);
+		
+		nameMap.put(TYPE, type);
+		nameMap.put(CATALOG, catalog);
+		nameMap.put(PAGES, pages);
 	}
 
 	private PName(byte[] name) {

@@ -16,18 +16,31 @@ public class ObjectReader {
 
 	private LineReader lineReader;
 	private BytesReader bytesReader;
+	private LineData lineData;
 	
 	public ObjectReader(LineReader reader) {
 		this.lineReader = reader;
+		this.readNextLine();
+	}
+	
+	public ObjectReader(LineData lineData) {
+		this.lineData = lineData;
+		this.readNextLine();
 	}
 
+	private void readNextLine() {
+		if (this.lineReader != null) {
+			this.lineData = this.lineReader.readLine();				
+		}
+		if (null == this.lineData) {
+			throw new ReadException();
+		}
+		this.bytesReader = new BytesReader(this.lineData.getBytes());
+	}
+	
 	public PObject readNextObj() {
 		if (this.bytesReader == null || this.bytesReader.remaining() == 0) {
-			LineData data = this.lineReader.readLine();
-			if (null == data) {
-				throw new ReadException();
-			}
-			this.bytesReader = new BytesReader(data.getBytes());
+			this.readNextLine();
 		}
 		
 		PObject next = read();
@@ -44,7 +57,7 @@ public class ObjectReader {
 		case PName.BEGIN: {
 			// read name here, '/'
 			this.bytesReader.readByte();	// skip '/'
-			byte[] name = this.bytesReader.readToSpace();
+			byte[] name = this.bytesReader.readToStop();
 			obj = PName.instance(name);
 			break;
 		}

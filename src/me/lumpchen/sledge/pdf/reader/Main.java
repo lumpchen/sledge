@@ -15,6 +15,8 @@ public class Main {
 			PDFDocument doc = reader.read(f);
 			
 			System.out.println(doc.toString());
+			
+			System.out.println(doc.getInfo().getProducer());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
