@@ -22,12 +22,24 @@ public class PArray extends PObject {
 		this.objList.add(child);
 	}
 	
+	public int size() {
+		return this.objList.size();
+	}
+	
+	public PObject getChild(int index) {
+		return this.objList.get(index);
+	}
+	
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append((char) BEGIN);
-		for (PObject obj : this.objList) {
+		
+		for (int i = 0, n = this.objList.size(); i < n; i++) {
+			PObject obj = this.objList.get(i);
 			buf.append(obj.toString());
-			buf.append(" ");
+			if (i != n - 1) {
+				buf.append(" ");				
+			}
 		}
 		buf.append((char) END);
 		return buf.toString();

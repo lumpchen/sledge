@@ -13,6 +13,8 @@ public class PDFDocument {
 	private PDFTrailer trailer;
 	private PDFXRef xref;
 	private PDFDocumentInfo info;
+	private PDFCatalog catalog;
+	private PDFPageTree pageTree;
 
 	public PDFDocument() {
 	}
@@ -31,6 +33,15 @@ public class PDFDocument {
 	
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
+		
+		if (this.pageTree != null) {
+			buf.append(this.pageTree.toString());
+		}
+		buf.append('\n');
+		if (this.catalog != null) {
+			buf.append(this.catalog.toString());
+		}
+		buf.append('\n');
 		if (this.info != null) {
 			buf.append(this.info.toString());
 		}
@@ -55,6 +66,7 @@ public class PDFDocument {
 		
 		this.readRoot(reader);
 		
+		this.readPageTree(reader);
 	}
 
 	private void readRoot(SegmentedFileReader reader) {
@@ -69,7 +81,27 @@ public class PDFDocument {
 		if (root != null) {
 			PObject obj = root.getValue(PName.type);
 			if (obj != null) {
-				if (PName.CATALOG.equals(obj)) {
+				if (PName.catalog.equals(obj)) {
+					this.catalog = new PDFCatalog(root);
+				}
+			}
+		}
+	}
+	
+	private void readPageTree(SegmentedFileReader reader) {
+		if (this.catalog == null) {
+			return;
+		}
+		
+		IndirectRef ref = this.catalog.getPages();
+		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
+		
+		IndirectObject pages = this.readIndirectObject(entry.offset, reader);
+		if (pages != null) {
+			PObject obj = pages.getValue(PName.type);
+			if (obj != null) {
+				if (PName.pages.equals(obj)) {
+					this.pageTree = new PDFPageTree(pages);
 				}
 			}
 		}
@@ -93,8 +125,9 @@ public class PDFDocument {
 		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
 		
 		this.info = new PDFDocumentInfo();
-		reader.setPosition(entry.offset);
-		this.info.read(reader);
+		
+		IndirectObject info = this.readIndirectObject(entry.offset, reader);
+		this.info.setObj(info);
 	}
 	
 	private void readTrailer(SegmentedFileReader reader) throws IOException {

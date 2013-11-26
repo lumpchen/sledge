@@ -14,6 +14,9 @@ public class PName extends PObject {
 
 	protected String name;
 
+	public static final String PARENT = "Parent";
+	public static final PName parent = new PName(PARENT);
+	
 	public static final String SIZE = "Size";
 	public static final PName size = new PName(SIZE);
 	
@@ -63,8 +66,18 @@ public class PName extends PObject {
 	public static final String PAGES = "Pages";
 	public static final PName pages = new PName(PAGES);
 	
+	public static final String PAGE = "Page";
+	public static final PName page = new PName(PAGE);
+	
+	public static final String COUNT = "Count";
+	public static final PName count = new PName(COUNT);
+	
+	public static final String KIDS = "Kids";
+	public static final PName kids = new PName(KIDS);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
+		nameMap.put(PARENT, parent);
 		nameMap.put(ID, id);
 		nameMap.put(INFO, info);
 		nameMap.put(ROOT, root);
@@ -83,6 +96,10 @@ public class PName extends PObject {
 		nameMap.put(TYPE, type);
 		nameMap.put(CATALOG, catalog);
 		nameMap.put(PAGES, pages);
+		nameMap.put(PAGE, page);
+		
+		nameMap.put(COUNT, count);
+		nameMap.put(KIDS, kids);
 	}
 
 	private PName(byte[] name) {

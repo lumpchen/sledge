@@ -3,7 +3,9 @@ package me.lumpchen.sledge.pdf.syntax;
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
@@ -39,6 +41,38 @@ public class IndirectObject extends PObject {
 
 	public PObject getValue(PName key) {
 		return this.dict().get(key);
+	}
+	
+	public PName getValueAsName(PName key) {
+		PObject obj = this.getValue(key);
+		if (obj != null && obj instanceof PName) {
+			return (PName) obj;
+		}
+		return null;
+	}
+	
+	public PInteger getValueAsInteger(PName key) {
+		PObject obj = this.getValue(key);
+		if (obj != null && obj instanceof PInteger) {
+			return (PInteger) obj;
+		}
+		return null;
+	}
+	
+	public PArray getValueAsArray(PName key) {
+		PObject obj = this.getValue(key);
+		if (obj != null && obj instanceof PArray) {
+			return (PArray) obj;
+		}
+		return null;
+	}
+	
+	public IndirectRef getValueAsRef(PName key) {
+		PObject obj = this.getValue(key);
+		if (obj != null && obj instanceof IndirectRef) {
+			return (IndirectRef) obj;
+		}
+		return null;
 	}
 	
 	private PDictionary dict() {
