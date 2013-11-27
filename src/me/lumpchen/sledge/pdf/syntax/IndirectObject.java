@@ -39,7 +39,14 @@ public class IndirectObject extends PObject {
 		return this.genNum;
 	}
 
+	public PObject insideObj() {
+		return this.insideObj;
+	}
+	
 	public PObject getValue(PName key) {
+		if (this.dict() == null) {
+			return null;
+		}
 		return this.dict().get(key);
 	}
 	
@@ -77,7 +84,7 @@ public class IndirectObject extends PObject {
 	
 	private PDictionary dict() {
 		if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
-			throw new InvalidElementException();
+			return null;
 		}
 		return (PDictionary) this.insideObj;
 	}
