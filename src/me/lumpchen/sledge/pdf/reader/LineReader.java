@@ -62,19 +62,24 @@ public class LineReader {
 		int remain = this.buf.remaining();
 		int eol = 0;
 		while (true) {
-			if (run == remain) {
+			if (run + eol == remain) {
 				// not a valid line, need back position to \n
 				this.rollbackBytes = run;
 				run = 0;
 				break;
 			}
-			byte b = buf.get(pos + run);
+			byte b = buf.get(pos + run + eol);
 			if (b == '\r') {
 				eol++;
+				continue;
 			}
 			if (b == '\n') {
 				eol++;
 				break;
+			} else {
+				if (eol > 0) {
+					break;
+				}
 			}
 			run++;
 		}

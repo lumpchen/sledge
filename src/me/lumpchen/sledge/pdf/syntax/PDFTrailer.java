@@ -85,7 +85,7 @@ public class PDFTrailer {
 				found = true;
 			}
 			if (found) {
-				lineArr.add(line);				
+				lineArr.add(line);
 			}
 		}
 		

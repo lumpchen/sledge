@@ -46,7 +46,7 @@ public class BytesReader {
 	public byte[] readToStop() {
 		int i = 0;
 		while (true) {
-			if (isKeyword(buf.get(this.buf.position() + i))) {
+			if (isDelimiter(buf.get(this.buf.position() + i))) {
 				break;
 			}
 			i++;
@@ -58,15 +58,9 @@ public class BytesReader {
 		return bytes;
 	}
 	
-	private boolean isKeyword(byte b) {
-		if (b == '/' 
-				|| b == '[' || b == ']' 
-				|| b == ' ' 
-				|| b == '<' || b == '>'
-				|| b == '(' || b == ')') {
-			return true;
-		}
-		return false;
+	private boolean isDelimiter(byte b) {
+		return (b == '(' || b == ')' || b == '<' || b == '>' || b == '[' || b == ']' 
+				|| b == '/' || b == '%' || b == ' ');
 	}
 	
 	public byte[] readToFlag(byte flag) {
@@ -76,7 +70,7 @@ public class BytesReader {
 		while (true) {
 			byte next = this.buf.get(pos + run);
 			if (next == flag) {
-				if (!(last == '\\' && isKeyword(next))) {
+				if (!(last == '\\' && isDelimiter(next))) {
 					break;
 				}
 			}

@@ -80,7 +80,7 @@ public class PDFXRef {
 			if (line.getBytes()[0] == 'x') {
 				continue;
 			}
-			if (line.getBytes().length < 20 - 1) {
+			if (line.getBytes().length < 16) {
 				this.readSectionEntry(line);
 				continue;
 			}

@@ -96,6 +96,8 @@ public class PName extends PObject {
 	public static final PName font = new PName(FONT);
 	public static final String F1 = "F1";
 	public static final PName f1 = new PName(F1);
+	public static final String F2 = "F2";
+	public static final PName f2 = new PName(F2);
 	public static final String MEDIABOX = "MediaBox";
 	public static final PName mediabox = new PName(MEDIABOX);
 	
@@ -136,6 +138,7 @@ public class PName extends PObject {
 		nameMap.put(IMAGEI, imagei);
 		nameMap.put(FONT, font);
 		nameMap.put(F1, f1);
+		nameMap.put(F2, f2);
 		nameMap.put(MEDIABOX, mediabox);
 	}
 
@@ -151,8 +154,11 @@ public class PName extends PObject {
 		String key = new String(name, Charset.defaultCharset());
 		if (nameMap.containsKey(key)) {
 			return nameMap.get(key);
+		} else {
+			PName unDef = new PName(name);
+			nameMap.put(key, unDef);
+			return unDef;
 		}
-		throw new InvalidNameException(key);
 	}
 
 	public int hashCode() {

@@ -2,6 +2,8 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import java.io.IOException;
 
+import me.lumpchen.sledge.pdf.reader.BytesReader;
+import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
@@ -195,9 +197,31 @@ public class PDFDocument {
 	}
 
 	private void readTrailer(SegmentedFileReader reader) throws IOException {
-		reader.setPosition(1024, true);
-		reader.setSegmentSize(1024);
+		reader.setPosition(64, true);
+		reader.setSegmentSize(64);
 		LineReader lineReader = new LineReader(reader);
+		long startxref = -1;
+		
+		while (true) {
+			LineData line = lineReader.readLine();
+			if (line == null) {
+				break;
+			}
+			if (line.startsWith(PDFTrailer.STARTXREF)) {
+				line = lineReader.readLine();
+				BytesReader breader = new BytesReader(line.getBytes());
+				startxref = breader.readLong();
+				break;
+			}
+		}
+		
+		if (startxref < 0) {
+			throw new SyntaxException("not found startxref.");
+		}
+		
+		reader.setPosition(startxref);
+		reader.setSegmentSize(1024);
+		lineReader = new LineReader(reader);
 		this.trailer = new PDFTrailer();
 		trailer.read(lineReader);
 	}
