@@ -10,7 +10,7 @@ public class PDFPage {
 	private int pageNo;
 	
 	public PDFPage(IndirectObject obj) {
-		if (obj == null || !PName.pages.equals(obj.getValue(PName.type))) {
+		if (obj == null || !PName.page.equals(obj.getValue(PName.type))) {
 			throw new InvalidTypeException();
 		}
 		this.page = obj;

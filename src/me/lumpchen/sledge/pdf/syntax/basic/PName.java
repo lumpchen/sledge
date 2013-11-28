@@ -75,6 +75,30 @@ public class PName extends PObject {
 	public static final String KIDS = "Kids";
 	public static final PName kids = new PName(KIDS);
 	
+	public static final String CONTENTS = "Contents";
+	public static final PName contents = new PName(CONTENTS);
+	public static final String RESOURCES = "Resources";
+	public static final PName resources = new PName(RESOURCES);
+	public static final String PROCSET = "ProcSet";
+	public static final PName procset = new PName(PROCSET);
+	public static final String PDF = "PDF";
+	public static final PName pdf = new PName(PDF);
+	
+	public static final String TEXT = "Text";
+	public static final PName text = new PName(TEXT);
+	public static final String IMAGEB = "ImageB";
+	public static final PName imageb = new PName(IMAGEB);
+	public static final String IMAGEC = "ImageC";
+	public static final PName imagec = new PName(IMAGEC);
+	public static final String IMAGEI = "ImageI";
+	public static final PName imagei = new PName(IMAGEI);
+	public static final String FONT = "Font";
+	public static final PName font = new PName(FONT);
+	public static final String F1 = "F1";
+	public static final PName f1 = new PName(F1);
+	public static final String MEDIABOX = "MediaBox";
+	public static final PName mediabox = new PName(MEDIABOX);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(PARENT, parent);
@@ -100,6 +124,19 @@ public class PName extends PObject {
 		
 		nameMap.put(COUNT, count);
 		nameMap.put(KIDS, kids);
+		
+		nameMap.put(CONTENTS, contents);
+		nameMap.put(RESOURCES, resources);
+		nameMap.put(PROCSET, procset);
+		nameMap.put(PDF, pdf);
+		
+		nameMap.put(TEXT, text);
+		nameMap.put(IMAGEB, imageb);
+		nameMap.put(IMAGEC, imagec);
+		nameMap.put(IMAGEI, imagei);
+		nameMap.put(FONT, font);
+		nameMap.put(F1, f1);
+		nameMap.put(MEDIABOX, mediabox);
 	}
 
 	private PName(byte[] name) {

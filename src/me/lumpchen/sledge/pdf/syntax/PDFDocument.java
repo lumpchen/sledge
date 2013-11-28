@@ -68,8 +68,8 @@ public class PDFDocument {
 		this.readRoot(reader);
 
 		this.readPageTree(reader);
-		
-		this.readPages(reader);
+
+		this.readPages(this.pageTree, reader);
 	}
 
 	private void readRoot(SegmentedFileReader reader) {
@@ -110,31 +110,31 @@ public class PDFDocument {
 		}
 	}
 
-	private void readPages(SegmentedFileReader reader) {
-		if (this.pageTree == null) {
+	private void readPages(PDFPageTree pageTree, SegmentedFileReader reader) {
+		if (pageTree == null) {
 			return;
 		}
 
-		PArray pages = this.pageTree.getKids();
+		PArray pages = pageTree.getKids();
 		int size = pages.size();
 		for (int i = 0; i < size; i++) {
 			PObject obj = pages.getChild(i);
-			this.readPage(obj, reader);
-		}
-	}
-	
-	private void readPage(PObject obj, SegmentedFileReader reader) {
-		if (obj == null) {
-			return;
-		}
-		if (obj instanceof IndirectObject) {
-			this.readPage((IndirectRef) obj, reader);
-		} else if (obj instanceof PArray) {
-			this.readPage((PArray) obj, reader);
+			this.readPage(obj, pageTree, reader);
 		}
 	}
 
-	private void readPage(IndirectRef ref, SegmentedFileReader reader) {
+	private void readPage(PObject obj, PDFPageTree pageTree, SegmentedFileReader reader) {
+		if (obj == null) {
+			return;
+		}
+		if (obj instanceof IndirectRef) {
+			this.readPage((IndirectRef) obj, pageTree, reader);
+		} else if (obj instanceof PArray) {
+			this.readPage((PArray) obj, pageTree, reader);
+		}
+	}
+
+	private void readPage(IndirectRef ref, PDFPageTree pageTree, SegmentedFileReader reader) {
 		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
 		IndirectObject iobj = this.readIndirectObject(entry.offset, reader);
 		if (iobj == null) {
@@ -144,7 +144,10 @@ public class PDFDocument {
 		PName type = iobj.getValueAsName(PName.type);
 		if (type != null) {
 			if (type == PName.page) {
-				this.pageTree.addPage(new PDFPage(iobj));
+				pageTree.addPage(new PDFPage(iobj));
+			} else if (type == PName.pages) {
+				PDFPageTree nestedPageTree = new PDFPageTree(iobj);
+				this.readPages(nestedPageTree, reader);
 			} else {
 				throw new SyntaxException("mark here");
 			}
@@ -154,21 +157,16 @@ public class PDFDocument {
 				return;
 			}
 			if (inside instanceof PArray) {
-				this.readPage((PArray) inside, reader);
+				this.readPage((PArray) inside, pageTree, reader);
 			}
 		}
 	}
 
-	private void readPage(PArray pageArray, SegmentedFileReader reader) {
+	private void readPage(PArray pageArray, PDFPageTree pageTree, SegmentedFileReader reader) {
 		int size = pageArray.size();
 		for (int i = 0; i < size; i++) {
 			PObject obj = pageArray.getChild(i);
-			if (obj instanceof IndirectRef) {
-				IndirectRef ref = (IndirectRef) obj;
-				this.readPage(ref, reader);
-			} else {
-				throw new SyntaxException("mark here");
-			}
+			readPage(obj, pageTree, reader);
 		}
 	}
 

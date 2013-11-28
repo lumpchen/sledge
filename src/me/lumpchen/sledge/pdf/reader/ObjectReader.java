@@ -17,12 +17,12 @@ public class ObjectReader {
 	private LineReader lineReader;
 	private BytesReader bytesReader;
 	private LineData lineData;
-	
+
 	public ObjectReader(LineReader reader) {
 		this.lineReader = reader;
 		this.readNextLine();
 	}
-	
+
 	public ObjectReader(LineData lineData) {
 		this.lineData = lineData;
 		this.readNextLine();
@@ -30,33 +30,33 @@ public class ObjectReader {
 
 	private void readNextLine() {
 		if (this.lineReader != null) {
-			this.lineData = this.lineReader.readLine();				
+			this.lineData = this.lineReader.readLine();
 		}
 		if (null == this.lineData) {
 			throw new ReadException();
 		}
 		this.bytesReader = new BytesReader(this.lineData.getBytes());
 	}
-	
+
 	public PObject readNextObj() {
 		if (this.bytesReader == null || this.bytesReader.remaining() == 0) {
 			this.readNextLine();
 		}
-		
+
 		PObject next = read();
 		return next;
 	}
 
 	private PObject read() {
 		PObject obj = null;
-		
+
 		this.bytesReader.skipSpace();
 		byte first = this.bytesReader.getByte(this.bytesReader.position());
 
 		switch (first) {
 		case PName.BEGIN: {
 			// read name here, '/'
-			this.bytesReader.readByte();	// skip '/'
+			this.bytesReader.readByte(); // skip '/'
 			byte[] name = this.bytesReader.readToStop();
 			obj = PName.instance(name);
 			break;
@@ -66,7 +66,8 @@ public class ObjectReader {
 			break;
 		}
 		case '<': {
-			byte next = this.bytesReader.getByte(this.bytesReader.position() + 1);
+			byte next = this.bytesReader
+					.getByte(this.bytesReader.position() + 1);
 			if (next == PDictionary.BEGIN[1]) {
 				// Dictionary
 				obj = new PDictionary();
@@ -82,7 +83,7 @@ public class ObjectReader {
 		}
 		default: {
 			if (this.match(PBoolean.TAG_FALSE) || this.match(PBoolean.TAG_TRUE)) {
-				obj = new PBoolean(); 
+				obj = new PBoolean();
 			} else if (this.match(PStream.BEGIN)) {
 				obj = new PStream();
 			} else {
@@ -93,12 +94,17 @@ public class ObjectReader {
 					byte[] num1 = this.bytesReader.peekToSpace(run);
 					if (BytesReader.isNumber(num1)) {
 						run += num1.length + 1;
-						byte tag = this.bytesReader.getByte(this.bytesReader.position() + run);
+						byte tag = this.bytesReader.getByte(this.bytesReader
+								.position() + run);
 						if (tag == IndirectObject.BEGIN[0]) {
 							obj = new IndirectObject();
 						} else if (tag == IndirectRef.BEGIN) {
 							obj = new IndirectRef();
+						} else {
+							obj = new PInteger();
 						}
+					} else {
+						obj = new PInteger();
 					}
 				} else if (BytesReader.isNumber(first)) {
 					obj = new PInteger();
@@ -109,7 +115,7 @@ public class ObjectReader {
 		}
 
 		if (obj != null) {
-			obj.read(this);		
+			obj.read(this);
 		}
 		return obj;
 	}
@@ -131,7 +137,7 @@ public class ObjectReader {
 	public byte[] readToFlag(byte flag) {
 		return this.bytesReader.readToFlag(flag);
 	}
-	
+
 	public byte[] readBytes(int size) {
 		return this.bytesReader.readBytes(size);
 	}
@@ -139,7 +145,7 @@ public class ObjectReader {
 	public int readInt() {
 		return this.bytesReader.readInt();
 	}
-	
+
 	public long readLong() {
 		return this.bytesReader.readLong();
 	}

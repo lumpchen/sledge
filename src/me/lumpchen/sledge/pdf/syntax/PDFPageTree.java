@@ -17,6 +17,18 @@ public class PDFPageTree extends PDFDocObject {
 		this.pageList = new ArrayList<PDFPage>();
 	}
 	
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(super.toString());
+		
+		for (PDFPage page : this.pageList) {
+			buf.append('\n');
+			buf.append(page.toString());
+		}
+		
+		return buf.toString();
+	}
+	
 	public void addPage(PDFPage page) {
 		this.pageList.add(page);
 	}
