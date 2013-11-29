@@ -13,7 +13,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PLong;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public class PDFTrailer {
+public class Trailer {
 
 	public static byte[] TRAILER = { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
 	public static byte[] STARTXREF = {'s', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f'};
@@ -22,7 +22,7 @@ public class PDFTrailer {
 	private PDictionary dict;
 	private PLong startxref;
 
-	public PDFTrailer() {
+	public Trailer() {
 	}
 	
 	public int getSize() {

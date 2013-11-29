@@ -2,9 +2,9 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public class PDFCatalog extends PDFDocObject {
+public class Catalog extends DocObject {
 
-	public PDFCatalog(IndirectObject obj) {
+	public Catalog(IndirectObject obj) {
 		super(obj);
 	}
 	

@@ -1,6 +1,10 @@
 package me.lumpchen.sledge.pdf;
 
-import java.nio.ByteBuffer;
+import java.io.File;
+import java.io.IOException;
+
+import me.lumpchen.sledge.pdf.reader.PDFReader;
+import me.lumpchen.sledge.pdf.syntax.PDFDocument;
 
 public class Main {
 
@@ -9,9 +13,16 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 
-		byte[] bytes = {1, 1};
-		ByteBuffer bb = ByteBuffer.wrap(bytes);
-		System.out.println(bb.getShort());
+		PDFReader reader = new PDFReader();
+
+		File f = new File("c:/mpage.pdf");
+		try {
+			PDFDocument doc = reader.read(f);
+
+			System.out.println(doc.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
-

@@ -101,6 +101,28 @@ public class PName extends PObject {
 	public static final String MEDIABOX = "MediaBox";
 	public static final PName mediabox = new PName(MEDIABOX);
 	
+	// filter
+	public static final String ASCII85DECODE = "ASCII85Decode";
+	public static final PName ASCII85Decode = new PName(ASCII85DECODE);
+	public static final String ASCIIHEXDECODE = "ASCIIHexDecode";
+	public static final PName ASCIIHexDecode = new PName(ASCIIHEXDECODE);
+	public static final String LZWDECODE = "LZWDecode";
+	public static final PName LZWDecode = new PName(LZWDECODE);
+	public static final String FLATEDECODE = "FlateDecode";
+	public static final PName FlateDecode = new PName(FLATEDECODE);
+	public static final String RUNLENGTHDECODE = "RunLengthDecode";
+	public static final PName RunLengthDecode = new PName(RUNLENGTHDECODE);
+	public static final String CCITTFAXDECODE = "CCITTFaxDecode";
+	public static final PName CCITTFaxDecode = new PName(CCITTFAXDECODE);
+	public static final String JBIG2DECODE = "JBIG2Decode";
+	public static final PName JBIG2Decode = new PName(JBIG2DECODE);
+	public static final String DCTDECODE = "DCTDecode";
+	public static final PName DCTDecode = new PName(DCTDECODE);
+	public static final String JPXDECODE = "JPXDecode";
+	public static final PName JPXDecode = new PName(JPXDECODE);
+	public static final String CRYPT = "Crypt";
+	public static final PName Crypt = new PName(CRYPT);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(PARENT, parent);
@@ -140,6 +162,17 @@ public class PName extends PObject {
 		nameMap.put(F1, f1);
 		nameMap.put(F2, f2);
 		nameMap.put(MEDIABOX, mediabox);
+		
+		nameMap.put(ASCII85DECODE, ASCII85Decode);
+		nameMap.put(ASCIIHEXDECODE, ASCIIHexDecode);
+		nameMap.put(LZWDECODE, LZWDecode);
+		nameMap.put(FLATEDECODE, FlateDecode);
+		nameMap.put(RUNLENGTHDECODE, RunLengthDecode);
+		nameMap.put(CCITTFAXDECODE, CCITTFaxDecode);
+		nameMap.put(JBIG2DECODE, JBIG2Decode);
+		nameMap.put(DCTDECODE, DCTDecode);
+		nameMap.put(JPXDECODE, JPXDecode);
+		nameMap.put(CRYPT, Crypt);
 	}
 
 	private PName(byte[] name) {

@@ -4,13 +4,13 @@ import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public abstract class PDFDocObject {
+public abstract class DocObject {
 
 	protected IndirectObject insideObj;
 	
-	protected PDFDocObject(IndirectObject obj) {
+	protected DocObject(IndirectObject obj) {
 		if (obj == null || !getType().equals(obj.getValue(PName.type))) {
-			throw new InvalidTypeException();
+			throw new InvalidTypeException(obj.toString());
 		}
 		this.insideObj = obj;
 	}

@@ -2,11 +2,11 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public class PDFDocumentInfo {
+public class DocumentInfo {
 
 	private IndirectObject info;
 
-	public PDFDocumentInfo() {
+	public DocumentInfo() {
 	}
 	
 	public String toString() {

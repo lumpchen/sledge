@@ -13,24 +13,25 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public class PDFDocument {
 
-	private PDFTrailer trailer;
-	private PDFXRef xref;
-	private PDFDocumentInfo info;
-	private PDFCatalog catalog;
-	private PDFPageTree pageTree;
+	private Trailer trailer;
+	private XRef xref;
+	private DocumentInfo info;
+	private Catalog catalog;
+	private PageTree pageTree;
+	private int pageNo = 0;
 
 	public PDFDocument() {
 	}
 
-	public void setTrailer(PDFTrailer trailer) {
+	public void setTrailer(Trailer trailer) {
 		this.trailer = trailer;
 	}
 
-	public PDFTrailer getTrailer() {
+	public Trailer getTrailer() {
 		return this.trailer;
 	}
 
-	public PDFDocumentInfo getInfo() {
+	public DocumentInfo getInfo() {
 		return this.info;
 	}
 
@@ -80,14 +81,14 @@ public class PDFDocument {
 		}
 
 		IndirectRef ref = this.trailer.getRoot();
-		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
+		XRef.XRefEntry entry = this.xref.getRefEntry(ref);
 
 		IndirectObject root = this.readIndirectObject(entry.offset, reader);
 		if (root != null) {
 			PObject obj = root.getValue(PName.type);
 			if (obj != null) {
 				if (PName.catalog.equals(obj)) {
-					this.catalog = new PDFCatalog(root);
+					this.catalog = new Catalog(root);
 				}
 			}
 		}
@@ -99,20 +100,20 @@ public class PDFDocument {
 		}
 
 		IndirectRef ref = this.catalog.getPages();
-		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
+		XRef.XRefEntry entry = this.xref.getRefEntry(ref);
 
 		IndirectObject pages = this.readIndirectObject(entry.offset, reader);
 		if (pages != null) {
 			PObject obj = pages.getValue(PName.type);
 			if (obj != null) {
 				if (PName.pages.equals(obj)) {
-					this.pageTree = new PDFPageTree(pages);
+					this.pageTree = new PageTree(pages);
 				}
 			}
 		}
 	}
 
-	private void readPages(PDFPageTree pageTree, SegmentedFileReader reader) {
+	private void readPages(PageTree pageTree, SegmentedFileReader reader) {
 		if (pageTree == null) {
 			return;
 		}
@@ -125,7 +126,7 @@ public class PDFDocument {
 		}
 	}
 
-	private void readPage(PObject obj, PDFPageTree pageTree, SegmentedFileReader reader) {
+	private void readPage(PObject obj, PageTree pageTree, SegmentedFileReader reader) {
 		if (obj == null) {
 			return;
 		}
@@ -136,8 +137,8 @@ public class PDFDocument {
 		}
 	}
 
-	private void readPage(IndirectRef ref, PDFPageTree pageTree, SegmentedFileReader reader) {
-		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
+	private void readPage(IndirectRef ref, PageTree pageTree, SegmentedFileReader reader) {
+		XRef.XRefEntry entry = this.xref.getRefEntry(ref);
 		IndirectObject iobj = this.readIndirectObject(entry.offset, reader);
 		if (iobj == null) {
 			throw new SyntaxException("lost object: " + ref.toString());
@@ -146,10 +147,15 @@ public class PDFDocument {
 		PName type = iobj.getValueAsName(PName.type);
 		if (type != null) {
 			if (type == PName.page) {
-				pageTree.addPage(new PDFPage(iobj));
+				Page page = new Page(iobj);
+				page.setPageNo(++pageNo);
+				pageTree.addPageObject(page);
+				
 			} else if (type == PName.pages) {
-				PDFPageTree nestedPageTree = new PDFPageTree(iobj);
+				PageTree nestedPageTree = new PageTree(iobj);
 				this.readPages(nestedPageTree, reader);
+				
+				pageTree.addPageObject(nestedPageTree);
 			} else {
 				throw new SyntaxException("mark here");
 			}
@@ -164,7 +170,7 @@ public class PDFDocument {
 		}
 	}
 
-	private void readPage(PArray pageArray, PDFPageTree pageTree, SegmentedFileReader reader) {
+	private void readPage(PArray pageArray, PageTree pageTree, SegmentedFileReader reader) {
 		int size = pageArray.size();
 		for (int i = 0; i < size; i++) {
 			PObject obj = pageArray.getChild(i);
@@ -188,9 +194,9 @@ public class PDFDocument {
 			throw new ReadException();
 		}
 		IndirectRef ref = this.trailer.getInfo();
-		PDFXRef.XRefEntry entry = this.xref.getRefEntry(ref);
+		XRef.XRefEntry entry = this.xref.getRefEntry(ref);
 
-		this.info = new PDFDocumentInfo();
+		this.info = new DocumentInfo();
 
 		IndirectObject info = this.readIndirectObject(entry.offset, reader);
 		this.info.setObj(info);
@@ -207,7 +213,7 @@ public class PDFDocument {
 			if (line == null) {
 				break;
 			}
-			if (line.startsWith(PDFTrailer.STARTXREF)) {
+			if (line.startsWith(Trailer.STARTXREF)) {
 				line = lineReader.readLine();
 				BytesReader breader = new BytesReader(line.getBytes());
 				startxref = breader.readLong();
@@ -222,7 +228,7 @@ public class PDFDocument {
 		reader.setPosition(startxref);
 		reader.setSegmentSize(1024);
 		lineReader = new LineReader(reader);
-		this.trailer = new PDFTrailer();
+		this.trailer = new Trailer();
 		trailer.read(lineReader);
 	}
 
@@ -239,7 +245,7 @@ public class PDFDocument {
 		// reader.readSegment(bufSize);
 
 		LineReader lineReader = new LineReader(reader);
-		this.xref = new PDFXRef(size);
+		this.xref = new XRef(size);
 		this.xref.read(lineReader);
 	}
 }

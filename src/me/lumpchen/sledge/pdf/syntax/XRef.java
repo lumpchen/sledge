@@ -10,7 +10,7 @@ import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 
-public class PDFXRef {
+public class XRef {
 
 	public static final String begin = "xref";
 
@@ -20,7 +20,7 @@ public class PDFXRef {
 	private Map<Integer, XRefEntry> entryMap;
 	private int entryCount;
 
-	public PDFXRef(int size) {
+	public XRef(int size) {
 		this.sectionList = new ArrayList<Section>();
 		this.entryMap = new HashMap<Integer, XRefEntry>();
 		this.entryCount = size;
