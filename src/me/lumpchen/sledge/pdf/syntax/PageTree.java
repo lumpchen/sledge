@@ -1,22 +1,23 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public class PageTree extends DocObject {
 	
 	private List<DocObject> objList;
-	private List<Page> pageList;
-	private int count;
+	Map<Integer, Page> pageMap;
+	private int count; // The number of leaf nodes(page objects)
 	
 	public PageTree(IndirectObject obj) {
 		super(obj);
 		this.objList = new ArrayList<DocObject>();
-		this.pageList = new ArrayList<Page>();
+		this.pageMap = new HashMap<Integer, Page>();
 		this.count = this.getValueAsInteger(PName.count).getValue();
 	}
 	
@@ -32,9 +33,31 @@ public class PageTree extends DocObject {
 		return buf.toString();
 	}
 	
+	public int getCount() {
+		return this.count;
+	}
+	
 	public void addPageObject(DocObject obj) {
 		if (obj.getType().equals(PName.page) || obj.getType().equals(PName.pages)) {
+			obj.parent = this;
 			this.objList.add(obj);
+			
+			DocObject root = null;
+			DocObject parent = this.getParent();
+			while (parent != null) {
+				root = parent;
+				parent = parent.getParent();
+			}
+			
+			if (root == null) {
+				root = this;
+			}
+			
+			if (obj.getType().equals(PName.page)) {
+				((PageTree) root).pageMap.put(((Page) obj).getPageNo(), (Page) obj);				
+			} else if (obj.getType().equals(PName.pages)) {
+				// still not read page now....
+			}
 			return;
 		}
 		
@@ -50,10 +73,6 @@ public class PageTree extends DocObject {
 	
 	public PName getType() {
 		return PName.pages;
-	}
-	
-	public PInteger getCount() {
-		return this.getValueAsInteger(PName.count);
 	}
 	
 	public PArray getKids() {
