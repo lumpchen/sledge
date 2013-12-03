@@ -115,7 +115,9 @@ public class ObjectReader {
 		}
 
 		if (obj != null) {
-			obj.read(this);
+			if (!(obj instanceof PStream)) {
+				obj.read(this);	
+			}
 		}
 		return obj;
 	}
@@ -139,9 +141,22 @@ public class ObjectReader {
 	}
 
 	public byte[] readBytes(int size) {
+		if (size > this.bytesReader.remaining()) {
+			if (this.lineReader != null) {
+				this.lineData = this.lineReader.readBytesDirect(size + 32);
+			}
+			if (null == this.lineData) {
+				throw new ReadException();
+			}
+			this.bytesReader = new BytesReader(this.lineData.getBytes());
+		}
 		return this.bytesReader.readBytes(size);
 	}
 
+	public void readEOL() {
+		this.bytesReader.readEOL();
+	}
+	
 	public int readInt() {
 		return this.bytesReader.readInt();
 	}

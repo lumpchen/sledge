@@ -1,31 +1,25 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
-public class DocumentInfo {
+public class DocumentInfo extends DocObject {
 
-	private IndirectObject info;
+	public DocumentInfo(IndirectObject obj) {
+		super(obj);
+	}
 
-	public DocumentInfo() {
+	public PString getCreator() {
+		return this.getValueAsString(PName.creator);
 	}
 	
-	public String toString() {
-		if (this.info != null) {
-			return this.info.toString();
-		}
-		return "";
+	public PString getProducer() {
+		return this.getValueAsString(PName.producer);
 	}
-	
-	public void setObj(IndirectObject obj) {
-		this.info = obj;
-	}
-	
-	public String getCreator() {
-		return this.info.getValue(PName.creator).toString();
-	}
-	
-	public String getProducer() {
-		return this.info.getValue(PName.producer).toString();
+
+	@Override
+	public PName getType() {
+		return null;
 	}
 	
 }

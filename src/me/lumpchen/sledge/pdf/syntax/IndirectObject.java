@@ -8,6 +8,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public class IndirectObject extends PObject {
 
@@ -82,6 +83,14 @@ public class IndirectObject extends PObject {
 		return null;
 	}
 	
+	public PString getValueAsString(PName key) {
+		PObject obj = this.getValue(key);
+		if (obj != null && obj instanceof PString) {
+			return (PString) obj;
+		}
+		return null;
+	}
+	
 	private PDictionary dict() {
 		if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
 			return null;
@@ -92,11 +101,14 @@ public class IndirectObject extends PObject {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(this.objNum + " " + this.genNum + " " + "obj");
-		
 		buf.append('\n');
-		buf.append(this.insideObj.toString());
 		
-		buf.append('\n');
+		if (null != this.stream) {
+			buf.append(this.stream.toString());
+		} else if (null != this.insideObj) {
+			buf.append(this.insideObj.toString());
+		} 
+		
 		buf.append("endobj");
 		buf.append('\n');
 		return buf.toString();
@@ -126,7 +138,7 @@ public class IndirectObject extends PObject {
 				break;
 			}
 			if (next instanceof PStream) {
-				this.stream = new PStream();
+				this.stream = (PStream) next;
 				if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
 					throw new InvalidElementException();
 				}

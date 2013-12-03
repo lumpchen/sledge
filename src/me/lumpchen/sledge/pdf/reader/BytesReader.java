@@ -28,6 +28,20 @@ public class BytesReader {
 		return this.buf.get();
 	}
 	
+	public void readEOL() {
+		int pos = this.buf.position();
+		byte next = this.buf.get(pos);
+		if ('\r' == next) {
+			this.buf.get();
+			next = this.buf.get(pos + 1);
+			if ('\n' == next) {
+				this.buf.get();	
+			}
+		} else if ('\n' == next) {
+			this.buf.get();
+		}
+	}
+	
 	public byte[] readToSpace() {
 		int i = 0;
 		while (true) {

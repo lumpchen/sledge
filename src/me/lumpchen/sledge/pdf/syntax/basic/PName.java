@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.reader.InvalidNameException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.PObject;
 
@@ -123,6 +122,10 @@ public class PName extends PObject {
 	public static final String CRYPT = "Crypt";
 	public static final PName Crypt = new PName(CRYPT);
 	
+	
+	public static final String LENGTH = "Length";
+	public static final PName Length = new PName(LENGTH);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(PARENT, parent);
@@ -173,6 +176,8 @@ public class PName extends PObject {
 		nameMap.put(DCTDECODE, DCTDecode);
 		nameMap.put(JPXDECODE, JPXDecode);
 		nameMap.put(CRYPT, Crypt);
+		
+		nameMap.put(LENGTH, Length);
 	}
 
 	private PName(byte[] name) {

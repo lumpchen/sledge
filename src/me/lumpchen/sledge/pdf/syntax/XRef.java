@@ -118,11 +118,11 @@ public class XRef {
 		int count;
 	}
 
-	static class XRefEntry {
-		long offset;
-		int objNum;
-		int genNum;
-		boolean free; // or in-use (f/n)
+	public static class XRefEntry {
+		public long offset;
+		public int objNum;
+		public int genNum;
+		public boolean free; // or in-use (f/n)
 
 		public String offsetString() {
 			Long v = new Long(offset);

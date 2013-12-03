@@ -1,16 +1,13 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
 
 public class Page extends DocObject {
 
 	private int pageNo;
 
-	
-	private PObject contents; // single stream or an array of streams
+	private IndirectObject streamObj;
 	
 	private Rectangle mediaBox;
 	private Rectangle cropBox;
@@ -26,18 +23,16 @@ public class Page extends DocObject {
 		return PName.page;
 	}
 	
-	public PStream getContentStream() {
-		if (contents == null) {
-			return null;
-		}
-		if (this.contents instanceof PStream) {
-			return (PStream) this.contents;
-		}
-		
-		if (this.contents instanceof PArray) {
-			// concatenate the streams
-		}
-		throw new SyntaxException("The page Contents can't be: " + contents.getClass().getName());
+	public IndirectRef getContentsRef() {
+		return this.getValueAsRef(PName.contents);
+	}
+	
+	public void setContents(IndirectObject streamObj) { 
+		this.streamObj = streamObj;
+	}
+	
+	public IndirectObject getContents() {
+		return this.streamObj;
 	}
 	
 	public void setPageNo(int pageNo) {

@@ -42,21 +42,8 @@ public class PageTree extends DocObject {
 			obj.parent = this;
 			this.objList.add(obj);
 			
-			DocObject root = null;
-			DocObject parent = this.getParent();
-			while (parent != null) {
-				root = parent;
-				parent = parent.getParent();
-			}
-			
-			if (root == null) {
-				root = this;
-			}
-			
 			if (obj.getType().equals(PName.page)) {
-				((PageTree) root).pageMap.put(((Page) obj).getPageNo(), (Page) obj);				
-			} else if (obj.getType().equals(PName.pages)) {
-				// still not read page now....
+				this.pageMap.put(((Page) obj).getPageNo(), (Page) obj);
 			}
 			return;
 		}
@@ -66,7 +53,26 @@ public class PageTree extends DocObject {
 	
 	public Page getPage(int pageNo) {
 		if (pageNo < 1 || pageNo > count) {
-			throw new java.lang.IllegalArgumentException();
+			throw new java.lang.IllegalArgumentException("Page number " + pageNo
+					+ " exceeds page count " + count);
+		}
+		
+		if (this.pageMap.containsKey(pageNo)) {
+			return this.pageMap.get(pageNo);
+		}
+		
+		for (DocObject obj : this.objList) {
+			if (obj.getType().equals(PName.page)) {
+				continue;
+			}
+			if (obj.getType().equals(PName.pages)) {
+				PageTree subTree = (PageTree) obj;
+				Page page = subTree.getPage(pageNo);
+				if ( page == null) {
+					continue;
+				}
+				return page;
+			}
 		}
 		return null;
 	}
