@@ -16,7 +16,7 @@ public class Main {
 
 		PDFReader reader = new PDFReader();
 
-		File f = new File("c:/simple.pdf");
+		File f = new File("/simple.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 
