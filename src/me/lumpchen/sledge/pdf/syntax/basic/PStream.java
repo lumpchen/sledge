@@ -20,6 +20,14 @@ public class PStream extends PObject {
 		this.dict = dict;
 	}
 	
+	public PDictionary getDict() {
+		return this.dict;
+	}
+	
+	public byte[] getStream() {
+		return this.stream;
+	}
+	
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		if (null != this.dict) {

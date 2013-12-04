@@ -44,6 +44,10 @@ public class IndirectObject extends PObject {
 		return this.insideObj;
 	}
 	
+	public PStream getStream() {
+		return this.stream;
+	}
+	
 	public PObject getValue(PName key) {
 		if (this.dict() == null) {
 			return null;

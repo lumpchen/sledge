@@ -45,10 +45,16 @@ public class BytesReader {
 	public byte[] readToSpace() {
 		int i = 0;
 		while (true) {
+			if (i >= this.buf.remaining()) {
+				break;
+			}
 			if (isSpace(buf.get(this.buf.position() + i))) {
 				break;
 			}
 			i++;
+		}
+		if (i == 0) {
+			return null;
 		}
 		byte[] bytes = new byte[i];
 		buf.get(bytes);
@@ -57,14 +63,22 @@ public class BytesReader {
 		return bytes;
 	}
 
-	public byte[] readToStop() {
+	public byte[] readToNextToken() {
 		int i = 0;
 		while (true) {
-			if (isDelimiter(buf.get(this.buf.position() + i))) {
+			if (i >= this.buf.remaining()) {
+				break;
+			}
+			if (isToken(buf.get(this.buf.position() + i))) {
 				break;
 			}
 			i++;
 		}
+		
+		if (i == 0) {
+			return null;
+		}
+		
 		byte[] bytes = new byte[i];
 		buf.get(bytes);
 		
@@ -72,7 +86,7 @@ public class BytesReader {
 		return bytes;
 	}
 	
-	private boolean isDelimiter(byte b) {
+	private boolean isToken(byte b) {
 		return (b == '(' || b == ')' || b == '<' || b == '>' || b == '[' || b == ']' 
 				|| b == '/' || b == '%' || b == ' ');
 	}
@@ -84,7 +98,7 @@ public class BytesReader {
 		while (true) {
 			byte next = this.buf.get(pos + run);
 			if (next == flag) {
-				if (!(last == '\\' && isDelimiter(next))) {
+				if (!(last == '\\' && isToken(next))) {
 					break;
 				}
 			}
@@ -183,6 +197,9 @@ public class BytesReader {
 	}
 	
 	public void skipSpace() {
+		if (this.buf.remaining() <= 0) {
+			return;
+		}
 		while (true) {
 			byte b = this.buf.get();
 			if (!isSpace(b)) {

@@ -57,7 +57,7 @@ public class ObjectReader {
 		case PName.BEGIN: {
 			// read name here, '/'
 			this.bytesReader.readByte(); // skip '/'
-			byte[] name = this.bytesReader.readToStop();
+			byte[] name = this.bytesReader.readToNextToken();
 			obj = PName.instance(name);
 			break;
 		}
