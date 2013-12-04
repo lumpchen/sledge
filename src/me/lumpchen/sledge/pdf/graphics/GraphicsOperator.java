@@ -11,7 +11,7 @@ public abstract class GraphicsOperator {
 	byte[] operatorBytes;
 	int operandNumber;
 	
-	GraphicsOperator(byte[] operatorBytes) {
+	protected GraphicsOperator(byte[] operatorBytes) {
 		this.operatorBytes = operatorBytes;
 	}
 	
@@ -31,7 +31,7 @@ public abstract class GraphicsOperator {
 }
 
 class OPre extends GraphicsOperator {
-
+	
 	OPre(byte[] operatorBytes) {
 		super(operatorBytes);
 		this.operandNumber = 4;
@@ -39,5 +39,12 @@ class OPre extends GraphicsOperator {
 
 	@Override
 	public void execute(Stack<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = operandStack.pop();
+		GraphicsOperand operand_2 = operandStack.pop();
+		GraphicsOperand operand_3 = operandStack.pop();
+		GraphicsOperand operand_4 = operandStack.pop();
+		
+		operand_1.asReal();
 	}
 }
+
