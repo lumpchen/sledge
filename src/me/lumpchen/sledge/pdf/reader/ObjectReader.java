@@ -164,4 +164,8 @@ public class ObjectReader {
 	public long readLong() {
 		return this.bytesReader.readLong();
 	}
+	
+	public double readDouble() {
+		return this.bytesReader.readDouble();
+	}
 }

@@ -259,12 +259,13 @@ class OP_gs extends GraphicsOperator {
 class OP_q extends GraphicsOperator {
 
 	public OP_q() {
-		super(new byte[] { 'q'});
+		super(new byte[]{'q'});
 		this.operandNumber = 0;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		g2d.saveGraphicsState();
 	}
 }
 
@@ -277,6 +278,7 @@ class OP_Q_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		g2d.restoreGraphicsState();
 	}
 }
 

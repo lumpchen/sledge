@@ -159,6 +159,10 @@ public class BytesReader {
 		return value;
 	}
 	
+	public double readDouble() {
+		return 0;
+	}
+	
 	public static boolean isSpace(byte b) {
 		return Character.isWhitespace(b);
 	}
