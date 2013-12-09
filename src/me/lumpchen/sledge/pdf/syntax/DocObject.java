@@ -1,8 +1,8 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public abstract class DocObject {
@@ -32,8 +32,8 @@ public abstract class DocObject {
 		return "";
 	}
 	
-	protected PInteger getValueAsInteger(PName name) {
-		return this.insideObj.getValueAsInteger(name);
+	protected PNumber getValueAsNumber(PName name) {
+		return this.insideObj.getValueAsNumber(name);
 	}
 	
 	protected PArray getValueAsArray(PName name) {

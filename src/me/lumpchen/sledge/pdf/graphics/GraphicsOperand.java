@@ -1,31 +1,27 @@
 package me.lumpchen.sledge.pdf.graphics;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
+import me.lumpchen.sledge.pdf.syntax.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PReal;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public class GraphicsOperand {
 
-	private byte[] operandBytes;
+	private PObject operand;
 	
-	public GraphicsOperand(byte[] operandBytes) {
-		this.operandBytes = operandBytes;
+	public GraphicsOperand(PObject operand) {
+		this.operand = operand;
 	}
 	
 	public String toString() {
-		return new String(this.operandBytes);
+		return this.operand.toString();
 	}
 	
-	public PInteger asInt() {
+	public PNumber asNumber() {
 		return null;
 	}
-	
+
 	public PString asString() {
-		return null;
-	}
-	
-	public PReal asReal() {
 		return null;
 	}
 	

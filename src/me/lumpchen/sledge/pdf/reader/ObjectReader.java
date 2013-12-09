@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.reader;
 
+import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.PObject;
@@ -7,9 +8,9 @@ import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PBoolean;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PHexString;
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class ObjectReader {
@@ -28,19 +29,22 @@ public class ObjectReader {
 		this.readNextLine();
 	}
 
-	private void readNextLine() {
+	private boolean readNextLine() {
 		if (this.lineReader != null) {
 			this.lineData = this.lineReader.readLine();
 		}
 		if (null == this.lineData) {
-			throw new ReadException();
+			return false;
 		}
 		this.bytesReader = new BytesReader(this.lineData.getBytes());
+		return true;
 	}
 
 	public PObject readNextObj() {
 		if (this.bytesReader == null || this.bytesReader.remaining() == 0) {
-			this.readNextLine();
+			if (!this.readNextLine()) {
+				return null;
+			}
 		}
 
 		PObject next = read();
@@ -101,20 +105,27 @@ public class ObjectReader {
 						} else if (tag == IndirectRef.BEGIN) {
 							obj = new IndirectRef();
 						} else {
-							obj = new PInteger();
+							obj = new PNumber();
 						}
 					} else {
-						obj = new PInteger();
+						obj = new PNumber();
 					}
 				} else if (BytesReader.isNumber(first)) {
-					obj = new PInteger();
+					obj = new PNumber();
 				}
 			}
 			break;
 		}
 		}
 
-		if (obj != null) {
+		if (null == obj) {
+			byte[] bytes = this.bytesReader.peekToToken(0);
+			if (GraphicsOperator.isGraphicsOperator(bytes)) {
+				obj = GraphicsOperator.create(bytes);				
+			}
+		}
+		
+		if (null != obj) {
 			if (!(obj instanceof PStream)) {
 				obj.read(this);	
 			}
@@ -167,5 +178,9 @@ public class ObjectReader {
 	
 	public double readDouble() {
 		return this.bytesReader.readDouble();
+	}
+	
+	public byte[] readToNextToken() {
+		return this.bytesReader.readToNextToken();
 	}
 }

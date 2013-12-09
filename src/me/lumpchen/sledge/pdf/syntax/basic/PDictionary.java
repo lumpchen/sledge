@@ -33,12 +33,12 @@ public class PDictionary extends PObject {
 		return this.dict.get(key);
 	}
 	
-	public PInteger getValueAsIntger(PName key) {
+	public PNumber getValueAsNumber(PName key) {
 		PObject value = this.get(key);
-		if (null == value || !(value instanceof PInteger)) {
+		if (null == value || !(value instanceof PNumber)) {
 			return null;
 		}
-		return (PInteger) value;
+		return (PNumber) value;
 	}
 
 	public PObject remove(PName key) {

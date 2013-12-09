@@ -20,6 +20,14 @@ public abstract class PString extends PObject {
 	}
 
 	abstract protected void encode(byte[] bytes);
+
+	public String toJavaString() {
+		if (charSequence != null) {
+			return new String(charSequence);
+		}
+
+		return "";
+	}
 	
 	public String toString() {
 		if (charSequence != null) {

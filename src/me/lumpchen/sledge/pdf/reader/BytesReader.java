@@ -175,6 +175,30 @@ public class BytesReader {
 		}
 		return true;
 	}
+	
+	public byte[] peekToToken(int offset) {
+		int pos = this.buf.position();
+		int remain = this.buf.remaining();
+		
+		int run = 0;
+		while (true) {
+			if (remain - offset == run) {
+				break;
+			}
+			byte next = this.buf.get(pos + offset + run);
+			if (isToken(next)) {
+				break;
+			}
+			run++;
+		}
+
+		this.buf.position(pos + offset);
+		byte[] bytes = new byte[run];
+		this.buf.get(bytes, 0, run);
+
+		this.buf.position(pos); // back to original position
+		return bytes;
+	}
 
 	public byte[] peekToSpace(int offset) {
 		int pos = this.buf.position();

@@ -5,8 +5,8 @@ import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
@@ -63,10 +63,10 @@ public class IndirectObject extends PObject {
 		return null;
 	}
 	
-	public PInteger getValueAsInteger(PName key) {
+	public PNumber getValueAsNumber(PName key) {
 		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof PInteger) {
-			return (PInteger) obj;
+		if (obj != null && obj instanceof PNumber) {
+			return (PNumber) obj;
 		}
 		return null;
 	}

@@ -57,11 +57,11 @@ public class PStream extends PObject {
 		if (null == this.dict) {
 			throw new SyntaxException("not found stream dictionary.");
 		}
-		PInteger len = this.dict.getValueAsIntger(PName.Length);
+		PNumber len = this.dict.getValueAsNumber(PName.Length);
 		if (len == null) {
 			throw new SyntaxException("not found stream length in dictionary.");
 		}
-		this.stream = reader.readBytes(len.getValue());
+		this.stream = reader.readBytes(len.intValue());
 		reader.readEOL();
 	}
 

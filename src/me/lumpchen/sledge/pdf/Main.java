@@ -32,7 +32,7 @@ public class Main {
 			
 			ContentStreamReader csReader = new ContentStreamReader();
 			ContentStream cs = csReader.read(bstream);
-			System.out.println(cs);
+			System.err.println(cs);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

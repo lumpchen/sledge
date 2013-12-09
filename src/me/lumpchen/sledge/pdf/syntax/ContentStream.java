@@ -36,19 +36,17 @@ public class ContentStream {
 			}
 			GraphicsOperator op = this.operatorStack.poll();
 			buf.append(op.toString());
-			buf.append('\n');			
-		}
-		buf.append('\n');
-		buf.append(this.operandStack.size());
-		while (true) {
-			if (this.operandStack.isEmpty()) {
-				break;
+			
+			int num = op.getOperandNumber();
+			while (num > 0) {
+				buf.append(' ');
+				GraphicsOperand operand = this.operandStack.poll();
+				buf.append(operand.toString());
+				num--;
 			}
-			GraphicsOperand op = this.operandStack.poll();
-			buf.append(op.toString());
+			
 			buf.append('\n');			
 		}
-		
 		return buf.toString();
 	}
 }

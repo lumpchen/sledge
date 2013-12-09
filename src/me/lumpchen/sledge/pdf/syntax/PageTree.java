@@ -18,7 +18,7 @@ public class PageTree extends DocObject {
 		super(obj);
 		this.objList = new ArrayList<DocObject>();
 		this.pageMap = new HashMap<Integer, Page>();
-		this.count = this.getValueAsInteger(PName.count).getValue();
+		this.count = this.getValueAsNumber(PName.count).intValue();
 	}
 	
 	public String toString() {

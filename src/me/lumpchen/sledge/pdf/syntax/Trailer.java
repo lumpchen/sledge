@@ -9,9 +9,8 @@ import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PInteger;
-import me.lumpchen.sledge.pdf.syntax.basic.PLong;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 
 public class Trailer {
 
@@ -20,17 +19,17 @@ public class Trailer {
 	public static final byte[] EOF = {'%', '%', 'E', 'O', 'F'};
 	
 	private PDictionary dict;
-	private PLong startxref;
+	private PNumber startxref;
 
 	public Trailer() {
 	}
 	
 	public int getSize() {
 		PObject size = this.dict.get(PName.size);
-		if (size == null || !(size instanceof PInteger)) {
+		if (size == null || !(size instanceof PNumber)) {
 			throw new InvalidElementException(PName.SIZE);
 		}
-		return ((PInteger) size).getValue();
+		return ((PNumber) size).intValue();
 	}
 	
 	public IndirectRef getInfo() {
@@ -50,11 +49,11 @@ public class Trailer {
 	}
 	
 	public void setStartxref(long pos) {
-		this.startxref = new PLong(pos);
+		this.startxref = new PNumber(pos);
 	}
 	
 	public long getStartxref() {
-		return this.startxref.getValue();
+		return this.startxref.longValue();
 	}
 	
 	public String toString() {
@@ -97,7 +96,7 @@ public class Trailer {
 			LineData line = lineArr.get(i);
 			if (line.startsWith(STARTXREF)) {
 				line = lineArr.get(++i);
-				this.startxref = new PLong(line.readAsLong());
+				this.startxref = new PNumber(line.readAsLong());
 			} else if (line.startsWith(PDictionary.BEGIN)) {
 				ObjectReader objReader = new ObjectReader(line);
 				PObject obj = objReader.readNextObj();

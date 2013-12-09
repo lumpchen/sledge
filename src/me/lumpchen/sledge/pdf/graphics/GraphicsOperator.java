@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PReal;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.syntax.PObject;
+import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
-public abstract class GraphicsOperator {
+public abstract class GraphicsOperator extends PObject {
 
 	public static enum Group {
 		GraphicsState, PathConstruction, PathPainting, OtherPainting, Text, MarkedContent
@@ -135,6 +138,9 @@ public abstract class GraphicsOperator {
 
 	public static final GraphicsOperator create(String operator) {
 		Class<? extends GraphicsOperator> c = operatorMap.get(operator);
+		if (null == c) {
+			throw new SyntaxException("Illegal operator: " + operator);
+		}
 		try {
 			GraphicsOperator op = c.newInstance();
 			return op;
@@ -144,6 +150,14 @@ public abstract class GraphicsOperator {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static boolean isGraphicsOperator(byte[] operatorBytes) {
+		if (null == operatorBytes || operatorBytes.length <= 0) {
+			return false;
+		}
+		String op = new String(operatorBytes);
+		return operatorMap.containsKey(op);
 	}
 
 	public String toString() {
@@ -156,6 +170,19 @@ public abstract class GraphicsOperator {
 
 	abstract public void execute(Queue<GraphicsOperand> operandStack,
 			VirtualGraphics g2d);
+	
+	@Override
+	protected void readBeginTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void readBody(ObjectReader reader) {
+		reader.readBytes(this.operatorBytes.length);
+	}
+
+	@Override
+	protected void readEndTag(ObjectReader reader) {
+	}
 }
 
 //General graphics state w, J, j, M, d, ri, i, gs
@@ -256,8 +283,11 @@ class OP_gs extends GraphicsOperator {
 }
 
 // Special graphics state q, Q, cm
-class OP_q extends GraphicsOperator {
 
+/**
+ * Save the current graphics state on the graphics state stack
+ * */
+class OP_q extends GraphicsOperator {
 	public OP_q() {
 		super(new byte[]{'q'});
 		this.operandNumber = 0;
@@ -270,7 +300,10 @@ class OP_q extends GraphicsOperator {
 }
 
 class OP_Q_ extends GraphicsOperator {
-
+	/**
+	 * Restore the graphics state by removing the most recently saved state from
+	 * the stack and making it the current state
+	 * */
 	public OP_Q_() {
 		super(new byte[] { 'Q'});
 		this.operandNumber = 0;
@@ -283,14 +316,32 @@ class OP_Q_ extends GraphicsOperator {
 }
 
 class OP_cm extends GraphicsOperator {
-
+	/**
+	 * Modify the current transformation matrix (CTM) by concatenating the
+	 * specified matrix
+	 * */
 	public OP_cm() {
 		super(new byte[] { 'c', 'm'});
-		this.operandNumber = 0;
+		this.operandNumber = 6;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = operandStack.poll();
+		GraphicsOperand operand_2 = operandStack.poll();
+		GraphicsOperand operand_3 = operandStack.poll();
+		GraphicsOperand operand_4 = operandStack.poll();
+		GraphicsOperand operand_5 = operandStack.poll();
+		GraphicsOperand operand_6 = operandStack.poll();
+
+		double a = operand_1.asNumber().doubleValue();
+		double b = operand_2.asNumber().doubleValue();
+		double c = operand_3.asNumber().doubleValue();
+		double d = operand_4.asNumber().doubleValue();
+		double e = operand_5.asNumber().doubleValue();
+		double f = operand_6.asNumber().doubleValue();
+		
+		g2d.concatenate(new Matrix(a, b, c, d, e, f));
 	}
 }
 
@@ -368,7 +419,10 @@ class OP_h extends GraphicsOperator {
 }
 
 class OP_re extends GraphicsOperator {
-
+	/**
+	 * Append a rectangle to the current path as a complete subpath, 
+	 * with lower-left corner (x, y) and dimensions width and height in user space.
+	 * */
 	public OP_re() {
 		super(new byte[] { 'r', 'e' });
 		this.operandNumber = 4;
@@ -381,11 +435,12 @@ class OP_re extends GraphicsOperator {
 		GraphicsOperand operand_3 = operandStack.poll();
 		GraphicsOperand operand_4 = operandStack.poll();
 
-		PReal x = operand_1.asReal();
-		PReal y = operand_2.asReal();
-		PReal w = operand_3.asReal();
-		PReal h = operand_4.asReal();
-
+		double x = operand_1.asNumber().doubleValue();
+		double y = operand_2.asNumber().doubleValue();
+		double w = operand_3.asNumber().doubleValue();
+		double h = operand_4.asNumber().doubleValue();
+		
+		g2d.beginPath(x, y, w, h);
 	}
 }
 
@@ -499,7 +554,11 @@ class OP_b42 extends GraphicsOperator {
 }
 
 class OP_n extends GraphicsOperator {
-
+	/**
+	 * End the path object without filling or stroking it. 
+	 * This operator is a path-painting no-op, used primarily for the 
+	 * side effect of changing the current clipping path
+	 * */
 	public OP_n() {
 		super(new byte[] { 'n'});
 		this.operandNumber = 0;
@@ -507,12 +566,17 @@ class OP_n extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		g2d.closePath();
 	}
 }
 
 // Clipping paths W, W*
 class OP_W_ extends GraphicsOperator {
-
+	/**
+	 * Modify the current clipping path by intersecting it with the current path, 
+	 * using the nonzero winding number rule to determine which regions lie 
+	 * inside the clipping path.
+	 * */
 	public OP_W_() {
 		super(new byte[] { 'W'});
 		this.operandNumber = 0;
@@ -537,7 +601,10 @@ class OP_W_42 extends GraphicsOperator {
 
 // Text objects BT, ET
 class OP_BT_ extends GraphicsOperator {
-
+	/**
+	 * Begin a text object, initializing the text matrix, Tm , and the text line
+	 * matrix, Tlm , to the identity matrix.
+	 * */
 	public OP_BT_() {
 		super(new byte[] { 'B', 'T'});
 		this.operandNumber = 0;
@@ -545,11 +612,14 @@ class OP_BT_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		g2d.beginText();
 	}
 }
 
 class OP_ET_ extends GraphicsOperator {
-
+	/**
+	 * End a text object, discarding the text matrix.
+	 * */
 	public OP_ET_() {
 		super(new byte[] { 'E', 'T'});
 		this.operandNumber = 0;
@@ -557,6 +627,7 @@ class OP_ET_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		g2d.endText();
 	}
 }
 
@@ -610,14 +681,17 @@ class OP_TL_ extends GraphicsOperator {
 }
 
 class OP_T_f extends GraphicsOperator {
-
+	/**
+	 * Set the text font to font and the text font size.
+	 * */
 	public OP_T_f() {
 		super(new byte[] { 'T', 'f'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		
 	}
 }
 
@@ -674,11 +748,26 @@ class OP_T_m extends GraphicsOperator {
 
 	public OP_T_m() {
 		super(new byte[] { 'T', 'm'});
-		this.operandNumber = 0;
+		this.operandNumber = 6;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = operandStack.poll();
+		GraphicsOperand operand_2 = operandStack.poll();
+		GraphicsOperand operand_3 = operandStack.poll();
+		GraphicsOperand operand_4 = operandStack.poll();
+		GraphicsOperand operand_5 = operandStack.poll();
+		GraphicsOperand operand_6 = operandStack.poll();
+
+		double a = operand_1.asNumber().doubleValue();
+		double b = operand_2.asNumber().doubleValue();
+		double c = operand_3.asNumber().doubleValue();
+		double d = operand_4.asNumber().doubleValue();
+		double e = operand_5.asNumber().doubleValue();
+		double f = operand_6.asNumber().doubleValue();
+		
+		g2d.transformTextMatrix(new Matrix(a, b, c, d, e, f));
 	}
 }
 
@@ -696,14 +785,20 @@ class OP_T_42 extends GraphicsOperator {
 
 // Text showing Tj, TJ, ', "
 class OP_T_j extends GraphicsOperator {
-
+	/**
+	 * Show a text string.
+	 * */
 	public OP_T_j() {
 		super(new byte[] { 'T', 'j'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		GraphicsOperand operand = operandStack.poll();
+		PString s = operand.asString();
+		
+		g2d.showText(s.toJavaString());
 	}
 }
 
@@ -869,7 +964,7 @@ class OP_RG_ extends GraphicsOperator {
 
 	public OP_RG_() {
 		super(new byte[] { 'R', 'G' });
-		this.operandNumber = 0;
+		this.operandNumber = 3;
 	}
 
 	@Override
@@ -878,14 +973,17 @@ class OP_RG_ extends GraphicsOperator {
 }
 
 class OP_rg extends GraphicsOperator {
-
+	/**
+	 * Same as RG but used for nonstroking operations, color space to DeviceGray.
+	 * */
 	public OP_rg() {
 		super(new byte[] { 'r', 'g' });
-		this.operandNumber = 0;
+		this.operandNumber = 3;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		
 	}
 }
 
