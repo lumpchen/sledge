@@ -691,7 +691,8 @@ class OP_T_f extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		
+		GraphicsOperand operand_1 = operandStack.poll();
+		GraphicsOperand operand_2 = operandStack.poll();
 	}
 }
 
@@ -747,7 +748,7 @@ class OP_TD_ extends GraphicsOperator {
 class OP_T_m extends GraphicsOperator {
 
 	public OP_T_m() {
-		super(new byte[] { 'T', 'm'});
+		super(new byte[] {'T', 'm'});
 		this.operandNumber = 6;
 	}
 
@@ -983,7 +984,9 @@ class OP_rg extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		
+		GraphicsOperand operand_1 = operandStack.poll();
+		GraphicsOperand operand_2 = operandStack.poll();
+		GraphicsOperand operand_3 = operandStack.poll();
 	}
 }
 

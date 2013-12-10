@@ -1,6 +1,9 @@
 package me.lumpchen.sledge.pdf.syntax;
 
+import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
+import me.lumpchen.sledge.pdf.reader.ContentStreamReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
 
 public class Page extends DocObject {
@@ -81,5 +84,30 @@ public class Page extends DocObject {
 
 	public void setArtBox(Rectangle artBox) {
 		this.artBox = artBox;
+	}
+	
+	private ContentStream contentStream;
+	private ContentStream getContentStream() {
+		if (null != this.contentStream) {
+			return this.contentStream;
+		}
+		
+		PStream stream = this.getContents().getStream();
+		if (null == stream) {
+			return null;
+		}
+		byte[] bstream = stream.getStream();
+		if (null == bstream || bstream.length <= 0) {
+			return null;
+		}
+		
+		ContentStreamReader csReader = new ContentStreamReader();
+		this.contentStream = csReader.read(bstream);
+		return this.contentStream;
+	}
+	
+	public void render(VirtualGraphics g2) {
+		ContentStream cs = this.getContentStream();
+		cs.render(g2);
 	}
 }

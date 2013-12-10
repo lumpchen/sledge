@@ -9,7 +9,7 @@ import me.lumpchen.sledge.pdf.graphics.Matrix;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
-public class DefaultGraphicsPath implements VirtualGraphics {
+public class DefaultGraphics implements VirtualGraphics {
 
 	private Graphics2D g2;
 	
@@ -19,7 +19,7 @@ public class DefaultGraphicsPath implements VirtualGraphics {
 	
 	private double resolution = -1;
 	
-	public DefaultGraphicsPath(Graphics2D g2) {
+	public DefaultGraphics(Graphics2D g2) {
 		this.g2 = g2;
 	}
 	
@@ -36,7 +36,6 @@ public class DefaultGraphicsPath implements VirtualGraphics {
 	
 	@Override
 	public void saveGraphicsState() {
-		
 	}
 
 	@Override
@@ -51,12 +50,13 @@ public class DefaultGraphicsPath implements VirtualGraphics {
 		int iWidth = this.toPixel(width);
 		int iHeight = this.toPixel(height);
 		this.currRect = new Rectangle(ix, iy, iWidth, iHeight);
+		
 	}
 
 	@Override
 	public void clip() {
 		if (null != this.currRect) {
-			this.g2.clip(this.currRect);
+//			this.g2.clip(this.currRect);
 		}
 	}
 
@@ -92,17 +92,16 @@ public class DefaultGraphicsPath implements VirtualGraphics {
 	@Override
 	public void transformTextMatrix(Matrix matrix) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void showText(String text) {
-		this.g2.drawString(text, 0, 0);
+		this.g2.drawString(text, 100.0f, 100.0f);
 	}
 
 	@Override
 	public void endText() {
-		
+
 	}
 
 

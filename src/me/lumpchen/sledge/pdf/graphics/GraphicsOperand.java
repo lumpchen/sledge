@@ -18,11 +18,11 @@ public class GraphicsOperand {
 	}
 	
 	public PNumber asNumber() {
-		return null;
+		return (PNumber) operand;
 	}
 
 	public PString asString() {
-		return null;
+		return (PString) operand;
 	}
 	
 	public PName asName() {
