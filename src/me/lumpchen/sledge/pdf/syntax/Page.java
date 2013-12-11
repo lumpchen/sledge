@@ -1,7 +1,9 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
+import me.lumpchen.sledge.pdf.graphics.VirtualGraphicsHelper;
 import me.lumpchen.sledge.pdf.reader.ContentStreamReader;
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
@@ -47,6 +49,8 @@ public class Page extends DocObject {
 	}
 
 	public Rectangle getMediaBox() {
+		PArray rect = super.getValueAsArray(PName.mediabox);
+		this.mediaBox = new Rectangle(rect);
 		return mediaBox;
 	}
 
@@ -86,12 +90,7 @@ public class Page extends DocObject {
 		this.artBox = artBox;
 	}
 	
-	private ContentStream contentStream;
 	private ContentStream getContentStream() {
-		if (null != this.contentStream) {
-			return this.contentStream;
-		}
-		
 		PStream stream = this.getContents().getStream();
 		if (null == stream) {
 			return null;
@@ -102,11 +101,14 @@ public class Page extends DocObject {
 		}
 		
 		ContentStreamReader csReader = new ContentStreamReader();
-		this.contentStream = csReader.read(bstream);
-		return this.contentStream;
+		ContentStream contentStream = csReader.read(bstream);
+		return contentStream;
 	}
 	
 	public void render(VirtualGraphics g2) {
+		Rectangle mediaBox = this.getMediaBox();
+		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
+		
 		ContentStream cs = this.getContentStream();
 		cs.render(g2);
 	}

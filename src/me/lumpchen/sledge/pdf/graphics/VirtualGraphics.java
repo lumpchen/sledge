@@ -34,6 +34,9 @@ public interface VirtualGraphics {
 	 * current clipping path.
 	 */
 	public void closePath();
+	
+	public void strokePath();
+	public void fillPath();
 
 	/**
 	 * Modify the current transformation matrix (CTM) by concatenating the

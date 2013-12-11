@@ -60,9 +60,6 @@ public class ContentStream implements RenderObject {
 			}
 			GraphicsOperator op = this.operatorStack.poll();
 			op.execute(this.operandStack, g2);
-			if (op.toString().equals("Tj")) {
-				break;
-			}
 		}
 	}
 }

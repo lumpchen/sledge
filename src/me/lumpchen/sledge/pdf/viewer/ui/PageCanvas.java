@@ -28,6 +28,5 @@ public class PageCanvas extends JPanel {
 
 		DefaultGraphics gd = new DefaultGraphics(g2);
 		this.page.render(gd);
-		
 	}
 }

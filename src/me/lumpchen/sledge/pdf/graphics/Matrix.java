@@ -17,6 +17,10 @@ public class Matrix {
 		this.e = e;
 		this.f = f;
 	}
+	
+	public double[] flate() {
+		return new double[]{a, b, c, d, e, f};
+	}
 
 	public Matrix concate(Matrix m) {
 		double[][] a = this.toArray();
