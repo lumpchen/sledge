@@ -9,7 +9,7 @@ public class FrameViewer extends JFrame {
 	public FrameViewer() {
 		super();
 		
-		this.setSize(400, 400);
+		this.setSize(800, 800);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	

@@ -51,6 +51,10 @@ public class PNumber extends PObject {
 		this.number = number;
 	}
 	
+	public Number getNumber() {
+		return this.number;
+	}
+	
 	@Override
 	protected void readBeginTag(ObjectReader reader) {
 	}

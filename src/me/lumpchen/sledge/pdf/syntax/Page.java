@@ -109,6 +109,8 @@ public class Page extends DocObject {
 		Rectangle mediaBox = this.getMediaBox();
 		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
 		
+		g2.beginCanvas(mediaBox.getWidth(), mediaBox.getHeight());
+		
 		ContentStream cs = this.getContentStream();
 		cs.render(g2);
 	}

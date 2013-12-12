@@ -44,4 +44,12 @@ public class Rectangle {
 	public PNumber ury() {
 		return this.ury;
 	}
+	
+	public double getWidth() {
+		return this.urx.doubleValue() - this.llx.doubleValue();
+	}
+	
+	public double getHeight() {
+		return this.ury.doubleValue() - this.lly.doubleValue();
+	}
 }

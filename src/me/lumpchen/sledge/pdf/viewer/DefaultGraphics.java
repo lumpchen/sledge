@@ -1,61 +1,118 @@
 package me.lumpchen.sledge.pdf.viewer;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Stack;
 
-import me.lumpchen.sledge.pdf.graphics.Color;
 import me.lumpchen.sledge.pdf.graphics.Matrix;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class DefaultGraphics implements VirtualGraphics {
 
+	static class GraphicsState {
+		public AffineTransform ctm;
+		public GeneralPath path;
+		public ColorSpace colorspace;
+		public Color color;
+		
+		public double charSpace;
+		public double wordSpace;
+		public double scale;
+		public double leading;
+		public double fontSize;
+		public double render;
+		public double rise;
+		
+		public float lineWidth;
+		public int lineCap;
+		public int lineJoin;
+		public float miterLimit;
+		public int[] dashArray;
+		public int dashPhase;
+		// ...
+		
+		public static GraphicsState clone(GraphicsState current) {
+			GraphicsState gs = new GraphicsState();
+			
+			gs.ctm = current.ctm;
+			
+			gs.fontSize = current.fontSize;
+			
+			return gs;
+		}
+	}
+	
+	private Stack<GraphicsState> gsStack = new Stack<GraphicsState>();
+
+	private GraphicsState gstate;
+	
 	private Graphics2D g2;
 	
-	private Rectangle currRect;
+	private Rectangle2D.Double currRect;
 	
 	private static int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
 	
 	private double resolution = -1;
 	
-	private AffineTransform currCTM;
-	
 	public DefaultGraphics(Graphics2D g2) {
 		this.g2 = g2;
+		this.gstate = new GraphicsState();
+		this.gstate.ctm = this.g2.getTransform();
 	}
 	
 	public void setResolutoin(double deviceRes) {
 		this.resolution = deviceRes;
 	}
 	
-	private int toPixel(double d) {
+	private double toPixel(double d) {
 		if (this.resolution <= 0) {
 			this.resolution = screenRes;
 		}
-		return (int) ((d / 72) * resolution + 0.5);
+		return (d / 72) * resolution;
 	}
 	
 	@Override
 	public void saveGraphicsState() {
-		this.currCTM = this.g2.getTransform();
+		if (this.gstate != null) {
+			this.gsStack.push(gstate);
+		}
+		
+		this.gstate = GraphicsState.clone(this.gstate);
 	}
 
 	@Override
 	public void restoreGraphicsState() {
-		this.g2.setTransform(this.currCTM);
+		if (this.gsStack.isEmpty()) {
+			throw new RuntimeException("unmatched graphics state.");
+		}
+		this.gstate = this.gsStack.pop();
+	}
+
+
+	@Override
+	public void beginCanvas(double width, double height) {
+		Matrix base = new Matrix(1, 0, 0, -1, 0, toPixel(height));
+		AffineTransform at = new AffineTransform(base.flate());
+		at.preConcatenate(this.gstate.ctm);
+		this.gstate.ctm = at;
+		this.g2.setTransform(at);
 	}
 
 	@Override
 	public void beginPath(double x, double y, double width, double height) {
-		int ix = this.toPixel(x);
-		int iy = this.toPixel(y);
-		int iWidth = this.toPixel(width);
-		int iHeight = this.toPixel(height);
-		this.currRect = new Rectangle(ix, iy, iWidth, iHeight);
+		double ix = this.toPixel(x);
+		double iy = this.toPixel(y);
+		double iWidth = this.toPixel(width);
+		double iHeight = this.toPixel(height);
+		this.currRect = new Rectangle2D.Double(ix, iy, iWidth, iHeight);
 	}
 
 	@Override
@@ -72,19 +129,19 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void concatenate(Matrix matrix) {
-		AffineTransform at = new AffineTransform(matrix.flate());
-		try {
-			at.invert();
-		} catch (NoninvertibleTransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		at.concatenate(this.currCTM);
-		this.g2.transform(at);
+		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
+		at.preConcatenate(this.gstate.ctm);
+		this.gstate.ctm = at;
+		this.g2.setTransform(at);
+		
+		Point2D ptSrc = new Point2D.Double(0, 0);
+		Point2D ptDst = new Point2D.Double();
+		this.g2.getTransform().transform(ptSrc, ptDst);
+		System.out.println(ptDst);
 	}
 
 	@Override
-	public void setColor(Color color) {
+	public void setColor(me.lumpchen.sledge.pdf.graphics.Color color) {
 		// TODO Auto-generated method stub
 		this.g2.setColor(java.awt.Color.red);
 	}
@@ -101,24 +158,18 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void transformTextMatrix(Matrix matrix) {
-		AffineTransform at = new AffineTransform(matrix.flate());
-		at.concatenate(this.currCTM);
-		this.g2.transform(at);
+		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
+		AffineTransform mirror = new AffineTransform(1, 0, 0, -1, 0, 0);
+		mirror.preConcatenate(at);
+		mirror.preConcatenate(this.gstate.ctm);
+		this.gstate.ctm = mirror;
+		this.g2.setTransform(mirror);
 	}
 
 	@Override
 	public void showText(String text) {
-		Point2D ptSrc = new Point2D.Double(0, 0);
-		Point2D ptDst = new Point2D.Double();
-//		try {
-//			this.g2.getTransform().inverseTransform(ptSrc, ptDst);
-//		} catch (NoninvertibleTransformException e) {
-//			e.printStackTrace();
-//		}
-		this.g2.getTransform().transform(ptSrc, ptDst);
-		
-		System.out.println(ptDst);
-		
+		Font f = new Font("Arial", Font.BOLD, (int) (this.toPixel(26) + 0.5));
+		this.g2.setFont(f);
 		this.g2.drawString(text, 0, 0);
 	}
 
@@ -137,6 +188,11 @@ public class DefaultGraphics implements VirtualGraphics {
 		// TODO Auto-generated method stub
 		
 	}
-
-
+	
+	private double[] flateMatrix(Matrix matrix) {
+		double[] doubleMatrix = matrix.flate();
+		doubleMatrix[4] = this.toPixel(doubleMatrix[4]);
+		doubleMatrix[5] = this.toPixel(doubleMatrix[5]);
+		return doubleMatrix;
+	}
 }

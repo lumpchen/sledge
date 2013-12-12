@@ -15,6 +15,8 @@ public interface VirtualGraphics {
 	 * */
 	public void restoreGraphicsState();
 
+	public void beginCanvas(double width, double height);
+	
 	/**
 	 * Append a rectangle to the current path as a complete subpath, with
 	 * lower-left corner (x, y) and dimensions width and height in user space.
