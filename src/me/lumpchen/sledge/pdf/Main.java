@@ -46,11 +46,11 @@ public class Main {
 	static void testUI() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/simple.pdf");
+		File f = new File("/p3.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 
-			Page page = doc.getPage(1);
+			Page page = doc.getPage(3);
 			
 			FrameViewer viewer = new FrameViewer();
 			
