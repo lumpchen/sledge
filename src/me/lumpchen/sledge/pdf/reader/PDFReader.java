@@ -21,7 +21,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
-import me.lumpchen.sledge.pdf.syntax.document.Font;
+import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 
@@ -306,7 +306,7 @@ public class PDFReader implements PageContentsLoader {
 					if (null == type || !type.equals(PName.font)) {
 						throw new SyntaxException("not a font object");
 					}
-					Font font = new Font(resObj);
+					FontObject font = new FontObject(resObj);
 //					this.resourceManager.put(key, font);
 				} else {
 					throw new SyntaxException("null object");

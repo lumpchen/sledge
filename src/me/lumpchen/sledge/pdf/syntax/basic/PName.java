@@ -128,8 +128,20 @@ public class PName extends PObject {
 	// font
 	public static final String BASEFONT = "BaseFont";
 	public static final PName BaseFont = new PName(BASEFONT);
-	public static final String FONTDESCRIPTIOR = "FontDescriptor";
-	public static final PName FontDescriptor = new PName(FONTDESCRIPTIOR);
+	public static final String SUBTYPE = "Subtype";
+	public static final PName Subtype = new PName(SUBTYPE);
+	public static final String FIRSTCHAR = "FirstChar";
+	public static final PName FirstChar = new PName(FIRSTCHAR);
+	public static final String LASTCHAR = "LastChar";
+	public static final PName LastChar = new PName(LASTCHAR);
+	public static final String WIDTHS = "Widths";
+	public static final PName Widths = new PName(WIDTHS);
+	public static final String FONTDESCRIPTOR = "FontDescriptor";
+	public static final PName FontDescriptor = new PName(FONTDESCRIPTOR);
+	public static final String ENCODING = "Encoding";
+	public static final PName Encoding = new PName(ENCODING);
+	public static final String TOUNICODE = "ToUnicode";
+	public static final PName ToUnicode = new PName(TOUNICODE);
 	
 	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
@@ -186,7 +198,13 @@ public class PName extends PObject {
 		nameMap.put(LENGTH, Length);
 		
 		nameMap.put(BASEFONT, BaseFont);
-		nameMap.put(FONTDESCRIPTIOR, FontDescriptor);
+		nameMap.put(FONTDESCRIPTOR, FontDescriptor);
+		nameMap.put(SUBTYPE, Subtype);
+		nameMap.put(FIRSTCHAR, FirstChar);
+		nameMap.put(LASTCHAR, LastChar);
+		nameMap.put(WIDTHS, Widths);
+		nameMap.put(ENCODING, Encoding);
+		nameMap.put(TOUNICODE, ToUnicode);
 	}
 
 	private PName(byte[] name) {
