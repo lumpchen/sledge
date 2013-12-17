@@ -5,9 +5,14 @@ import java.util.Map;
 import java.util.Queue;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.syntax.PObject;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.text.font.FontIndex;
+import me.lumpchen.sledge.pdf.text.font.FontManager;
+import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public abstract class GraphicsOperator extends PObject {
 
@@ -693,6 +698,12 @@ class OP_T_f extends GraphicsOperator {
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
 		GraphicsOperand operand_1 = operandStack.poll();
 		GraphicsOperand operand_2 = operandStack.poll();
+		
+		PName fontIndex= operand_1.asName();
+		PNumber fontSize = operand_2.asNumber();
+		
+		PDFFont font = FontManager.instance().findFont(new FontIndex(fontIndex));
+		g2d.setFont(font, fontSize.floatValue());
 	}
 }
 
@@ -987,6 +998,12 @@ class OP_rg extends GraphicsOperator {
 		GraphicsOperand operand_1 = operandStack.poll();
 		GraphicsOperand operand_2 = operandStack.poll();
 		GraphicsOperand operand_3 = operandStack.poll();
+		
+		float r = operand_1.asNumber().floatValue();
+		float g = operand_2.asNumber().floatValue();
+		float b = operand_3.asNumber().floatValue();
+		Color color = new RGBColor(r, g, b);
+		g2d.setColor(color);
 	}
 }
 

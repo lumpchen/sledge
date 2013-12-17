@@ -7,6 +7,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
@@ -48,59 +49,69 @@ public class IndirectObject extends PObject {
 		return this.stream;
 	}
 	
-	public PObject getValue(PName key) {
-		if (this.dict() == null) {
-			return null;
-		}
-		return this.dict().get(key);
-	}
-	
-	public PName getValueAsName(PName key) {
-		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof PName) {
-			return (PName) obj;
-		}
-		return null;
-	}
-	
-	public PNumber getValueAsNumber(PName key) {
-		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof PNumber) {
-			return (PNumber) obj;
-		}
-		return null;
-	}
-	
-	public PArray getValueAsArray(PName key) {
-		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof PArray) {
-			return (PArray) obj;
-		}
-		return null;
-	}
-	
-	public IndirectRef getValueAsRef(PName key) {
-		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof IndirectRef) {
-			return (IndirectRef) obj;
-		}
-		return null;
-	}
-	
-	public PString getValueAsString(PName key) {
-		PObject obj = this.getValue(key);
-		if (obj != null && obj instanceof PString) {
-			return (PString) obj;
-		}
-		return null;
-	}
-	
-	private PDictionary dict() {
+	public PDictionary getDict() {
 		if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
 			return null;
 		}
 		return (PDictionary) this.insideObj;
 	}
+	
+	public PObject getValue(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.get(key);
+	}
+	
+	public PName getValueAsName(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsName(key);
+	}
+	
+	public PNumber getValueAsNumber(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsNumber(key);
+	}
+	
+	public PArray getValueAsArray(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsArray(key);
+	}
+	
+	public IndirectRef getValueAsRef(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsRef(key);
+	}
+	
+	public PString getValueAsString(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsString(key);
+	}
+	
+	public PDictionary getValueAsDict(PName key) {
+		PDictionary dict = this.getDict();
+		if (null == dict) {
+			return null;
+		}
+		return dict.getValueAsDict(key);
+	}
+	
 	
 	public String toString() {
 		StringBuilder buf = new StringBuilder();

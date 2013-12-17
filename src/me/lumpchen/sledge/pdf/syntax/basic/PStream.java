@@ -2,7 +2,6 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.syntax.PObject;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 
 public class PStream extends PObject {

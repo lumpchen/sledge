@@ -1,10 +1,12 @@
-package me.lumpchen.sledge.pdf.syntax;
+package me.lumpchen.sledge.pdf.syntax.document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.lumpchen.sledge.pdf.syntax.IndirectObject;
+import me.lumpchen.sledge.pdf.syntax.InvalidTypeException;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 

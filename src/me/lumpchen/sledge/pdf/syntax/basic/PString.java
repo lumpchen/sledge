@@ -1,6 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-import me.lumpchen.sledge.pdf.syntax.PObject;
 
 public abstract class PString extends PObject {
 

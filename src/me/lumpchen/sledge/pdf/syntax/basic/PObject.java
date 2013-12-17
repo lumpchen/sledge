@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.syntax;
+package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 

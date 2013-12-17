@@ -11,6 +11,7 @@ import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 
 public class Trailer {
 

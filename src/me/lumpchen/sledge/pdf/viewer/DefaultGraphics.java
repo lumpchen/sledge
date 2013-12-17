@@ -23,13 +23,13 @@ public class DefaultGraphics implements VirtualGraphics {
 		public ColorSpace colorspace;
 		public Color color;
 		
-		public double charSpace;
-		public double wordSpace;
-		public double scale;
-		public double leading;
-		public double fontSize;
-		public double render;
-		public double rise;
+		public float charSpace;
+		public float wordSpace;
+		public float scale;
+		public float leading;
+		public float fontSize;
+		public float render;
+		public float rise;
 		
 		public float lineWidth;
 		public int lineCap;
@@ -41,11 +41,11 @@ public class DefaultGraphics implements VirtualGraphics {
 		
 		public static GraphicsState clone(GraphicsState current) {
 			GraphicsState gs = new GraphicsState();
-			
 			gs.ctm = current.ctm;
 			
-			gs.fontSize = current.fontSize;
+			gs.color = current.color;
 			
+			gs.fontSize = current.fontSize;
 			return gs;
 		}
 	}
@@ -142,8 +142,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setColor(me.lumpchen.sledge.pdf.graphics.Color color) {
-		// TODO Auto-generated method stub
-		this.g2.setColor(java.awt.Color.red);
+		this.gstate.color = color.toJavaColor();
+		this.g2.setColor(this.gstate.color);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setFont(PDFFont font, float size) {
-		// TODO Auto-generated method stub
+		this.gstate.fontSize = size;
 	}
 
 	@Override
@@ -168,7 +168,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void showText(String text) {
-		Font f = new Font("Arial", Font.BOLD, (int) (this.toPixel(26) + 0.5));
+		float fontSize = this.gstate.fontSize;
+		Font f = new Font("Arial", Font.BOLD, (int) (this.toPixel(fontSize) + 0.5));
 		this.g2.setFont(f);
 		this.g2.drawString(text, 0, 0);
 	}

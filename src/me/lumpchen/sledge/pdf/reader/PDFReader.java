@@ -4,21 +4,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
-import me.lumpchen.sledge.pdf.syntax.Catalog;
-import me.lumpchen.sledge.pdf.syntax.DocumentInfo;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.PDFDocument;
-import me.lumpchen.sledge.pdf.syntax.PObject;
-import me.lumpchen.sledge.pdf.syntax.Page;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
-import me.lumpchen.sledge.pdf.syntax.PageTree;
+import me.lumpchen.sledge.pdf.syntax.Resource;
+import me.lumpchen.sledge.pdf.syntax.ResourceManager;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.document.Catalog;
+import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
+import me.lumpchen.sledge.pdf.syntax.document.Font;
+import me.lumpchen.sledge.pdf.syntax.document.Page;
+import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 
 public class PDFReader implements PageContentsLoader {
 
@@ -26,9 +31,12 @@ public class PDFReader implements PageContentsLoader {
 	private FileChannel fc;
 	private SegmentedFileReader reader;
 	
+	private ResourceManager resourceManager;
+	
 	private int pageNo;
 
 	public PDFReader() {
+		this.resourceManager = ResourceManager.instance();
 	}
 
 	void close() {
@@ -80,15 +88,10 @@ public class PDFReader implements PageContentsLoader {
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
-		IndirectObject root = this.readIndirectObject(entry.offset, pdfDoc);
-		if (root != null) {
-			PObject obj = root.getValue(PName.type);
-			if (obj != null) {
-				if (PName.catalog.equals(obj)) {
-					Catalog catalog = new Catalog(root);
-					pdfDoc.setCatalog(catalog);
-				}
-			}
+		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		if (null != iobj) {
+			Catalog catalog = new Catalog(iobj);
+			pdfDoc.setCatalog(catalog);
 		}
 	}
 
@@ -103,16 +106,9 @@ public class PDFReader implements PageContentsLoader {
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
-		IndirectObject pages = this.readIndirectObject(entry.offset, pdfDoc);
-		if (pages != null) {
-			PObject obj = pages.getValue(PName.type);
-			if (obj != null) {
-				if (PName.pages.equals(obj)) {
-					PageTree rootPageTree = new PageTree(pages);
-					pdfDoc.setRootPageTree(rootPageTree);
-				}
-			}
-		}
+		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		PageTree rootPageTree = new PageTree(iobj);
+		pdfDoc.setRootPageTree(rootPageTree);
 	}
 
 	private void readPages(PageTree pageTree, PDFDocument pdfDoc) {
@@ -200,10 +196,12 @@ public class PDFReader implements PageContentsLoader {
 		XRef xref = pdfDoc.getXRef();
 		
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
-
-		IndirectObject info = this.readIndirectObject(entry.offset, pdfDoc);
-		DocumentInfo docInfo = new DocumentInfo(info);
-		pdfDoc.setDocumentInfo(docInfo);
+		
+		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		if (null != iobj) {
+			DocumentInfo docInfo = new DocumentInfo(iobj);
+			pdfDoc.setDocumentInfo(docInfo);			
+		}
 	}
 
 	private void readTrailer(PDFDocument pdfDoc) throws IOException {
@@ -267,4 +265,54 @@ public class PDFReader implements PageContentsLoader {
 		IndirectObject stream = this.readIndirectObject(entry.offset, pdfDoc);
 		page.setContents(stream);
 	}
+
+	@Override
+	public void loadPageResource(Page page, PDFDocument pdfDoc) {
+		PObject res = page.getResources();
+		if (null == res) {
+			return;
+		}
+		if (res instanceof IndirectRef) {
+			IndirectRef resRef = (IndirectRef) res;
+			XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(resRef);
+			IndirectObject resObj = this.readIndirectObject(entry.offset, pdfDoc);
+			PDictionary dict = resObj.getDict();
+			if (null != dict) {
+				Resource resource = new Resource(dict);
+				this.loadResource(resource, pdfDoc);
+			}
+		} else if (res instanceof PDictionary) {
+			Resource resource = new Resource((PDictionary) res);
+			this.loadResource(resource, pdfDoc);
+		}
+	}
+	
+	private void loadResource(Resource res, PDFDocument pdfDoc) {
+		this.loadFont(res.getFont(), pdfDoc);
+	}
+	
+	private void loadFont(PDictionary fontDict, PDFDocument pdfDoc) {
+		if (null == fontDict || fontDict.isEmpty()) {
+			return;
+		}
+		List<PName> keys = fontDict.keyList();
+		for (PName key : keys) {
+			PObject obj = fontDict.get(key);
+			if (obj instanceof IndirectRef) {
+				XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry((IndirectRef) obj);
+				IndirectObject resObj = this.readIndirectObject(entry.offset, pdfDoc);
+				if (null != resObj) {
+					PName type = resObj.getValueAsName(PName.type);
+					if (null == type || !type.equals(PName.font)) {
+						throw new SyntaxException("not a font object");
+					}
+					Font font = new Font(resObj);
+//					this.resourceManager.put(key, font);
+				} else {
+					throw new SyntaxException("null object");
+				}
+			}
+		}
+	}
+	
 }

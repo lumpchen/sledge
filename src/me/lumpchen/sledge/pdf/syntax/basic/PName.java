@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.syntax.PObject;
 
 public class PName extends PObject {
 
@@ -126,6 +125,13 @@ public class PName extends PObject {
 	public static final String LENGTH = "Length";
 	public static final PName Length = new PName(LENGTH);
 	
+	// font
+	public static final String BASEFONT = "BaseFont";
+	public static final PName BaseFont = new PName(BASEFONT);
+	public static final String FONTDESCRIPTIOR = "FontDescriptor";
+	public static final PName FontDescriptor = new PName(FONTDESCRIPTIOR);
+	
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(PARENT, parent);
@@ -178,6 +184,9 @@ public class PName extends PObject {
 		nameMap.put(CRYPT, Crypt);
 		
 		nameMap.put(LENGTH, Length);
+		
+		nameMap.put(BASEFONT, BaseFont);
+		nameMap.put(FONTDESCRIPTIOR, FontDescriptor);
 	}
 
 	private PName(byte[] name) {
@@ -190,11 +199,18 @@ public class PName extends PObject {
 
 	public static PName instance(byte[] name) {
 		String key = new String(name, Charset.defaultCharset());
-		if (nameMap.containsKey(key)) {
-			return nameMap.get(key);
+		return PName.instance(key);
+	}
+	
+	public static PName instance(String name) {
+		if (name.startsWith("/")) {
+			name = name.substring(1);
+		}
+		if (nameMap.containsKey(name)) {
+			return nameMap.get(name);
 		} else {
 			PName unDef = new PName(name);
-			nameMap.put(key, unDef);
+			nameMap.put(name, unDef);
 			return unDef;
 		}
 	}

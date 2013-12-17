@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 
 public class IndirectRef extends PObject {
 

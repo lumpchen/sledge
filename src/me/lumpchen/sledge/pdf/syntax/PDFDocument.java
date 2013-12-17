@@ -1,5 +1,10 @@
 package me.lumpchen.sledge.pdf.syntax;
 
+import me.lumpchen.sledge.pdf.syntax.document.Catalog;
+import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
+import me.lumpchen.sledge.pdf.syntax.document.Page;
+import me.lumpchen.sledge.pdf.syntax.document.PageTree;
+
 public class PDFDocument {
 
 	private PageContentsLoader pageContentsLoader;
@@ -9,7 +14,7 @@ public class PDFDocument {
 	private DocumentInfo info;
 	private Catalog catalog;
 	private PageTree rootPageTree;
-
+	
 	public PDFDocument() {
 	}
 
@@ -63,6 +68,7 @@ public class PDFDocument {
 			this.pageContentsLoader.loadPageContents(page, this);
 		}
 		
+		this.pageContentsLoader.loadPageResource(page, this);
 		return page;
 	}
 

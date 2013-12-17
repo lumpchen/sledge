@@ -2,6 +2,10 @@ package me.lumpchen.sledge.pdf.graphics;
 
 public abstract class Color {
 	
+	public static Color red = new RGBColor(1.0f, 0, 0);
+	public static Color green = new RGBColor(0, 1.0f, 0);
+	public static Color blue = new RGBColor(0, 0, 1.0f);
+	
 	protected Color() {
 	}
 	
@@ -10,13 +14,13 @@ public abstract class Color {
 
 class RGBColor extends Color {
 	
-	private float red;
-	private float green;
-	private float blue;
-	private float alpha;
+	private float red = 0;
+	private float green = 0;
+	private float blue = 0;
+	private float alpha = 1.0f;
 	
 	public RGBColor(float r, float g, float b) {
-		this(r, g, b, 0);
+		this(r, g, b, 1.0f);
 	}
 	
 	public RGBColor(float r, float g, float b, float a) {

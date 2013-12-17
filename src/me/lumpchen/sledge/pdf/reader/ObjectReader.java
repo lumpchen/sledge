@@ -3,7 +3,6 @@ package me.lumpchen.sledge.pdf.reader;
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
-import me.lumpchen.sledge.pdf.syntax.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PBoolean;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
@@ -11,6 +10,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PHexString;
 import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class ObjectReader {

@@ -1,8 +1,8 @@
 package me.lumpchen.sledge.pdf.graphics;
 
-import me.lumpchen.sledge.pdf.syntax.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public class GraphicsOperand {
@@ -26,6 +26,6 @@ public class GraphicsOperand {
 	}
 	
 	public PName asName() {
-		return null;
+		return PName.instance(this.operand.toString());
 	}
 }

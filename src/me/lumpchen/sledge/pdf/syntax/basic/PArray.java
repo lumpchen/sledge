@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.syntax.PObject;
 
 public class PArray extends PObject {
 

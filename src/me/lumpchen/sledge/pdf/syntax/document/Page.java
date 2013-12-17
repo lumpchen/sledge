@@ -1,10 +1,14 @@
-package me.lumpchen.sledge.pdf.syntax;
+package me.lumpchen.sledge.pdf.syntax.document;
 
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphicsHelper;
 import me.lumpchen.sledge.pdf.reader.ContentStreamReader;
+import me.lumpchen.sledge.pdf.syntax.ContentStream;
+import me.lumpchen.sledge.pdf.syntax.IndirectObject;
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
 
@@ -113,5 +117,9 @@ public class Page extends DocObject {
 		
 		ContentStream cs = this.getContentStream();
 		cs.render(g2);
+	}
+	
+	public PObject getResources() {
+		return super.getValueAsDict(PName.resources);
 	}
 }

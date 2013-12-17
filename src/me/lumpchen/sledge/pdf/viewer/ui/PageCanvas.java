@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import me.lumpchen.sledge.pdf.syntax.Page;
+import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.viewer.DefaultGraphics;
 
 public class PageCanvas extends JPanel {

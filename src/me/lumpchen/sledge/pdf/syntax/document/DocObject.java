@@ -1,6 +1,10 @@
-package me.lumpchen.sledge.pdf.syntax;
+package me.lumpchen.sledge.pdf.syntax.document;
 
+import me.lumpchen.sledge.pdf.syntax.IndirectObject;
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.InvalidTypeException;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
@@ -44,8 +48,16 @@ public abstract class DocObject {
 		return this.insideObj.getValueAsRef(name);
 	}
 	
+	protected PName getValueAsName(PName name) {
+		return this.insideObj.getValueAsName(name);
+	}
+	
 	protected PString getValueAsString(PName name) {
 		return this.insideObj.getValueAsString(name);
+	}
+	
+	protected PDictionary getValueAsDict(PName name) {
+		return this.insideObj.getValueAsDict(name);
 	}
 	
 	public DocObject getParent() {
