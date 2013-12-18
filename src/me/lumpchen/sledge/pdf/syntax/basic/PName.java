@@ -233,6 +233,10 @@ public class PName extends PObject {
 		}
 	}
 
+	public String getName() {
+		return this.name;
+	}
+	
 	public int hashCode() {
 		return super.hashCode() + this.name.hashCode();
 	}

@@ -1,22 +1,29 @@
 package me.lumpchen.sledge.pdf.syntax.document;
 
+import java.util.List;
+
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphicsHelper;
 import me.lumpchen.sledge.pdf.reader.ContentStreamReader;
 import me.lumpchen.sledge.pdf.syntax.ContentStream;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.Resource;
+import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
+import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class Page extends DocObject {
 
 	private int pageNo;
 
-	private IndirectObject streamObj;
+	private boolean resourceLoaded = false;
+	private IndirectObject contentStreamObj;
 	
 	private Rectangle mediaBox;
 	private Rectangle cropBox;
@@ -35,15 +42,7 @@ public class Page extends DocObject {
 	public IndirectRef getContentsRef() {
 		return this.getValueAsRef(PName.contents);
 	}
-	
-	public void setContents(IndirectObject streamObj) { 
-		this.streamObj = streamObj;
-	}
-	
-	public IndirectObject getContents() {
-		return this.streamObj;
-	}
-	
+
 	public void setPageNo(int pageNo) {
 		this.pageNo = pageNo;
 	}
@@ -95,10 +94,19 @@ public class Page extends DocObject {
 	}
 	
 	private ContentStream getContentStream() {
-		PStream stream = this.getContents().getStream();
+		if (null == this.contentStreamObj) {
+			IndirectRef contentRef = this.getContentsRef();
+			if (null == contentRef) {
+				return null;
+			}
+			this.contentStreamObj = this.document.getObject(contentRef);
+		}
+		
+		PStream stream = this.contentStreamObj.getStream();
 		if (null == stream) {
 			return null;
 		}
+		
 		byte[] bstream = stream.getStream();
 		if (null == bstream || bstream.length <= 0) {
 			return null;
@@ -110,6 +118,8 @@ public class Page extends DocObject {
 	}
 	
 	public void render(VirtualGraphics g2) {
+		this.loadResource();
+		
 		Rectangle mediaBox = this.getMediaBox();
 		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
 		
@@ -121,5 +131,55 @@ public class Page extends DocObject {
 	
 	public PObject getResources() {
 		return super.getValueAsDict(PName.resources);
+	}
+	
+	private void loadResource() {
+		if (this.resourceLoaded) {
+			return;
+		}
+		PObject res = this.getResources();
+		if (null == res) {
+			return;
+		}
+		if (res instanceof IndirectRef) {
+			IndirectRef resRef = (IndirectRef) res;
+			IndirectObject resObj = this.document.getObject(resRef);
+			PDictionary dict = resObj.getDict();
+			if (null != dict) {
+				Resource resource = new Resource(dict);
+				this.loadResource(resource);
+			}
+		} else if (res instanceof PDictionary) {
+			Resource resource = new Resource((PDictionary) res);
+			this.loadResource(resource);
+		}
+		this.resourceLoaded = true;
+	}
+	
+	private void loadResource(Resource res) {
+		this.loadFont(res.getFont());
+	}
+	
+	private void loadFont(PDictionary fontDict) {
+		if (null == fontDict || fontDict.isEmpty()) {
+			return;
+		}
+		List<PName> keys = fontDict.keyList();
+		for (PName key : keys) {
+			PObject obj = fontDict.get(key);
+			if (obj instanceof IndirectRef) {
+				IndirectObject resObj = this.document.getObject((IndirectRef) obj);
+				if (null != resObj) {
+					PName type = resObj.getValueAsName(PName.type);
+					if (null == type || !type.equals(PName.font)) {
+						throw new SyntaxException("not a font object");
+					}
+					FontObject fontObj = new FontObject(resObj);
+					this.document.putResource(key, PDFFont.create(fontObj));
+				} else {
+					throw new SyntaxException("null object");
+				}
+			}
+		}
 	}
 }

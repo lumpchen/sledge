@@ -45,6 +45,31 @@ public class IndirectRef extends PObject {
 		}		
 	}
 	
+	@Override
+    public int hashCode() {
+    	int hash = 1;
+    	hash = hash * 17 + this.objNum;
+    	hash = hash * 31 + this.genNum;
+    	return hash;
+    }
+    
+	@Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+        	return true;
+        }
+        if (null == obj || !(obj instanceof IndirectRef)) {
+        	return false;
+        }
+        
+        if ( this.objNum != ((IndirectRef) obj).objNum 
+        		|| this.genNum != ((IndirectRef) obj).genNum) {
+        	return false;
+        }
+        
+        return true;
+    }
+	
 	public String toString() {
 		return this.objNum + " " + this.genNum + " " + "R";
 	}

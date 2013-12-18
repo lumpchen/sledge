@@ -4,24 +4,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class ResourceManager {
 
-	private Map<PName, IndirectObject> global; 
+	private static final ResourceManager instance = new ResourceManager(); 
+	private Map<PName, PDFFont> fontPool;
 	
 	private ResourceManager() {
-		this.global = new HashMap<PName, IndirectObject>();
+		this.fontPool = new HashMap<PName, PDFFont>();
 	}
 
 	public static ResourceManager instance() {
-		return new ResourceManager();
+		return instance;
 	}
 	
-	public void put(PName name, IndirectObject obj) {
-		this.global.put(name, obj);
+	public void put(PName name, PDFFont obj) {
+		this.fontPool.put(name, obj);
 	}
 	
-	public IndirectObject get(PName name) {
-		return this.global.get(name);
+	public PDFFont get(PName name) {
+		return this.fontPool.get(name);
 	}
 }

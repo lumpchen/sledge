@@ -31,16 +31,13 @@ public class Main {
 
 			Page page = doc.getPage(1);
 			
-			System.err.println(page);
+			FrameViewer viewer = new FrameViewer();
 			
-			System.out.println(page.getContents().toString());
+			PageCanvas pageCanvas = new PageCanvas();
+			pageCanvas.setPage(page);
+			viewer.setPageCanvas(pageCanvas);
 			
-			PStream stream = page.getContents().getStream();
-			byte[] bstream = stream.getStream();
-			
-			ContentStreamReader csReader = new ContentStreamReader();
-			ContentStream cs = csReader.read(bstream);
-			System.err.println(cs);
+			viewer.setVisible(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

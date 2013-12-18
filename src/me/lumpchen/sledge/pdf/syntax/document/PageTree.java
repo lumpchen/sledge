@@ -13,7 +13,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 public class PageTree extends DocObject {
 	
 	private List<DocObject> objList;
-	Map<Integer, Page> pageMap;
+	private Map<Integer, Page> pageMap;
 	private int count; // The number of leaf nodes(page objects)
 	
 	public PageTree(IndirectObject obj) {
@@ -42,6 +42,7 @@ public class PageTree extends DocObject {
 	public void addPageObject(DocObject obj) {
 		if (obj.getType().equals(PName.page) || obj.getType().equals(PName.pages)) {
 			obj.parent = this;
+			obj.setDocument(this.document);
 			this.objList.add(obj);
 			
 			if (obj.getType().equals(PName.page)) {

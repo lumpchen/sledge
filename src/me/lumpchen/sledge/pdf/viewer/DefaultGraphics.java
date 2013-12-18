@@ -23,6 +23,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		public ColorSpace colorspace;
 		public Color color;
 		
+		public Font font;
 		public float charSpace;
 		public float wordSpace;
 		public float scale;
@@ -153,7 +154,11 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setFont(PDFFont font, float size) {
+		String baseFont = font.getBaseFont();
 		this.gstate.fontSize = size;
+		if (font.getSubType().equalsIgnoreCase(PDFFont.TrueType)) {
+			this.gstate.font = new Font(baseFont, Font.PLAIN, (int) (this.toPixel(size) + 0.5)); 
+		}
 	}
 
 	@Override
@@ -168,9 +173,7 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void showText(String text) {
-		float fontSize = this.gstate.fontSize;
-		Font f = new Font("Arial", Font.BOLD, (int) (this.toPixel(fontSize) + 0.5));
-		this.g2.setFont(f);
+		this.g2.setFont(this.gstate.font);
 		this.g2.drawString(text, 0, 0);
 	}
 

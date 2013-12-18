@@ -1,14 +1,24 @@
 package me.lumpchen.sledge.pdf.syntax;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.syntax.document.PageTree;
+import me.lumpchen.sledge.pdf.text.font.FontManager;
+import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class PDFDocument {
 
 	private PageContentsLoader pageContentsLoader;
 
+	private FontManager fontManager = FontManager.instance();
+	private ResourceManager resourceManager =  ResourceManager.instance();
+	private Map<IndirectRef, IndirectObject> objectCache;
+	
 	private Trailer trailer;
 	private XRef xref;
 	private DocumentInfo info;
@@ -16,6 +26,7 @@ public class PDFDocument {
 	private PageTree rootPageTree;
 	
 	public PDFDocument() {
+		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
 	}
 
 	public void setTrailer(Trailer trailer) {
@@ -36,6 +47,7 @@ public class PDFDocument {
 
 	public void setDocumentInfo(DocumentInfo info) {
 		this.info = info;
+		this.info.setDocument(this);
 	}
 
 	public DocumentInfo getInfo() {
@@ -44,6 +56,7 @@ public class PDFDocument {
 
 	public void setCatalog(Catalog catalog) {
 		this.catalog = catalog;
+		this.catalog.setDocument(this);
 	}
 
 	public Catalog getCatalog() {
@@ -52,6 +65,7 @@ public class PDFDocument {
 
 	public void setRootPageTree(PageTree rootPageTree) {
 		this.rootPageTree = rootPageTree;
+		this.rootPageTree.setDocument(this);
 	}
 
 	public PageTree getRootPageTree() {
@@ -60,20 +74,29 @@ public class PDFDocument {
 
 	public Page getPage(int pageNo) {
 		Page page = this.rootPageTree.getPage(pageNo);
-		if (null == page) {
-			return null;
-		}
-
-		if (null == page.getContents()) {
-			this.pageContentsLoader.loadPageContents(page, this);
-		}
-		
-		this.pageContentsLoader.loadPageResource(page, this);
 		return page;
 	}
 
 	public void setPageContentsLoader(PageContentsLoader pageContentsLoader) {
 		this.pageContentsLoader = pageContentsLoader;
+	}
+	
+	public IndirectObject getObject(IndirectRef ref) {
+		if (this.objectCache.containsKey(ref)) {
+			return this.objectCache.get(ref);
+		}
+		
+		if (this.pageContentsLoader != null) {
+			IndirectObject obj = this.pageContentsLoader.loadObject(ref, this);
+			this.objectCache.put(ref, obj);
+			return obj;
+		}
+		
+		return null;
+	}
+	
+	public void putResource(PName key, PDFFont font) {
+		this.fontManager.put(key, font);
 	}
 
 	public String toString() {

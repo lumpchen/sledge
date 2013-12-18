@@ -4,24 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.util.List;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
-import me.lumpchen.sledge.pdf.syntax.Resource;
-import me.lumpchen.sledge.pdf.syntax.ResourceManager;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
-import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 
@@ -30,13 +25,9 @@ public class PDFReader implements PageContentsLoader {
 	private RandomAccessFile raf;
 	private FileChannel fc;
 	private SegmentedFileReader reader;
-	
-	private ResourceManager resourceManager;
-	
 	private int pageNo;
 
 	public PDFReader() {
-		this.resourceManager = ResourceManager.instance();
 	}
 
 	void close() {
@@ -255,64 +246,10 @@ public class PDFReader implements PageContentsLoader {
 	}
 
 	@Override
-	public void loadPageContents(Page page, PDFDocument pdfDoc) {
-		IndirectRef contentsRef = page.getContentsRef();
-		if (null == contentsRef) {
-			return;
-		}
-		
-		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(contentsRef);
-		IndirectObject stream = this.readIndirectObject(entry.offset, pdfDoc);
-		page.setContents(stream);
-	}
-
-	@Override
-	public void loadPageResource(Page page, PDFDocument pdfDoc) {
-		PObject res = page.getResources();
-		if (null == res) {
-			return;
-		}
-		if (res instanceof IndirectRef) {
-			IndirectRef resRef = (IndirectRef) res;
-			XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(resRef);
-			IndirectObject resObj = this.readIndirectObject(entry.offset, pdfDoc);
-			PDictionary dict = resObj.getDict();
-			if (null != dict) {
-				Resource resource = new Resource(dict);
-				this.loadResource(resource, pdfDoc);
-			}
-		} else if (res instanceof PDictionary) {
-			Resource resource = new Resource((PDictionary) res);
-			this.loadResource(resource, pdfDoc);
-		}
-	}
-	
-	private void loadResource(Resource res, PDFDocument pdfDoc) {
-		this.loadFont(res.getFont(), pdfDoc);
-	}
-	
-	private void loadFont(PDictionary fontDict, PDFDocument pdfDoc) {
-		if (null == fontDict || fontDict.isEmpty()) {
-			return;
-		}
-		List<PName> keys = fontDict.keyList();
-		for (PName key : keys) {
-			PObject obj = fontDict.get(key);
-			if (obj instanceof IndirectRef) {
-				XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry((IndirectRef) obj);
-				IndirectObject resObj = this.readIndirectObject(entry.offset, pdfDoc);
-				if (null != resObj) {
-					PName type = resObj.getValueAsName(PName.type);
-					if (null == type || !type.equals(PName.font)) {
-						throw new SyntaxException("not a font object");
-					}
-					FontObject font = new FontObject(resObj);
-//					this.resourceManager.put(key, font);
-				} else {
-					throw new SyntaxException("null object");
-				}
-			}
-		}
+	public IndirectObject loadObject(IndirectRef ref, PDFDocument pdfDoc) {
+		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(ref);
+		IndirectObject obj = this.readIndirectObject(entry.offset, pdfDoc);
+		return obj;
 	}
 	
 }
