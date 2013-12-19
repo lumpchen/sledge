@@ -195,11 +195,12 @@ class OP_w extends GraphicsOperator {
 
 	public OP_w() {
 		super(new byte[] { 'w'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -212,6 +213,7 @@ class OP_J_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -224,6 +226,7 @@ class OP_j extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -236,6 +239,7 @@ class OP_M_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -243,11 +247,13 @@ class OP_d extends GraphicsOperator {
 
 	public OP_d() {
 		super(new byte[] { 'd'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -255,11 +261,12 @@ class OP_ri extends GraphicsOperator {
 
 	public OP_ri() {
 		super(new byte[] { 'r', 'i'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -267,11 +274,12 @@ class OP_i extends GraphicsOperator {
 
 	public OP_i() {
 		super(new byte[] { 'i'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -284,6 +292,7 @@ class OP_gs extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -360,6 +369,8 @@ class OP_m extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -372,6 +383,9 @@ class OP_l extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
+		
 	}
 }
 
@@ -379,11 +393,17 @@ class OP_c extends GraphicsOperator {
 
 	public OP_c() {
 		super(new byte[] { 'c'});
-		this.operandNumber = 0;
+		this.operandNumber = 6;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -391,11 +411,15 @@ class OP_v extends GraphicsOperator {
 
 	public OP_v() {
 		super(new byte[] { 'v'});
-		this.operandNumber = 0;
+		this.operandNumber = 4;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -403,11 +427,15 @@ class OP_y extends GraphicsOperator {
 
 	public OP_y() {
 		super(new byte[] { 'y'});
-		this.operandNumber = 0;
+		this.operandNumber = 4;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -658,6 +686,7 @@ class OP_T_w extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -741,6 +770,8 @@ class OP_T_d extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -880,11 +911,12 @@ class OP_CS_ extends GraphicsOperator {
 
 	public OP_CS_() {
 		super(new byte[] { 'C', 'S' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -892,11 +924,12 @@ class OP_cs extends GraphicsOperator {
 
 	public OP_cs() {
 		super(new byte[] { 'c', 's' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -904,11 +937,12 @@ class OP_SC_ extends GraphicsOperator {
 
 	public OP_SC_() {
 		super(new byte[] { 'S', 'C' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -916,11 +950,12 @@ class OP_SCN_ extends GraphicsOperator {
 
 	public OP_SCN_() {
 		super(new byte[] { 'S', 'C', 'N' });
-		this.operandNumber = 3;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -928,11 +963,12 @@ class OP_sc extends GraphicsOperator {
 
 	public OP_sc() {
 		super(new byte[] { 's', 'c' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -940,11 +976,12 @@ class OP_scn extends GraphicsOperator {
 
 	public OP_scn() {
 		super(new byte[] { 's', 'c', 'n'});
-		this.operandNumber = 3;
+		this.operandNumber = 1;
 	}
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
@@ -981,6 +1018,9 @@ class OP_RG_ extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
+		operandStack.poll();
+		operandStack.poll();
 	}
 }
 
@@ -1091,6 +1131,7 @@ class OP_D_o extends GraphicsOperator {
 
 	@Override
 	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+		operandStack.poll();
 	}
 }
 
