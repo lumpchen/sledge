@@ -3,6 +3,8 @@ package me.lumpchen.sledge.pdf.viewer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
@@ -57,14 +59,22 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	private Graphics2D g2;
 	
-	private Rectangle2D.Double currRect;
+	private Shape currPath;
 	
 	private static int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
 	
 	private double resolution = -1;
 	
+	private Font defaultFont;
+	
 	public DefaultGraphics(Graphics2D g2) {
 		this.g2 = g2;
+		
+		this.g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		this.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	
+		this.defaultFont = new Font("Arial", Font.PLAIN, 12);
+		
 		this.gstate = new GraphicsState();
 		this.gstate.ctm = this.g2.getTransform();
 	}
@@ -113,19 +123,19 @@ public class DefaultGraphics implements VirtualGraphics {
 		double iy = this.toPixel(y);
 		double iWidth = this.toPixel(width);
 		double iHeight = this.toPixel(height);
-		this.currRect = new Rectangle2D.Double(ix, iy, iWidth, iHeight);
+		this.currPath = new Rectangle2D.Double(ix, iy, iWidth, iHeight);
 	}
 
 	@Override
 	public void clip() {
-		if (null != this.currRect) {
-			this.g2.clip(this.currRect);
+		if (null != this.currPath) {
+			this.g2.clip(this.currPath);
 		}
 	}
 
 	@Override
 	public void closePath() {
-		this.currRect = null;
+		this.currPath = null;
 	}
 
 	@Override
@@ -154,11 +164,12 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setFont(PDFFont font, float size) {
-		String baseFont = font.getBaseFont();
-		this.gstate.fontSize = size;
-		if (font.getSubType().equalsIgnoreCase(PDFFont.TrueType)) {
-			this.gstate.font = new Font(baseFont, Font.PLAIN, (int) (this.toPixel(size) + 0.5)); 
+		this.gstate.font = font.peerAWTFont();
+		if (null == this.gstate.font) {
+			this.gstate.font = this.defaultFont;
 		}
+		this.gstate.fontSize = (int) (this.toPixel(size) + 0.5);
+		this.gstate.font = this.gstate.font.deriveFont(this.gstate.fontSize);
 	}
 
 	@Override
@@ -184,13 +195,12 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void strokePath() {
-		this.g2.draw(this.currRect);
+		this.g2.draw(this.currPath);
 	}
 
 	@Override
 	public void fillPath() {
-		// TODO Auto-generated method stub
-		
+		this.g2.fill(this.currPath);
 	}
 	
 	private double[] flateMatrix(Matrix matrix) {

@@ -31,8 +31,16 @@ public class Page extends DocObject {
 	private Rectangle trimBox;
 	private Rectangle artBox;
 	
+	private double width;
+	private double height;
+	
 	public Page(IndirectObject obj) {
 		super(obj);
+		
+		PArray rect = super.getValueAsArray(PName.mediabox);
+		this.mediaBox = new Rectangle(rect);
+		this.width = this.mediaBox.getWidth();
+		this.height = this.mediaBox.getHeight();
 	}
 	
 	public PName getType() {
@@ -51,14 +59,22 @@ public class Page extends DocObject {
 		return this.pageNo;
 	}
 
+	public double getWidth() {
+		return this.width;
+	}
+	
+	public double getHeight() {
+		return this.height;
+	}
+	
 	public Rectangle getMediaBox() {
-		PArray rect = super.getValueAsArray(PName.mediabox);
-		this.mediaBox = new Rectangle(rect);
 		return mediaBox;
 	}
 
 	public void setMediaBox(Rectangle mediaBox) {
 		this.mediaBox = mediaBox;
+		this.width = this.mediaBox.getWidth();
+		this.height = this.mediaBox.getHeight();
 	}
 
 	public Rectangle getCropBox() {

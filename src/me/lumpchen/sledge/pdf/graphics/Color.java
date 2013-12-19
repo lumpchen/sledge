@@ -2,6 +2,8 @@ package me.lumpchen.sledge.pdf.graphics;
 
 public abstract class Color {
 	
+	public static Color white = new RGBColor(1.0f, 1.0f, 1.0f);
+	public static Color black = new RGBColor(0f, 0f, 0f);
 	public static Color red = new RGBColor(1.0f, 0, 0);
 	public static Color green = new RGBColor(0, 1.0f, 0);
 	public static Color blue = new RGBColor(0, 0, 1.0f);
