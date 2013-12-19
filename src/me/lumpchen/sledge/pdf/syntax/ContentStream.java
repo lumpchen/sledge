@@ -1,6 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
@@ -10,39 +11,56 @@ import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 
 public class ContentStream implements RenderObject {
 
-	private Queue<GraphicsOperator> operatorStack;
-	private Queue<GraphicsOperand> operandStack;
+	private List<GraphicsOperator> operatorList;
+	private List<GraphicsOperand> operandList;
 
 	public ContentStream() {
-		this.operatorStack = new LinkedList<GraphicsOperator>();
-		this.operandStack = new LinkedList<GraphicsOperand>();
+		this.operatorList = new LinkedList<GraphicsOperator>();
+		this.operandList = new LinkedList<GraphicsOperand>();
 	}
 
 	public void pushOperator(GraphicsOperator... ops) {
 		for (GraphicsOperator op : ops) {
-			this.operatorStack.add(op);
+			this.operatorList.add(op);
 		}
 	}
 
 	public void pushOperand(GraphicsOperand... operands) {
 		for (GraphicsOperand operand : operands) {
-			this.operandStack.add(operand);
+			this.operandList.add(operand);
 		}
 	}
-
+	
+	private Queue<GraphicsOperator> operatorStack() {
+		Queue<GraphicsOperator> stack = new LinkedList<GraphicsOperator>();
+		stack.addAll(this.operatorList);
+		return stack;
+	}
+	
+	private Queue<GraphicsOperand> operandStack() {
+		Queue<GraphicsOperand> stack = new LinkedList<GraphicsOperand>();
+		stack.addAll(this.operandList);
+		return stack;
+	}
+	
 	public String toString() {
+		Queue<GraphicsOperator> operatorStack = operatorStack();
+		Queue<GraphicsOperand> operandStack = operandStack();
 		StringBuilder buf = new StringBuilder();
 		while (true) {
-			if (this.operatorStack.isEmpty()) {
+			if (operatorStack.isEmpty()) {
 				break;
 			}
-			GraphicsOperator op = this.operatorStack.poll();
+			GraphicsOperator op = operatorStack.poll();
 			buf.append(op.toString());
 
 			int num = op.getOperandNumber();
 			while (num > 0) {
 				buf.append(' ');
-				GraphicsOperand operand = this.operandStack.poll();
+				GraphicsOperand operand = operandStack.poll();
+				if (operand == null) {
+					System.out.println(op);
+				}
 				buf.append(operand.toString());
 				num--;
 			}
@@ -54,12 +72,14 @@ public class ContentStream implements RenderObject {
 
 	@Override
 	public void render(VirtualGraphics g2) {
+		Queue<GraphicsOperator> operatorStack = operatorStack();
+		Queue<GraphicsOperand> operandStack = operandStack();
 		while (true) {
-			if (this.operatorStack.isEmpty()) {
+			if (operatorStack.isEmpty()) {
 				break;
 			}
-			GraphicsOperator op = this.operatorStack.poll();
-			op.execute(this.operandStack, g2);
+			GraphicsOperator op = operatorStack.poll();
+			op.execute(operandStack, g2);
 		}
 	}
 }

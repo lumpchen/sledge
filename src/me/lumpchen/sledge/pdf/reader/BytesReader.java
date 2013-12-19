@@ -169,6 +169,9 @@ public class BytesReader {
 
 	public static boolean isNumber(byte... bytes) {
 		for (byte b : bytes) {
+			if ('.' == b || '-' == b || '+' == b) {
+				continue;
+			}
 			if (!Character.isDigit(b)) {
 				return false;
 			}

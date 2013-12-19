@@ -25,7 +25,7 @@ public class Main {
 	static void testReader() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/simple.pdf");
+		File f = new File("/c.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 

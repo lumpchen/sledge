@@ -148,7 +148,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		Point2D ptSrc = new Point2D.Double(0, 0);
 		Point2D ptDst = new Point2D.Double();
 		this.g2.getTransform().transform(ptSrc, ptDst);
-		System.out.println(ptDst);
+//		System.out.println(ptDst);
 	}
 
 	@Override

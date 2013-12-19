@@ -207,7 +207,7 @@ class OP_J_ extends GraphicsOperator {
 
 	public OP_J_() {
 		super(new byte[] { 'J'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -219,7 +219,7 @@ class OP_j extends GraphicsOperator {
 
 	public OP_j() {
 		super(new byte[] { 'j'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -231,7 +231,7 @@ class OP_M_ extends GraphicsOperator {
 
 	public OP_M_() {
 		super(new byte[] { 'M'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -279,7 +279,7 @@ class OP_gs extends GraphicsOperator {
 
 	public OP_gs() {
 		super(new byte[] { 'g', 's'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -355,7 +355,7 @@ class OP_m extends GraphicsOperator {
 
 	public OP_m() {
 		super(new byte[] { 'm'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
@@ -367,7 +367,7 @@ class OP_l extends GraphicsOperator {
 
 	public OP_l() {
 		super(new byte[] { 'l'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
@@ -653,7 +653,7 @@ class OP_T_w extends GraphicsOperator {
 
 	public OP_T_w() {
 		super(new byte[] { 'T', 'w'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -736,7 +736,7 @@ class OP_T_d extends GraphicsOperator {
 
 	public OP_T_d() {
 		super(new byte[] { 'T', 'd'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
@@ -916,7 +916,7 @@ class OP_SCN_ extends GraphicsOperator {
 
 	public OP_SCN_() {
 		super(new byte[] { 'S', 'C', 'N' });
-		this.operandNumber = 0;
+		this.operandNumber = 3;
 	}
 
 	@Override
@@ -940,7 +940,7 @@ class OP_scn extends GraphicsOperator {
 
 	public OP_scn() {
 		super(new byte[] { 's', 'c', 'n'});
-		this.operandNumber = 0;
+		this.operandNumber = 3;
 	}
 
 	@Override
@@ -1086,7 +1086,7 @@ class OP_D_o extends GraphicsOperator {
 
 	public OP_D_o() {
 		super(new byte[] { 'D', 'o' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override

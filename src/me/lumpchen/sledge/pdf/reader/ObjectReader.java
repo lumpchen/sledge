@@ -134,13 +134,16 @@ public class ObjectReader {
 	}
 
 	private boolean match(byte... tag) {
+		if (this.bytesReader.remaining() < tag.length) {
+			return false;
+		}
 		int pos = this.bytesReader.position();
 		for (int i = 0, n = tag.length; i < n; i++) {
 			if (this.bytesReader.getByte(pos + i) != tag[i]) {
 				return false;
 			}
 		}
-		return true;
+		return true;	
 	}
 
 	public byte readByte() {

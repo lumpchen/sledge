@@ -39,7 +39,7 @@ public class PageCanvas extends JPanel {
 		if (this.page != null) {
 			double pw = this.toPixel(this.page.getWidth());
 			double ph = this.toPixel(this.page.getHeight());
-			
+
 			int w = this.getWidth();
 			double offx = 0;
 			if (w > pw) {

@@ -130,6 +130,9 @@ public class Page extends DocObject {
 		
 		ContentStreamReader csReader = new ContentStreamReader();
 		ContentStream contentStream = csReader.read(bstream);
+		
+		System.out.println(contentStream);
+		
 		return contentStream;
 	}
 	
