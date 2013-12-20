@@ -184,6 +184,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void showText(String text) {
+//		this.g2.setColor(Color.blue);
+		
 		this.g2.setFont(this.gstate.font);
 		this.g2.drawString(text, 0, 0);
 	}

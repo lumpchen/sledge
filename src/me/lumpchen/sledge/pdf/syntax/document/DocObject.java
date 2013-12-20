@@ -3,7 +3,6 @@ package me.lumpchen.sledge.pdf.syntax.document;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.InvalidTypeException;
-import me.lumpchen.sledge.pdf.syntax.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;

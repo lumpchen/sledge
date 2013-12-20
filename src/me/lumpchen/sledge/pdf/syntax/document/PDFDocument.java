@@ -1,13 +1,15 @@
-package me.lumpchen.sledge.pdf.syntax;
+package me.lumpchen.sledge.pdf.syntax.document;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import me.lumpchen.sledge.pdf.syntax.IndirectObject;
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
+import me.lumpchen.sledge.pdf.syntax.ResourceManager;
+import me.lumpchen.sledge.pdf.syntax.Trailer;
+import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.document.Catalog;
-import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
-import me.lumpchen.sledge.pdf.syntax.document.Page;
-import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
