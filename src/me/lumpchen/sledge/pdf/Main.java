@@ -9,8 +9,8 @@ import me.lumpchen.sledge.pdf.syntax.ContentStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
-import me.lumpchen.sledge.pdf.viewer.ui.FrameViewer;
-import me.lumpchen.sledge.pdf.viewer.ui.PageCanvas;
+import me.lumpchen.sledge.pdf.toolkit.viewer.ui.FrameViewer;
+import me.lumpchen.sledge.pdf.toolkit.viewer.ui.PageCanvas;
 
 public class Main {
 

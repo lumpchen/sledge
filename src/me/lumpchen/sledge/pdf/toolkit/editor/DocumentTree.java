@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.viewer.treeview;
+package me.lumpchen.sledge.pdf.toolkit.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

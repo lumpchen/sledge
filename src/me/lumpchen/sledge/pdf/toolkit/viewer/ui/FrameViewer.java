@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.viewer.ui;
+package me.lumpchen.sledge.pdf.toolkit.viewer.ui;
 
 import javax.swing.JFrame;
 

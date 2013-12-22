@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.viewer.ui;
+package me.lumpchen.sledge.pdf.toolkit.viewer.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,7 +8,7 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 
 import me.lumpchen.sledge.pdf.syntax.document.Page;
-import me.lumpchen.sledge.pdf.viewer.DefaultGraphics;
+import me.lumpchen.sledge.pdf.toolkit.viewer.DefaultGraphics;
 
 public class PageCanvas extends JPanel {
 

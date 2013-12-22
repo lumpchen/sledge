@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.viewer.treeview;
+package me.lumpchen.sledge.pdf.toolkit.editor;
 
 import me.lumpchen.sledge.pdf.syntax.document.DocObject;
 

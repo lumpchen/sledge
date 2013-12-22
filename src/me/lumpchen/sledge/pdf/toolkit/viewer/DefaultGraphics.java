@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.viewer;
+package me.lumpchen.sledge.pdf.toolkit.viewer;
 
 import java.awt.Color;
 import java.awt.Font;
