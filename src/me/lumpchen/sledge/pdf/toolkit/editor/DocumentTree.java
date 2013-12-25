@@ -48,12 +48,15 @@ public class DocumentTree {
 	private void showDocumentInfo() {
 		DocumentInfo info = this.doc.getInfo();
 
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode("Info");
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(info);
 		this.model.insertNodeInto(node, this.root, 0);
 	}
 
 	private void showPages() {
 		Catalog catalog = this.doc.getCatalog();
+		
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(catalog);
+		this.model.insertNodeInto(node, this.root, 0);
 	}
 
 	public static void main(String args[]) {
