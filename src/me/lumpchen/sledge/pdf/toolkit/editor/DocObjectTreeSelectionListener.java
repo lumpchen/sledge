@@ -20,10 +20,9 @@ public class DocObjectTreeSelectionListener implements TreeSelectionListener {
 		if (null != obj) {
 			if (obj instanceof DocObjectTreeNode) {
 				DocObjectTreeNode node = (DocObjectTreeNode) obj;
+				this.tableModel.removeAllRows();
 				this.tableModel.addDocObject(node.getDocObject());
 			}
-			System.out.println(obj.getClass().getName());
 		}
 	}
-
 }

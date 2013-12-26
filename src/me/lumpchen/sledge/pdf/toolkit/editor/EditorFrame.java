@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
@@ -18,10 +17,11 @@ public class EditorFrame extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 
-	private JPanel leftPanel;
-	private JPanel rightPanel;
 	private int width;
 	private int height;
+	
+	private JScrollPane leftScrollPane;
+	private JScrollPane rightScrollPane;
 	
 	public EditorFrame() {
 		super();
@@ -31,15 +31,9 @@ public class EditorFrame extends JFrame {
 		this.setSize(this.width, this.height);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		this.leftPanel = new JPanel();
-		this.leftPanel.setLayout(new BorderLayout());
-		
-		this.rightPanel = new JPanel();
-		this.rightPanel.setLayout(new BorderLayout());
-		
-		JScrollPane leftScrollPane = new JScrollPane(this.leftPanel);
+		this.leftScrollPane = new JScrollPane();
 		leftScrollPane.setMinimumSize(new Dimension(this.width / 3, this.height));
-		JScrollPane rightScrollPane = new JScrollPane(this.rightPanel);
+		this.rightScrollPane = new JScrollPane();
 		rightScrollPane.setMinimumSize(new Dimension(this.width / 3, this.height));
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScrollPane, rightScrollPane);
@@ -64,10 +58,10 @@ public class EditorFrame extends JFrame {
 	private void createDocumentTree(PDFDocument doc) {
 		PropertyTableModel tableModel = new PropertyTableModel();
 		DocumentTree dtree = new DocumentTree(doc, tableModel);
-		this.leftPanel.add(dtree, BorderLayout.CENTER);
+		this.leftScrollPane.setViewportView(dtree);
 		
 		PropertyTable table = new PropertyTable(tableModel);
-		this.rightPanel.add(table, BorderLayout.CENTER);
+		this.rightScrollPane.setViewportView(table);
 	}
 	
 }
