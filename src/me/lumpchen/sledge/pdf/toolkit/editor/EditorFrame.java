@@ -7,8 +7,10 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
@@ -23,6 +25,8 @@ public class EditorFrame extends JFrame {
 	private JScrollPane leftScrollPane;
 	private JScrollPane rightScrollPane;
 	
+	private JTextArea textarea;
+	
 	public EditorFrame() {
 		super();
 		
@@ -33,10 +37,21 @@ public class EditorFrame extends JFrame {
 		
 		this.leftScrollPane = new JScrollPane();
 		leftScrollPane.setMinimumSize(new Dimension(this.width / 3, this.height));
-		this.rightScrollPane = new JScrollPane();
-		rightScrollPane.setMinimumSize(new Dimension(this.width / 3, this.height));
 		
-		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScrollPane, rightScrollPane);
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
+		
+		this.rightScrollPane = new JScrollPane();
+		rightScrollPane.setPreferredSize(new Dimension(this.width / 3, this.height));
+		rightPanel.add(this.rightScrollPane, BorderLayout.CENTER);
+		
+		JScrollPane rightBottomScrollPane = new JScrollPane();
+		rightBottomScrollPane.setPreferredSize(new Dimension(this.width / 3, this.height / 2));
+		rightPanel.add(rightBottomScrollPane, BorderLayout.SOUTH);
+		this.textarea = new JTextArea();
+		rightBottomScrollPane.setViewportView(this.textarea);
+		
+		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScrollPane, rightPanel);
 	    getContentPane().add(sp, BorderLayout.CENTER);
 	}
 	
@@ -57,7 +72,7 @@ public class EditorFrame extends JFrame {
 	
 	private void createDocumentTree(PDFDocument doc) {
 		PropertyTableModel tableModel = new PropertyTableModel();
-		DocumentTree dtree = new DocumentTree(doc, tableModel);
+		DocumentTree dtree = new DocumentTree(doc, tableModel, this.textarea);
 		this.leftScrollPane.setViewportView(dtree);
 		
 		PropertyTable table = new PropertyTable(tableModel);

@@ -208,10 +208,12 @@ public class PName extends PObject {
 	}
 
 	private PName(byte[] name) {
+		super.type = Type.Name;
 		this.name = new String(name, Charset.defaultCharset());
 	}
 
 	private PName(String name) {
+		super.type = Type.Name;
 		this.name = name;
 	}
 

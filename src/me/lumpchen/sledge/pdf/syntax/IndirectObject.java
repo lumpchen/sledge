@@ -26,9 +26,11 @@ public class IndirectObject extends PObject {
 	private PStream stream;
 
 	public IndirectObject() {
+		super.type = Type.IndirectObject; 
 	}
 
 	public IndirectObject(int objectNumber, int generationNumber) {
+		super.type = Type.IndirectObject;
 		this.objNum = objectNumber;
 		this.genNum = generationNumber;
 	}

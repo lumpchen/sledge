@@ -14,6 +14,7 @@ public class PArray extends PObject {
 	private List<PObject> objList;
 	
 	public PArray() {
+		this.type = Type.Array;
 		this.objList = new ArrayList<PObject>();
 	}
 		

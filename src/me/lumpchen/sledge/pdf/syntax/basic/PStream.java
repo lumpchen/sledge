@@ -13,6 +13,7 @@ public class PStream extends PObject {
 	private byte[] stream;
 	
 	public PStream() {
+		super.type = Type.Stream;
 	}
 	
 	public void setDict(PDictionary dict) {

@@ -37,6 +37,10 @@ public abstract class DocObject {
 		return "";
 	}
 	
+	public IndirectObject insideObject() {
+		return this.insideObj;
+	}
+	
 	public void setDocument(PDFDocument document) {
 		this.document = document;
 	}

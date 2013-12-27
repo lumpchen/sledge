@@ -8,11 +8,14 @@ public class DocObjectTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
 
-	public DocObjectTreeNode(DocObject docObj) {
-		super(docObj);
+	private DocObject docObj;
+	
+	public DocObjectTreeNode(String tag, DocObject docObj) {
+		super(tag);
+		this.docObj = docObj;
 	}
 	
 	public DocObject getDocObject() {
-		return (DocObject) this.getUserObject();
+		return this.docObj;
 	}
 }

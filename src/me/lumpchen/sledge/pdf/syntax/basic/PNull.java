@@ -4,6 +4,10 @@ import me.lumpchen.sledge.pdf.reader.ObjectReader;
 
 public class PNull extends PObject {
 
+	public PNull() {
+		super.type = Type.Null;
+	}
+	
 	public String toString() {
 		return "NULL";
 	}

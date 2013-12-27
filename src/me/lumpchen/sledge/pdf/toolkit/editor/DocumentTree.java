@@ -1,10 +1,10 @@
 package me.lumpchen.sledge.pdf.toolkit.editor;
 
+import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
@@ -20,40 +20,29 @@ public class DocumentTree extends JTree {
 
 	private PDFDocument doc;
 
-	public DocumentTree(PDFDocument doc, PropertyTableModel tableModel) {
+	public DocumentTree(PDFDocument doc, PropertyTableModel tableModel, JTextArea textarea) {
 		super();
 		
 		this.doc = doc;
 		this.model = (DefaultTreeModel) this.getModel();
-		this.treeSelectionListener = new DocObjectTreeSelectionListener(tableModel);
+		this.treeSelectionListener = new DocObjectTreeSelectionListener(tableModel, textarea);
 		this.addTreeSelectionListener(this.treeSelectionListener);
 		
 		this.initialize();
 	}
 
 	private void initialize() {
-		this.root = new DefaultMutableTreeNode("Root");
+		DocumentInfo info = this.doc.getInfo();
+		this.root = new DocObjectTreeNode("Root", info);
 		this.model.setRoot(this.root);
 
-		this.showDocumentInfo();
-		this.showPages();
+		this.showPages(this.root);
 	}
 
-	private void showDocumentInfo() {
-		DocumentInfo info = this.doc.getInfo();
-
-		DefaultMutableTreeNode node = new DocObjectTreeNode(info);
-		this.model.insertNodeInto(node, this.root, 0);
-	}
-
-	private void showPages() {
+	private void showPages(DefaultMutableTreeNode parent) {
 		Catalog catalog = this.doc.getCatalog();
-		DefaultMutableTreeNode catalogNode = new DefaultMutableTreeNode("Catalog");
-		
-		this.model.insertNodeInto(catalogNode, this.root, this.root.getChildCount());
-		
-		DefaultMutableTreeNode node = new DocObjectTreeNode(catalog);
-		this.model.insertNodeInto(node, catalogNode, 0);
+		DefaultMutableTreeNode catalogNode = new DocObjectTreeNode("Catalog", catalog);
+		parent.add(catalogNode);
 		
 		int count = this.doc.getRootPageTree().getCount();
 		
@@ -64,7 +53,7 @@ public class DocumentTree extends JTree {
 	}
 	
 	private void showPage(Page page, DefaultMutableTreeNode parent) {
-		DefaultMutableTreeNode node = new DocObjectTreeNode(page);
-		this.model.insertNodeInto(node, (MutableTreeNode) parent, parent.getChildCount());
+		DefaultMutableTreeNode pageNode = new DocObjectTreeNode("Page", page);
+		parent.add(pageNode);
 	}
 }
