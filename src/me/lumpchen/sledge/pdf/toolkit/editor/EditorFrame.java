@@ -13,6 +13,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
+import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
 public class EditorFrame extends JFrame {
@@ -63,15 +64,22 @@ public class EditorFrame extends JFrame {
 		}
 		try {
 			PDFDocument doc = reader.read(pdf);
-			this.createDocumentTree(doc);
+//			this.createDocumentTree(doc);
+			this.createXRefTable(doc);
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
 	}
 	
+	private void createXRefTable(PDFDocument doc) {
+		XRefTableModel tableModel = new XRefTableModel(doc);
+		XRefTable table = new XRefTable(tableModel, this.textarea);
+		this.leftScrollPane.setViewportView(table);
+	}
+	
 	private void createDocumentTree(PDFDocument doc) {
-		PropertyTableModel tableModel = new PropertyTableModel();
+		PropertyTableModel tableModel = new PropertyTableModel(doc);
 		DocumentTree dtree = new DocumentTree(doc, tableModel, this.textarea);
 		this.leftScrollPane.setViewportView(dtree);
 		

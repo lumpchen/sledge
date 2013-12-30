@@ -10,6 +10,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class IndirectObject extends PObject {
 
@@ -175,5 +176,31 @@ public class IndirectObject extends PObject {
 				throw new InvalidTagException();
 			}
 		}
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+		writer.writeInt(this.objNum);
+		writer.writeSpace();
+		writer.writeInt(this.genNum);
+		writer.writeSpace();
+		writer.writeBytes(IndirectObject.BEGIN);
+		writer.writeLN();
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		if (this.stream != null) {
+			this.stream.writer(writer);
+		} else if (this.insideObj != null) {
+			this.insideObj.writer(writer);
+		}
+		writer.writeLN();
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+		writer.writeBytes(IndirectObject.END);
+		writer.writeLN();
 	}
 }

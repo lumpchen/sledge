@@ -3,6 +3,7 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PStream extends PObject {
 
@@ -73,5 +74,21 @@ public class PStream extends PObject {
 				throw new InvalidTagException();
 			}
 		}
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+		writer.writeBytes(PStream.BEGIN);
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+		writer.writeBytes(PStream.END);
 	}
 }

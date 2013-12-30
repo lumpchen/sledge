@@ -47,13 +47,26 @@ public class XRef {
 		return buf.toString();
 	}
 
+	public List<XRefEntry> getEntryList() {
+		List<XRefEntry> list = new ArrayList<XRefEntry>();
+		for (Section section : this.sectionList) {
+			int sectionNo = section.sectionNo;
+			int sectionCount = section.count;
+			for (int i = sectionNo, n = sectionCount; i < n; i++) {
+				XRefEntry entry = this.entryMap.get(i);
+				list.add(entry);
+			}
+		}
+		return list;
+	}
+	
 	public XRefEntry getRefEntry(IndirectRef ref) {
 		int objNum = ref.getObjNum();
 		int genNum = ref.getGenNum();
 
 		return this.getRefEntry(objNum, genNum);
 	}
-
+	
 	private XRefEntry getRefEntry(int objNum, int genNum) {
 		XRefEntry entry = this.entryMap.get(objNum);
 		if (null == entry) {
@@ -66,7 +79,7 @@ public class XRef {
 		
 		return entry;
 	}
-
+	
 	public void read(LineReader reader) {
 		int n = this.entryCount;
 		while (true) {

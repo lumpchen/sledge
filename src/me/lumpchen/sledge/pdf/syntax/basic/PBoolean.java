@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PBoolean extends PObject {
 
@@ -60,5 +61,22 @@ public class PBoolean extends PObject {
 
 	@Override
 	protected void readEndTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		if (this.value) {
+			writer.writeBytes(PBoolean.TAG_TRUE);
+		} else {
+			writer.writeBytes(PBoolean.TAG_FALSE);
+		}
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
 	}
 }

@@ -28,6 +28,7 @@ public class ContentStreamReader {
 			}
 		}
 		
+		contentStream.matchOperands();
 		return contentStream;
 	}
 }

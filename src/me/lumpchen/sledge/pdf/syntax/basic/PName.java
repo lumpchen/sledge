@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PName extends PObject {
 
@@ -275,5 +276,18 @@ public class PName extends PObject {
 
 	@Override
 	protected void readEndTag(ObjectReader reader) {
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		writer.writeString("/" + this.name);
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
 	}
 }

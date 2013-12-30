@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PArray extends PObject {
 
@@ -48,7 +49,7 @@ public class PArray extends PObject {
 	@Override
 	public void readBeginTag(ObjectReader reader) {
 		byte tag = reader.readByte();
-		if (tag != BEGIN) {
+		if (tag != PArray.BEGIN) {
 			throw new InvalidTagException();
 		}
 	}
@@ -68,8 +69,32 @@ public class PArray extends PObject {
 	@Override
 	public void readEndTag(ObjectReader reader) {
 		byte tag = reader.readByte();
-		if (tag != END) {
+		if (tag != PArray.END) {
 			throw new InvalidTagException();
 		}
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+		writer.writeBytes(PArray.BEGIN);
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		if (null == this.objList || this.objList.size() <= 0) {
+			return;
+		}
+		for (int i = 0, n = this.objList.size(); i < n; i++) {
+			PObject obj = this.objList.get(i);
+			obj.writer(writer);
+			if (i != n - 1) {
+				writer.writeSpace();				
+			}
+		}
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+		writer.writeBytes(PArray.END);
 	}
 }

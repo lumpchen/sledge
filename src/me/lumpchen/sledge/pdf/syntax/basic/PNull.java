@@ -1,6 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PNull extends PObject {
 
@@ -24,4 +25,15 @@ public class PNull extends PObject {
 	protected void readEndTag(ObjectReader reader) {
 	}
 
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+	}
 }

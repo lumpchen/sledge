@@ -1,6 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public abstract class PObject {
 
@@ -28,7 +29,7 @@ public abstract class PObject {
 	};
 
 	protected PObject parent;
-	protected Type type; 
+	protected Type type;
 
 	protected PObject() {
 	}
@@ -52,9 +53,17 @@ public abstract class PObject {
 	}
 
 	abstract protected void readBeginTag(ObjectReader reader);
-
 	abstract protected void readBody(ObjectReader reader);
-
 	abstract protected void readEndTag(ObjectReader reader);
-
+	
+	public void writer(ObjectWriter writer) {
+		this.writeBeginTag(writer);
+		this.writeBody(writer);
+		this.writeEndTag(writer);
+	}
+	
+	abstract protected void writeBeginTag(ObjectWriter writer);
+	abstract protected void writeBody(ObjectWriter writer);
+	abstract protected void writeEndTag(ObjectWriter writer);
+	
 }

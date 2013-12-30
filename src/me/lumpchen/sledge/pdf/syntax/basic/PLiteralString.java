@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PLiteralString extends PString {
 
@@ -156,5 +157,23 @@ public class PLiteralString extends PString {
 			this.charSequence = new char[size - skip];
 			System.arraycopy(chars, 0, this.charSequence, 0, size - skip);
 		}
+	}
+
+	
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+		writer.writeBytes(PLiteralString.BEGIN);
+	}
+	
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		
+	}
+	
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+		writer.writeBytes(PLiteralString.END);
 	}
 }

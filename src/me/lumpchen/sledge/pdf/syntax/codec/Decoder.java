@@ -1,7 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.codec;
 
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public abstract class Decoder {
@@ -16,7 +15,7 @@ public abstract class Decoder {
 		return name;
 	}
 
-	public static Decoder instance(PName filterName, PDictionary streamDict) {
+	public static Decoder instance(PName filterName) {
 		if (filterName.equals(PName.ASCII85Decode)) {
 			return new ASCII85Decoder();
 		}

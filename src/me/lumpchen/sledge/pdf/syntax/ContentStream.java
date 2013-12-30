@@ -2,7 +2,6 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
@@ -31,55 +30,38 @@ public class ContentStream implements RenderObject {
 		}
 	}
 	
-	private Queue<GraphicsOperator> operatorStack() {
-		Queue<GraphicsOperator> stack = new LinkedList<GraphicsOperator>();
-		stack.addAll(this.operatorList);
-		return stack;
-	}
-	
-	private Queue<GraphicsOperand> operandStack() {
-		Queue<GraphicsOperand> stack = new LinkedList<GraphicsOperand>();
-		stack.addAll(this.operandList);
-		return stack;
-	}
-	
 	public String toString() {
-		Queue<GraphicsOperator> operatorStack = operatorStack();
-		Queue<GraphicsOperand> operandStack = operandStack();
 		StringBuilder buf = new StringBuilder();
-		while (true) {
-			if (operatorStack.isEmpty()) {
-				break;
-			}
-			GraphicsOperator op = operatorStack.poll();
+		int size = this.operatorList.size();
+		for (int i = 0; i < size; i++) {
+			GraphicsOperator op = this.operatorList.get(i);
 			buf.append(op.toString());
-
-			int num = op.getOperandNumber();
-			while (num > 0) {
-				buf.append(' ');
-				GraphicsOperand operand = operandStack.poll();
-				if (operand == null) {
-					System.out.println(op);
-				}
-				buf.append(operand.toString());
-				num--;
-			}
-
 			buf.append('\n');
 		}
+		
 		return buf.toString();
 	}
 
+	public void matchOperands() {
+		int size = this.operatorList.size();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			GraphicsOperator op = this.operatorList.get(i);
+			int operandCount = op.getOperandNumber();
+			while (operandCount > 0) {
+				GraphicsOperand operand = this.operandList.get(count++);
+				op.addOperator(operand);
+				operandCount--;
+			}
+		}
+	}
+	
 	@Override
 	public void render(VirtualGraphics g2) {
-		Queue<GraphicsOperator> operatorStack = operatorStack();
-		Queue<GraphicsOperand> operandStack = operandStack();
-		while (true) {
-			if (operatorStack.isEmpty()) {
-				break;
-			}
-			GraphicsOperator op = operatorStack.poll();
-			op.execute(operandStack, g2);
+		int size = this.operatorList.size();
+		for (int i = 0; i < size; i++) {
+			GraphicsOperator op = this.operatorList.get(i);
+			op.execute(g2);
 		}
 	}
 }

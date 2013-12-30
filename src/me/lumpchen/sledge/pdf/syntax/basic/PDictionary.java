@@ -12,6 +12,7 @@ import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PDictionary extends PObject {
 
@@ -150,5 +151,35 @@ public class PDictionary extends PObject {
 		if (tag[0] != END[0] || tag[1] != END[1]) {
 			throw new InvalidTagException();
 		}
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+		writer.writeBytes(PDictionary.BEGIN);
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		if (null == this.dict || this.dict.size() <= 0) {
+			return;
+		}
+		Iterator<Map.Entry<PName, PObject>> iter = this.dict.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<PName, PObject> next = iter.next();
+			PName key = next.getKey();
+			PObject value = next.getValue();
+			
+			key.writer(writer);
+			writer.writeSpace();
+			value.writer(writer);
+			if (iter.hasNext()) {
+				writer.writeSpace();	
+			}
+		}
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+		writer.writeBytes(PDictionary.END);
 	}
 }

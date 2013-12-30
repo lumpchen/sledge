@@ -3,7 +3,7 @@ package me.lumpchen.sledge.pdf.syntax;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject.Type;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class IndirectRef extends PObject {
 
@@ -75,5 +75,22 @@ public class IndirectRef extends PObject {
 	
 	public String toString() {
 		return this.objNum + " " + this.genNum + " " + "R";
+	}
+
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		writer.writeInt(this.objNum);
+		writer.writeSpace();
+		writer.writeInt(this.genNum);
+		writer.writeSpace();
+		writer.writeBytes(IndirectRef.BEGIN);
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
 	}
 }

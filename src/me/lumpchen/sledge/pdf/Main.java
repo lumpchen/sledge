@@ -3,10 +3,8 @@ package me.lumpchen.sledge.pdf;
 import java.io.File;
 import java.io.IOException;
 
-import me.lumpchen.sledge.pdf.reader.ContentStreamReader;
 import me.lumpchen.sledge.pdf.reader.PDFReader;
-import me.lumpchen.sledge.pdf.syntax.ContentStream;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.toolkit.viewer.ui.FrameViewer;
@@ -18,8 +16,8 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		testUI();
-		testReader();
+		testUI();
+//		testReader();
 	}
 	
 	static void testReader() {

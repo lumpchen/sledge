@@ -1,8 +1,9 @@
 package me.lumpchen.sledge.pdf.graphics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
@@ -13,6 +14,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PString;
 import me.lumpchen.sledge.pdf.text.font.FontIndex;
 import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
+import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public abstract class GraphicsOperator extends PObject {
 
@@ -130,8 +132,9 @@ public abstract class GraphicsOperator extends PObject {
 		operatorMap.put("EX", OP_EX_.class);
 	}
 
-	byte[] operatorBytes;
-	int operandNumber;
+	protected byte[] operatorBytes;
+	protected int operandNumber;
+	protected  List<GraphicsOperand> operandList;
 
 	protected GraphicsOperator(byte[] operatorBytes) {
 		this.operatorBytes = operatorBytes;
@@ -166,15 +169,32 @@ public abstract class GraphicsOperator extends PObject {
 	}
 
 	public String toString() {
-		return new String(this.operatorBytes);
+		StringBuilder sbuf = new StringBuilder();
+		sbuf.append(new String(this.operatorBytes));
+		
+		for (int i = 0; i < this.operandNumber; i++) {
+			sbuf.append(" ");
+			sbuf.append(this.operandList.get(i).toString());
+		}
+		
+		return sbuf.toString();
 	}
 
 	public int getOperandNumber() {
 		return this.operandNumber;
 	}
+	
+	public void addOperator(GraphicsOperand oparand) {
+		if (null == this.operandList) {
+			this.operandList = new ArrayList<GraphicsOperand>();
+		}
+		if (this.operandNumber < this.operandList.size()) {
+			throw new SyntaxException("exceed the limit size of operator: " + this.toString());
+		}
+		this.operandList.add(oparand);
+	}
 
-	abstract public void execute(Queue<GraphicsOperand> operandStack,
-			VirtualGraphics g2d);
+	abstract public void execute(VirtualGraphics g2d);
 	
 	@Override
 	protected void readBeginTag(ObjectReader reader) {
@@ -188,6 +208,19 @@ public abstract class GraphicsOperator extends PObject {
 	@Override
 	protected void readEndTag(ObjectReader reader) {
 	}
+	
+	@Override
+	protected void writeBeginTag(ObjectWriter writer) {
+	}
+
+	@Override
+	protected void writeBody(ObjectWriter writer) {
+		writer.writeBytes(this.operatorBytes);
+	}
+
+	@Override
+	protected void writeEndTag(ObjectWriter writer) {
+	}
 }
 
 //General graphics state w, J, j, M, d, ri, i, gs
@@ -199,8 +232,7 @@ class OP_w extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -212,8 +244,7 @@ class OP_J_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -225,8 +256,7 @@ class OP_j extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -238,8 +268,7 @@ class OP_M_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -251,9 +280,7 @@ class OP_d extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -265,8 +292,7 @@ class OP_ri extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -278,8 +304,7 @@ class OP_i extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -291,8 +316,7 @@ class OP_gs extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -308,7 +332,7 @@ class OP_q extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 		g2d.saveGraphicsState();
 	}
 }
@@ -324,7 +348,7 @@ class OP_Q_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 		g2d.restoreGraphicsState();
 	}
 }
@@ -340,13 +364,13 @@ class OP_cm extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand_1 = operandStack.poll();
-		GraphicsOperand operand_2 = operandStack.poll();
-		GraphicsOperand operand_3 = operandStack.poll();
-		GraphicsOperand operand_4 = operandStack.poll();
-		GraphicsOperand operand_5 = operandStack.poll();
-		GraphicsOperand operand_6 = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = this.operandList.get(0);
+		GraphicsOperand operand_2 = this.operandList.get(1);
+		GraphicsOperand operand_3 = this.operandList.get(2);
+		GraphicsOperand operand_4 = this.operandList.get(3);
+		GraphicsOperand operand_5 = this.operandList.get(4);
+		GraphicsOperand operand_6 = this.operandList.get(5);
 
 		double a = operand_1.asNumber().doubleValue();
 		double b = operand_2.asNumber().doubleValue();
@@ -368,9 +392,7 @@ class OP_m extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -382,10 +404,7 @@ class OP_l extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
-		
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -397,13 +416,7 @@ class OP_c extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -415,11 +428,7 @@ class OP_v extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -431,11 +440,7 @@ class OP_y extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -447,7 +452,7 @@ class OP_h extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -462,11 +467,11 @@ class OP_re extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand_1 = operandStack.poll();
-		GraphicsOperand operand_2 = operandStack.poll();
-		GraphicsOperand operand_3 = operandStack.poll();
-		GraphicsOperand operand_4 = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = this.operandList.get(0);
+		GraphicsOperand operand_2 = this.operandList.get(1);
+		GraphicsOperand operand_3 = this.operandList.get(2);
+		GraphicsOperand operand_4 = this.operandList.get(3);
 
 		double x = operand_1.asNumber().doubleValue();
 		double y = operand_2.asNumber().doubleValue();
@@ -486,7 +491,7 @@ class OP_S_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -498,7 +503,7 @@ class OP_s extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -510,7 +515,7 @@ class OP_f extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -522,7 +527,7 @@ class OP_F_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -534,7 +539,7 @@ class OP_f42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -546,7 +551,7 @@ class OP_B_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -558,7 +563,7 @@ class OP_B_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -570,7 +575,7 @@ class OP_b extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -582,7 +587,7 @@ class OP_b42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -598,7 +603,7 @@ class OP_n extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 		g2d.closePath();
 	}
 }
@@ -616,7 +621,7 @@ class OP_W_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -628,7 +633,7 @@ class OP_W_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -644,7 +649,7 @@ class OP_BT_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 		g2d.beginText();
 	}
 }
@@ -659,7 +664,7 @@ class OP_ET_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 		g2d.endText();
 	}
 }
@@ -673,7 +678,7 @@ class OP_T_c extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -685,8 +690,7 @@ class OP_T_w extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -698,7 +702,7 @@ class OP_T_z extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -710,7 +714,7 @@ class OP_TL_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -724,9 +728,9 @@ class OP_T_f extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand_1 = operandStack.poll();
-		GraphicsOperand operand_2 = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = this.operandList.get(0);
+		GraphicsOperand operand_2 = this.operandList.get(1);
 		
 		PName fontIndex= operand_1.asName();
 		PNumber fontSize = operand_2.asNumber();
@@ -744,7 +748,7 @@ class OP_T_r extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -756,7 +760,7 @@ class OP_T_s extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -769,9 +773,7 @@ class OP_T_d extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -783,7 +785,7 @@ class OP_TD_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -795,13 +797,13 @@ class OP_T_m extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand_1 = operandStack.poll();
-		GraphicsOperand operand_2 = operandStack.poll();
-		GraphicsOperand operand_3 = operandStack.poll();
-		GraphicsOperand operand_4 = operandStack.poll();
-		GraphicsOperand operand_5 = operandStack.poll();
-		GraphicsOperand operand_6 = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = this.operandList.get(0);
+		GraphicsOperand operand_2 = this.operandList.get(1);
+		GraphicsOperand operand_3 = this.operandList.get(2);
+		GraphicsOperand operand_4 = this.operandList.get(3);
+		GraphicsOperand operand_5 = this.operandList.get(4);
+		GraphicsOperand operand_6 = this.operandList.get(5);
 
 		double a = operand_1.asNumber().doubleValue();
 		double b = operand_2.asNumber().doubleValue();
@@ -822,7 +824,7 @@ class OP_T_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -837,8 +839,8 @@ class OP_T_j extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand = this.operandList.get(0);
 		PString s = operand.asString();
 		
 		g2d.showText(s.toJavaString());
@@ -853,7 +855,7 @@ class OP_TJ_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -865,7 +867,7 @@ class OP_39 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -877,7 +879,7 @@ class OP_34 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -890,7 +892,7 @@ class OP_d0 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -902,7 +904,7 @@ class OP_d1 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -915,8 +917,7 @@ class OP_CS_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -928,8 +929,7 @@ class OP_cs extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -941,8 +941,7 @@ class OP_SC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -954,8 +953,7 @@ class OP_SCN_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -967,8 +965,7 @@ class OP_sc extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -980,8 +977,7 @@ class OP_scn extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -993,7 +989,7 @@ class OP_G_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1005,7 +1001,7 @@ class OP_g extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1017,10 +1013,7 @@ class OP_RG_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
-		operandStack.poll();
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1034,10 +1027,10 @@ class OP_rg extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		GraphicsOperand operand_1 = operandStack.poll();
-		GraphicsOperand operand_2 = operandStack.poll();
-		GraphicsOperand operand_3 = operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
+		GraphicsOperand operand_1 = this.operandList.get(0);
+		GraphicsOperand operand_2 = this.operandList.get(1);
+		GraphicsOperand operand_3 = this.operandList.get(2);
 		
 		float r = operand_1.asNumber().floatValue();
 		float g = operand_2.asNumber().floatValue();
@@ -1055,7 +1048,7 @@ class OP_K_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1067,7 +1060,7 @@ class OP_k extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1080,7 +1073,7 @@ class OP_sh extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1093,7 +1086,7 @@ class OP_BI_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1105,7 +1098,7 @@ class OP_ID_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1117,7 +1110,7 @@ class OP_EI_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1130,8 +1123,7 @@ class OP_D_o extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
-		operandStack.poll();
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1144,7 +1136,7 @@ class OP_MP_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1156,7 +1148,7 @@ class OP_DP_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute( VirtualGraphics g2d) {
 	}
 }
 
@@ -1168,7 +1160,7 @@ class OP_BMC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1180,7 +1172,7 @@ class OP_BDC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1192,7 +1184,7 @@ class OP_EMC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1205,7 +1197,7 @@ class OP_BX_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
 
@@ -1217,6 +1209,6 @@ class OP_EX_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(Queue<GraphicsOperand> operandStack, VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d) {
 	}
 }
