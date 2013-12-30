@@ -74,8 +74,14 @@ public class EditorFrame extends JFrame {
 	
 	private void createXRefTable(PDFDocument doc) {
 		XRefTableModel tableModel = new XRefTableModel(doc);
-		XRefTable table = new XRefTable(tableModel, this.textarea);
+		
+		PropertyTableModel propTableModel = new PropertyTableModel(doc);
+		
+		XRefTable table = new XRefTable(tableModel, propTableModel, this.textarea);
 		this.leftScrollPane.setViewportView(table);
+		
+		PropertyTable propTable = new PropertyTable(propTableModel);
+		this.rightScrollPane.setViewportView(propTable);
 	}
 	
 	private void createDocumentTree(PDFDocument doc) {

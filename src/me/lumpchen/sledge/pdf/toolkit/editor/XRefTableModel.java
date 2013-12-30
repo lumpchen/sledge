@@ -43,9 +43,14 @@ public class XRefTableModel extends DefaultTableModel {
 		this.addRow(new Object[]{iobj, igen, free, offset});
 	}
 	
-	public String getRowString(int row) {
+	public IndirectObject getRowObject(int row) {
 		XRefEntry entry = this.entryList.get(row);
 		IndirectObject obj = pdf.getObject(new IndirectRef(entry.objNum, entry.genNum));
+		return obj;
+	}
+	
+	public String getRowString(int row) {
+		IndirectObject obj = this.getRowObject(row);
 		if (obj != null) {
 			return obj.toString();
 		}

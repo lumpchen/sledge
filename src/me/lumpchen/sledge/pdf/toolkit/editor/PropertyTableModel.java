@@ -77,6 +77,38 @@ public class PropertyTableModel extends DefaultTableModel {
 			}
 		}
 	}
+	
+	public void updateIndirectObject(IndirectObject obj) {
+		this.removeAllRows();
+		PObject inside = obj.insideObj();
+		if (null == inside) {
+			return;
+		}
+		if (inside instanceof PDictionary) {
+			PDictionary dict = (PDictionary) inside;
+			List<PName> keyList = dict.keyList();
+			for (PName key : keyList) {
+				RowClass classEntry = new RowClass();
+				classEntry.key = key;
+				
+				PObject value = dict.get(key);
+				
+				String c0 = key.toString();
+				String c1 = "", c2 = "";
+				if (value != null) {
+					PObject.Type type = value.getType();
+					c1 = type.toString();
+					c2 = value.toString();
+					
+					classEntry.type = type;
+					classEntry.value = value;
+				}
+				
+				this.classEntryList.add(classEntry);
+				this.addRow(new String[]{c0, c1, c2});
+			}
+		}
+	}
 
 	public boolean isCellEditable(int row, int col) {
 		return false;
