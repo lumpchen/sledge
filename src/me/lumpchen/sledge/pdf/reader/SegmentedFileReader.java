@@ -36,6 +36,10 @@ public class SegmentedFileReader {
 		}
 	}
 
+	public long remain() {
+		return this.fileSize - this.position;
+	}
+	
 	public void setSegmentSize(int size) {
 		this.segmentSize = size;
 	}

@@ -39,16 +39,16 @@ public class LineReader {
 			}
 		}
 		byte[] data = readNextLine();
-		if (data == null) {
+		
+		int i = 1;
+		while (data == null) {
 			if (this.segmentedFileReader != null) {
-				this.readSegment();
+				this.readSegment(SegmentedFileReader.SEGMETN_SIZE * i);
 			}
 			data = this.readNextLine();
+			i++;
 		}
 		
-		if (data == null) {
-			return null;
-		}
 		return new LineData(data);
 	}
 	
@@ -65,7 +65,7 @@ public class LineReader {
 		this.segmentedFileReader.setPosition(pos);
 		try {
 			if (size > 0) {
-				this.buf = this.segmentedFileReader.readSegment(size);				
+				this.buf = this.segmentedFileReader.readSegment(size);
 			} else {
 				this.buf = this.segmentedFileReader.readSegment();
 			}

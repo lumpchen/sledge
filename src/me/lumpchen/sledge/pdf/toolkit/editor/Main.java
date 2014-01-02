@@ -5,7 +5,7 @@ public class Main {
 
 	public static void main(String args[]) {
 		EditorFrame f = new EditorFrame();
-		f.openDocument("/incremental_update.pdf");
+		f.openDocument("/pdf_reference_1-7.pdf");
 		f.setVisible(true);
 	}
 }

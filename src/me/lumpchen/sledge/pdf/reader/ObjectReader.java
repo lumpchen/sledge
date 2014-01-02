@@ -9,6 +9,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PHexString;
 import me.lumpchen.sledge.pdf.syntax.basic.PLiteralString;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNull;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
@@ -88,6 +89,8 @@ public class ObjectReader {
 		default: {
 			if (this.match(PBoolean.TAG_FALSE) || this.match(PBoolean.TAG_TRUE)) {
 				obj = new PBoolean();
+			} else if (this.match(PNull.NULL)) {
+				obj = new PNull();
 			} else if (this.match(PStream.BEGIN)) {
 				obj = new PStream();
 			} else {
@@ -98,8 +101,7 @@ public class ObjectReader {
 					byte[] num1 = this.bytesReader.peekToSpace(run);
 					if (BytesReader.isNumber(num1)) {
 						run += num1.length + 1;
-						byte tag = this.bytesReader.getByte(this.bytesReader
-								.position() + run);
+						byte tag = this.bytesReader.getByte(this.bytesReader.position() + run);
 						if (tag == IndirectObject.BEGIN[0]) {
 							obj = new IndirectObject();
 						} else if (tag == IndirectRef.BEGIN) {

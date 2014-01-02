@@ -32,6 +32,14 @@ public class PBoolean extends PObject {
 		}
 	}
 
+	public String toString() {
+		if (value) {
+			return "true";
+		} else {
+			return "false";
+		}
+	}
+	
 	public boolean getValue() {
 		return this.value;
 	}
