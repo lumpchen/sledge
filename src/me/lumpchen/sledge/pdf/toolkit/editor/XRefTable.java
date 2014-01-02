@@ -10,7 +10,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import me.lumpchen.sledge.pdf.syntax.IndirectObject;
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 
 public class XRefTable extends JTable {
 
@@ -33,22 +34,37 @@ public class XRefTable extends JTable {
 		this.addMouseListener(new XTMouseListener());
 	}
 	
-	private void updateTextArea(final String text) {
+	public void setSelectedRef(IndirectRef ref) {
+		XRefTableModel model = (XRefTableModel) this.getModel();
+		int row = model.getRowIndex(ref);
+		if (row >= 0) {
+			this.setRowSelectionInterval(row, row);
+			this.updateTextArea(row);
+		}
+	}
+	
+	private void updateTextArea(final int row) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
+				XRefTableModel model = (XRefTableModel) getModel();
+				String text = model.getRowString(row);
+				if (text.length() > 20480) {
+					text = text.substring(0, 1024);
+					text += "\n......";
+				}
 				textarea.setText(text);
 			}
 		});
 	}
 	
-	private void updatePropTable(final IndirectObject selObj) {
+	private void updatePropTable(final PObject selObj) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
-				propTableModel.updateIndirectObject(selObj);
+				propTableModel.updateSelectedObject(selObj);
 			}
 		});
 	}
@@ -61,7 +77,7 @@ public class XRefTable extends JTable {
 				return;
 			}
 			XRefTableModel model = (XRefTableModel) getModel();
-			IndirectObject selObj = model.getRowObject(row);
+			PObject selObj = model.getRowObject(row);
 			if (selObj != null) {
 				updatePropTable(selObj);
 			}
@@ -76,10 +92,7 @@ public class XRefTable extends JTable {
 				if (row < 0) {
 					return;
 				}
-				
-				XRefTableModel model = (XRefTableModel) target.getModel();
-				String text = model.getRowString(row);
-				target.updateTextArea(text);
+				target.updateTextArea(row);
 			}
 		}
 	}

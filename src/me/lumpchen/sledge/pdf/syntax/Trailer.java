@@ -21,8 +21,18 @@ public class Trailer {
 	
 	private PDictionary dict;
 	private PNumber startxref;
+	
+	private Trailer prevTrailer;
 
 	public Trailer() {
+	}
+	
+	public void setPreTrailer(Trailer prevTrailer) {
+		this.prevTrailer = prevTrailer;
+	}
+	
+	public Trailer getPrevTrailer() {
+		return this.prevTrailer;
 	}
 	
 	public int getSize() {
@@ -47,6 +57,21 @@ public class Trailer {
 			throw new InvalidElementException(PName.ROOT);
 		}
 		return (IndirectRef) root;
+	}
+	
+	public long getPrev() {
+		PObject prev = this.dict.get(PName.prev);
+		if (null == prev) {
+			return -1;
+		}
+		if (!(prev instanceof PNumber)) {
+			throw new InvalidElementException(PName.PREV);
+		}
+		return ((PNumber) prev).longValue();
+	}
+	
+	public PDictionary getDict() {
+		return this.dict;
 	}
 	
 	public void setStartxref(long pos) {
@@ -79,6 +104,9 @@ public class Trailer {
 		while (true) {
 			LineData line = lineReader.readLine();
 			if (line == null) {
+				break;
+			}
+			if (line.startsWith(Trailer.EOF)) {
 				break;
 			}
 			if (line.startsWith(TRAILER)) {

@@ -5,19 +5,24 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.toolkit.editor.PropertyTableModel.RowClass;
 
 public class PropertyTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private XRefTable xRefTable;
 
-	public PropertyTable(PropertyTableModel model) {
+	public PropertyTable(PropertyTableModel model, XRefTable xRefTable) {
 		super(model);
 
+		this.xRefTable = xRefTable;
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
@@ -26,6 +31,27 @@ public class PropertyTable extends JTable {
 		this.addMouseListener(new PTMouseListener());
 	}
 
+	private void updateSelectedRow(final PObject selObj) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				PropertyTableModel model = (PropertyTableModel) getModel();
+				model.updateSelectedObject(selObj);
+			}
+		});
+	}
+	
+	private void updateXRefTable(final IndirectRef ref) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				xRefTable.setSelectedRef(ref);
+			}
+		});
+	}
+	
 	class PTMouseListener extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
@@ -37,10 +63,10 @@ public class PropertyTable extends JTable {
 				PropertyTableModel model = (PropertyTableModel) target.getModel();
 				RowClass rowClass = model.getRowClass(row);
 				
-				if (rowClass.type != null) {
-					if (rowClass.type == PObject.Type.Array) {
-						 
-					}
+				if (rowClass.type != null && rowClass.type == PObject.Type.IndirectRef) {
+					updateXRefTable((IndirectRef) rowClass.value);
+				} else {
+					updateSelectedRow(rowClass.value);					
 				}
 			}
 		}

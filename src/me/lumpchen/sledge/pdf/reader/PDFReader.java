@@ -218,31 +218,64 @@ public class PDFReader implements PageContentsLoader {
 			throw new SyntaxException("not found startxref.");
 		}
 		
+		this.readTrailer(pdfDoc, startxref, null);
+	}
+	
+	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) {
 		reader.setPosition(startxref);
 		reader.setSegmentSize(1024);
-		lineReader = new LineReader(reader);
+		LineReader lineReader = new LineReader(reader);
 		Trailer trailer = new Trailer();
 		trailer.read(lineReader);
-		pdfDoc.setTrailer(trailer);
+		if (null == current) {
+			pdfDoc.setTrailer(trailer);
+		} else {
+			current.setPreTrailer(trailer);
+		}
+		long prev = trailer.getPrev();
+		if (prev > 0) {
+			this.readTrailer(pdfDoc, prev, trailer);
+		}
 	}
 
 	private void readXRef(PDFDocument pdfDoc) throws IOException {
 		if (null == pdfDoc.getTrailer()) {
-			throw new ReadException();
+			throw new ReadException("Not found trailer.");
 		}
 
 		Trailer trailer = pdfDoc.getTrailer();
+		this.readXRef(pdfDoc, trailer, null);
+		
+//		long fp = trailer.getStartxref();
+//		reader.setPosition(fp);
+
+//		int size = trailer.getSize();
+		// int bufSize = (size + 2) * 20;
+		// reader.readSegment(bufSize);
+
+//		LineReader lineReader = new LineReader(this.reader);
+//		XRef xref = new XRef(size);
+//		xref.read(lineReader);
+//		pdfDoc.setXRef(xref);
+	}
+	
+	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) {
 		long fp = trailer.getStartxref();
 		reader.setPosition(fp);
 
 		int size = trailer.getSize();
-		// int bufSize = (size + 2) * 20;
-		// reader.readSegment(bufSize);
-
 		LineReader lineReader = new LineReader(this.reader);
-		XRef xref = new XRef(size);
-		xref.read(lineReader);
-		pdfDoc.setXRef(xref);
+		
+		if (null == xref) {
+			xref = new XRef(size);
+			xref.read(lineReader);
+			pdfDoc.setXRef(xref);
+		} else {
+			xref.read(lineReader);
+		}
+		if (trailer.getPrevTrailer() != null) {
+			this.readXRef(pdfDoc, trailer.getPrevTrailer(), xref);
+		}
 	}
 
 	@Override

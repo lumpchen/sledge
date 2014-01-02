@@ -16,24 +16,17 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		testUI();
-//		testReader();
+//		testUI();
+		testReader();
 	}
 	
 	static void testReader() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/simple.pdf");
+		File f = new File("/incremental_update.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 			Page page = doc.getPage(1);
-			FrameViewer viewer = new FrameViewer();
-			
-			PageCanvas pageCanvas = new PageCanvas();
-			pageCanvas.setPage(page);
-			viewer.setPageCanvas(pageCanvas);
-			
-			viewer.setVisible(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

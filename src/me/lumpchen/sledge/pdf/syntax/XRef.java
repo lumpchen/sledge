@@ -37,7 +37,7 @@ public class XRef {
 			buf.append(sectionNo + " " + sectionCount);
 			buf.append('\n');
 
-			for (int i = sectionNo, n = sectionCount; i < n; i++) {
+			for (int i = sectionNo, n = sectionNo + sectionCount; i < n; i++) {
 				XRefEntry entry = this.entryMap.get(i);
 				buf.append(entry.toString());
 				buf.append('\n');
@@ -49,13 +49,17 @@ public class XRef {
 
 	public List<XRefEntry> getEntryList() {
 		List<XRefEntry> list = new ArrayList<XRefEntry>();
-		for (Section section : this.sectionList) {
-			int sectionNo = section.sectionNo;
-			int sectionCount = section.count;
-			for (int i = sectionNo, n = sectionCount; i < n; i++) {
-				XRefEntry entry = this.entryMap.get(i);
-				list.add(entry);
-			}
+//		for (Section section : this.sectionList) {
+//			int sectionNo = section.sectionNo;
+//			int sectionCount = section.count;
+//			for (int i = sectionNo, n = sectionNo + sectionCount; i < n; i++) {
+//				XRefEntry entry = this.entryMap.get(i);
+//				list.add(entry);
+//			}
+//		}
+		for (int i = 0; i < this.entryCount; i++) {
+			XRefEntry entry = this.entryMap.get(i);
+			list.add(entry);
 		}
 		return list;
 	}
@@ -70,11 +74,11 @@ public class XRef {
 	private XRefEntry getRefEntry(int objNum, int genNum) {
 		XRefEntry entry = this.entryMap.get(objNum);
 		if (null == entry) {
-			throw new NotMatchObjectException(objNum + " " + genNum + "R");
+			throw new NotMatchObjectException(objNum + " " + genNum + " R");
 		}
 
 		if (entry.genNum != genNum) {
-			throw new NotMatchObjectException(objNum + " " + genNum + "R");
+			throw new NotMatchObjectException(objNum + " " + genNum + " R");
 		}
 		
 		return entry;
@@ -93,6 +97,10 @@ public class XRef {
 			if (line.getBytes()[0] == 'x') {
 				continue;
 			}
+			if (line.getBytes()[0] == 't') {
+				break;
+			}
+			
 			if (line.getBytes().length < 16) {
 				this.readSectionEntry(line);
 				continue;
@@ -123,7 +131,9 @@ public class XRef {
 		entry.free = 'n' == inuse ? false : true;
 		entry.objNum = this.currSubSectionNo++;
 
-		this.entryMap.put(entry.objNum, entry);
+		if (!this.entryMap.containsKey(entry.objNum)) {
+			this.entryMap.put(entry.objNum, entry);			
+		}
 	}
 
 	static class Section {

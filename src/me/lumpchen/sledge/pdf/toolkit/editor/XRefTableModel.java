@@ -8,6 +8,7 @@ import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.XRef.XRefEntry;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
 public class XRefTableModel extends DefaultTableModel {
@@ -43,14 +44,31 @@ public class XRefTableModel extends DefaultTableModel {
 		this.addRow(new Object[]{iobj, igen, free, offset});
 	}
 	
-	public IndirectObject getRowObject(int row) {
+	public PObject getRowObject(int row) {
+		if (0 == row) {
+			return this.pdf.getTrailer().getDict();
+		}
+		
 		XRefEntry entry = this.entryList.get(row);
 		IndirectObject obj = pdf.getObject(new IndirectRef(entry.objNum, entry.genNum));
 		return obj;
 	}
 	
+	public int getRowIndex(IndirectRef ref) {
+		int iobj = ref.getObjNum();
+		int igen = ref.getGenNum();
+
+		for (int i = 0, n = this.entryList.size(); i < n; i++) {
+			XRefEntry entry = this.entryList.get(i);
+			if (entry.objNum == iobj && entry.genNum == igen) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public String getRowString(int row) {
-		IndirectObject obj = this.getRowObject(row);
+		PObject obj = this.getRowObject(row);
 		if (obj != null) {
 			return obj.toString();
 		}
