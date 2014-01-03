@@ -1,7 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.PObjectReader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
@@ -44,7 +44,7 @@ public class PStream extends PObject {
 	}
 	
 	@Override
-	protected void readBeginTag(ObjectReader reader) {
+	protected void readBeginTag(PObjectReader reader) {
 		byte[] obj = reader.readBytes(BEGIN.length);
 		for (int i = 0; i < BEGIN.length; i++) {
 			if (obj[i] != BEGIN[i]) {
@@ -54,7 +54,7 @@ public class PStream extends PObject {
 	}
 
 	@Override
-	protected void readBody(ObjectReader reader) {
+	protected void readBody(PObjectReader reader) {
 		if (null == this.dict) {
 			throw new SyntaxException("not found stream dictionary.");
 		}
@@ -67,7 +67,7 @@ public class PStream extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(ObjectReader reader) {
+	protected void readEndTag(PObjectReader reader) {
 		byte[] obj = reader.readBytes(END.length);
 		for (int i = 0; i < END.length; i++) {
 			if (obj[i] != END[i]) {

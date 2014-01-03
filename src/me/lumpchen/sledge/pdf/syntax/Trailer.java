@@ -6,7 +6,7 @@ import java.util.List;
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.PObjectReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
@@ -127,7 +127,7 @@ public class Trailer {
 				line = lineArr.get(++i);
 				this.startxref = new PNumber(line.readAsLong());
 			} else if (line.startsWith(PDictionary.BEGIN)) {
-				ObjectReader objReader = new ObjectReader(line);
+				PObjectReader objReader = new PObjectReader(line);
 				PObject obj = objReader.readNextObj();
 				if (obj == null || !(obj instanceof PDictionary)) {
 					throw new InvalidElementException();

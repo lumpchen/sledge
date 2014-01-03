@@ -1,7 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.PObjectReader;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PBoolean extends PObject {
@@ -11,6 +11,9 @@ public class PBoolean extends PObject {
 	
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
+	
+	public static final PBoolean True = new PBoolean(true);
+	public static final PBoolean False = new PBoolean(false);
 
 	private boolean value;
 
@@ -45,11 +48,11 @@ public class PBoolean extends PObject {
 	}
 
 	@Override
-	protected void readBeginTag(ObjectReader reader) {
+	protected void readBeginTag(PObjectReader reader) {
 	}
 
 	@Override
-	protected void readBody(ObjectReader reader) {
+	protected void readBody(PObjectReader reader) {
 		byte b0 = reader.readByte();
 		byte b1 = reader.readByte();
 		byte b2 = reader.readByte();
@@ -68,7 +71,7 @@ public class PBoolean extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(ObjectReader reader) {
+	protected void readEndTag(PObjectReader reader) {
 	}
 
 	@Override

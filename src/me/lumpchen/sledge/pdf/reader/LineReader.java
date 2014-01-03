@@ -8,7 +8,6 @@ public class LineReader {
 	public static final byte LF = '\n'; 
 	private ByteBuffer buf;
 	private SegmentedFileReader segmentedFileReader;
-//	private int rollbackBytes = 0;
 	
 	public LineReader(SegmentedFileReader reader) {
 		this.segmentedFileReader = reader;
@@ -85,7 +84,6 @@ public class LineReader {
 		while (true) {
 			if (run + eol == remain) {
 				// not a valid line, need back position to \n
-//				this.rollbackBytes = run + eol;
 				run = 0;
 				break;
 			}
@@ -106,7 +104,11 @@ public class LineReader {
 		}
 
 		if (run == 0) {
-			return null;
+			if (this.segmentedFileReader.remain() == 0) {
+				run = this.buf.remaining();
+			} else {
+				return null;				
+			}
 		}
 		
 		byte[] data = new byte[run];

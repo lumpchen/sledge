@@ -2,7 +2,7 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.PObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
@@ -133,7 +133,7 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readBeginTag(ObjectReader reader) {
+	protected void readBeginTag(PObjectReader reader) {
 		int iobj = reader.readInt();
 		int igen = reader.readInt();
 
@@ -149,7 +149,7 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readBody(ObjectReader reader) {
+	protected void readBody(PObjectReader reader) {
 		while (true) {
 			PObject next = reader.readNextObj();
 			if (null == next) {
@@ -169,7 +169,7 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(ObjectReader reader) {
+	protected void readEndTag(PObjectReader reader) {
 		byte[] obj = reader.readBytes(END.length);
 		for (int i = 0; i < END.length; i++) {
 			if (obj[i] != END[i]) {

@@ -5,7 +5,7 @@ public class Main {
 
 	public static void main(String args[]) {
 		EditorFrame f = new EditorFrame();
-		f.openDocument("/pdf_reference_1-7.pdf");
+		f.openDocument("/p3.pdf");
 		f.setVisible(true);
 	}
 }

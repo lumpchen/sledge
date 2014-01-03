@@ -63,15 +63,50 @@ public class BytesReader {
 		return bytes;
 	}
 
-	public byte[] readToNextToken() {
+	
+	public byte[] readStringToken() {
 		int i = 0;
+		byte last = 0;
 		while (true) {
 			if (i >= this.buf.remaining()) {
 				break;
 			}
-			if (isToken(buf.get(this.buf.position() + i))) {
+			byte b = buf.get(this.buf.position() + i);
+			if ( last != '\\' && b == ')') {
 				break;
 			}
+			last = b;
+			i++;
+		}
+		
+		if (i == 0) {
+			return null;
+		}
+		
+		byte[] bytes = new byte[i];
+		buf.get(bytes);
+		
+		this.skipSpace();
+		return bytes;
+	}
+	
+	public byte[] readToNextToken() {
+		int i = 0;
+		byte last = 0;
+		while (true) {
+			if (i >= this.buf.remaining()) {
+				break;
+			}
+			byte b = buf.get(this.buf.position() + i);
+			if ( last == '\\' && (b == '(' || b == ')')) {
+				last = b;
+				i++;
+				continue;
+			}
+			if (isToken(b)) {
+				break;
+			}
+			last = b;
 			i++;
 		}
 		

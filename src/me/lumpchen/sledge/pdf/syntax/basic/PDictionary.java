@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.PObjectReader;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
@@ -122,7 +122,7 @@ public class PDictionary extends PObject {
 	}
 
 	@Override
-	protected void readBeginTag(ObjectReader reader) {
+	protected void readBeginTag(PObjectReader reader) {
 		byte[] tag = reader.readBytes(BEGIN.length);
 		if (tag[0] != BEGIN[0] || tag[1] != BEGIN[1]) {
 			throw new InvalidTagException();
@@ -130,7 +130,7 @@ public class PDictionary extends PObject {
 	}
 
 	@Override
-	protected void readBody(ObjectReader reader) {
+	protected void readBody(PObjectReader reader) {
 		while (true) {
 			PObject key = reader.readNextObj();
 			if (key == null) {
@@ -146,7 +146,7 @@ public class PDictionary extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(ObjectReader reader) {
+	protected void readEndTag(PObjectReader reader) {
 		byte[] tag = reader.readBytes(END.length);
 		if (tag[0] != END[0] || tag[1] != END[1]) {
 			throw new InvalidTagException();
