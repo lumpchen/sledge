@@ -2,7 +2,7 @@ package me.lumpchen.sledge.pdf.syntax;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.PObjectReader;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
@@ -24,7 +24,7 @@ public class IndirectObject extends PObject {
 	private int genNum;
 
 	private PObject insideObj;
-	private PStream stream;
+//	private PStream stream;
 
 	public IndirectObject() {
 		super.type = Type.IndirectObject; 
@@ -48,8 +48,15 @@ public class IndirectObject extends PObject {
 		return this.insideObj;
 	}
 	
+	public void setInsideObj(PObject insideObj) {
+		this.insideObj = insideObj;
+	}
+	
 	public PStream getStream() {
-		return this.stream;
+		if (this.insideObj instanceof PStream) {
+			return (PStream) this.insideObj;
+		}
+		return null;
 	}
 	
 	public PDictionary getDict() {
@@ -121,11 +128,9 @@ public class IndirectObject extends PObject {
 		buf.append(this.objNum + " " + this.genNum + " " + "obj");
 		buf.append('\n');
 		
-		if (null != this.stream) {
-			buf.append(this.stream.toString());
-		} else if (null != this.insideObj) {
+		if (null != this.insideObj) {
 			buf.append(this.insideObj.toString());
-		} 
+		}
 		
 		buf.append("endobj");
 		buf.append('\n');
@@ -133,7 +138,7 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readBeginTag(PObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
 		int iobj = reader.readInt();
 		int igen = reader.readInt();
 
@@ -149,19 +154,20 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readBody(PObjectReader reader) {
+	protected void readBody(ObjectReader reader) {
 		while (true) {
 			PObject next = reader.readNextObj();
 			if (null == next) {
 				break;
 			}
 			if (next instanceof PStream) {
-				this.stream = (PStream) next;
+				PStream stream = (PStream) next;
 				if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
 					throw new InvalidElementException();
 				}
-				this.stream.setDict((PDictionary) this.insideObj);
-				this.stream.read(reader);
+				stream.setDict((PDictionary) this.insideObj);
+				stream.read(reader);
+				this.setInsideObj(stream);
 			} else {
 				this.insideObj = next;
 			}
@@ -169,7 +175,7 @@ public class IndirectObject extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(PObjectReader reader) {
+	protected void readEndTag(ObjectReader reader) {
 		byte[] obj = reader.readBytes(END.length);
 		for (int i = 0; i < END.length; i++) {
 			if (obj[i] != END[i]) {
@@ -190,9 +196,7 @@ public class IndirectObject extends PObject {
 
 	@Override
 	protected void writeBody(ObjectWriter writer) {
-		if (this.stream != null) {
-			this.stream.writer(writer);
-		} else if (this.insideObj != null) {
+		if (this.insideObj != null) {
 			this.insideObj.writer(writer);
 		}
 		writer.writeLN();

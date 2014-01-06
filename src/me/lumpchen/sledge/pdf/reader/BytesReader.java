@@ -90,7 +90,7 @@ public class BytesReader {
 		return bytes;
 	}
 	
-	public byte[] readToNextToken() {
+	public byte[] readToken() {
 		int i = 0;
 		byte last = 0;
 		while (true) {
@@ -103,7 +103,7 @@ public class BytesReader {
 				i++;
 				continue;
 			}
-			if (isToken(b)) {
+			if (isKeyword(b)) {
 				break;
 			}
 			last = b;
@@ -121,7 +121,7 @@ public class BytesReader {
 		return bytes;
 	}
 	
-	private boolean isToken(byte b) {
+	private boolean isKeyword(byte b) {
 		return (b == '(' || b == ')' || b == '<' || b == '>' || b == '[' || b == ']' 
 				|| b == '/' || b == '%' || b == ' ');
 	}
@@ -133,7 +133,7 @@ public class BytesReader {
 		while (true) {
 			byte next = this.buf.get(pos + run);
 			if (next == flag) {
-				if (!(last == '\\' && isToken(next))) {
+				if (!(last == '\\' && isKeyword(next))) {
 					break;
 				}
 			}
@@ -214,7 +214,7 @@ public class BytesReader {
 		return true;
 	}
 	
-	public byte[] peekToToken(int offset) {
+	public byte[] peekNextToken(int offset) {
 		int pos = this.buf.position();
 		int remain = this.buf.remaining();
 		
@@ -224,7 +224,7 @@ public class BytesReader {
 				break;
 			}
 			byte next = this.buf.get(pos + offset + run);
-			if (isToken(next)) {
+			if (isKeyword(next)) {
 				break;
 			}
 			run++;

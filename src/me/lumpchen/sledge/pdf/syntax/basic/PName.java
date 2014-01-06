@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.reader.PObjectReader;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PName extends PObject {
@@ -262,7 +262,7 @@ public class PName extends PObject {
 	}
 
 	@Override
-	public void read(PObjectReader reader) {
+	public void read(ObjectReader reader) {
 		// read directly, do nothing here
 	}
 
@@ -271,15 +271,15 @@ public class PName extends PObject {
 	}
 
 	@Override
-	protected void readBeginTag(PObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
 	}
 
 	@Override
-	protected void readBody(PObjectReader reader) {
+	protected void readBody(ObjectReader reader) {
 	}
 
 	@Override
-	protected void readEndTag(PObjectReader reader) {
+	protected void readEndTag(ObjectReader reader) {
 	}
 
 	@Override

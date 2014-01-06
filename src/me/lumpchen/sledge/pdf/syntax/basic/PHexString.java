@@ -1,7 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
 import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.PObjectReader;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PHexString extends PString {
@@ -31,7 +31,7 @@ public class PHexString extends PString {
 	}
 
 	@Override
-	protected void readBeginTag(PObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
 		byte tag = reader.readByte();
 		if (tag != BEGIN) {
 			throw new InvalidTagException();
@@ -39,13 +39,13 @@ public class PHexString extends PString {
 	}
 
 	@Override
-	protected void readBody(PObjectReader reader) {
+	protected void readBody(ObjectReader reader) {
 		byte[] data = reader.readToFlag(END);
 		encode(data);
 	}
 
 	@Override
-	protected void readEndTag(PObjectReader reader) {
+	protected void readEndTag(ObjectReader reader) {
 		byte tag = reader.readByte();
 		if (tag != END) {
 			throw new InvalidTagException();

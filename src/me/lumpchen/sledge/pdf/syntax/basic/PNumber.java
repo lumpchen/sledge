@@ -1,6 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-import me.lumpchen.sledge.pdf.reader.PObjectReader;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
@@ -61,11 +61,11 @@ public class PNumber extends PObject {
 	}
 	
 	@Override
-	protected void readBeginTag(PObjectReader reader) {
+	protected void readBeginTag(ObjectReader reader) {
 	}
 
 	@Override
-	protected void readBody(PObjectReader reader) {
+	protected void readBody(ObjectReader reader) {
 		byte[] bytes = reader.readToNextToken();
 		if (null == bytes || bytes.length <= 0) {
 			throw new SyntaxException();
@@ -80,7 +80,7 @@ public class PNumber extends PObject {
 	}
 
 	@Override
-	protected void readEndTag(PObjectReader reader) {
+	protected void readEndTag(ObjectReader reader) {
 	}
 
 	@Override
