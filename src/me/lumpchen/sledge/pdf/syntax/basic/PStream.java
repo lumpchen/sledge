@@ -1,9 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.syntax.SyntaxException;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PStream extends PObject {
 
@@ -49,54 +45,5 @@ public class PStream extends PObject {
 		buf.append("endstream");
 		buf.append('\n');
 		return buf.toString();
-	}
-	
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-		byte[] obj = reader.readBytes(BEGIN.length);
-		for (int i = 0; i < BEGIN.length; i++) {
-			if (obj[i] != BEGIN[i]) {
-				throw new InvalidTagException();
-			}
-		}
-	}
-
-	@Override
-	protected void readBody(ObjectReader reader) {
-		if (null == this.dict) {
-			throw new SyntaxException("not found stream dictionary.");
-		}
-		PNumber len = this.dict.getValueAsNumber(PName.Length);
-		if (len == null) {
-			throw new SyntaxException("not found stream length in dictionary.");
-		}
-		this.stream = reader.readBytes(len.intValue());
-		reader.readEOL();
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-		byte[] obj = reader.readBytes(END.length);
-		for (int i = 0; i < END.length; i++) {
-			if (obj[i] != END[i]) {
-				throw new InvalidTagException();
-			}
-		}
-	}
-
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-		writer.writeBytes(PStream.BEGIN);
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
-		writer.writeBytes(PStream.END);
 	}
 }

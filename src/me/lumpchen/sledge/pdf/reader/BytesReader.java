@@ -63,7 +63,7 @@ public class BytesReader {
 		return bytes;
 	}
 
-	
+	////
 	public byte[] readStringToken() {
 		int i = 0;
 		byte last = 0;
@@ -89,6 +89,79 @@ public class BytesReader {
 		this.skipSpace();
 		return bytes;
 	}
+	
+	public byte[] peekNextToken(int offset) {
+		int pos = this.buf.position();
+		this.buf.position(pos + offset);
+
+		byte[] bytes = this.readNextToken();
+		this.buf.position(pos);
+		
+		return bytes;
+	}
+	
+	public byte[] readNextToken() {
+		int i = 0;
+		byte last = 0;
+		int space = 0;
+		
+		while (true) {
+			if (i + space >= this.buf.remaining()) {
+				break;
+			}
+			byte b = buf.get(this.buf.position() + i + space);
+			if ('(' == b || ')' == b || '[' == b || ']' == b || '/' == b || '%' == b) {
+				if (i == 0) {
+					i++;					
+				}
+				if ('\\' == last) {
+					continue;
+				} else {
+					break;					
+				}
+			} else if ('<' == b) {
+				if (i == 0) {
+					i++;
+					byte next = buf.get(this.buf.position() + space + i);
+					if ('<' == next) {
+						i++;
+					}
+				}
+				break;
+			} else if ('>' == b) {
+				if (i == 0) {
+					i++;
+					byte next = buf.get(this.buf.position() + space + i);
+					if ('>' == next) {
+						i++;
+					}
+				}
+				break;
+			} else if (' ' == b || '\r' == b || '\n' == b) {
+				if (i == 0) {
+					space++;
+					continue;
+				}
+				break;
+			}
+			
+			last = b;
+			i++;
+		}
+		
+		if (i == 0) {
+			return null;
+		}
+		
+		byte[] bytes = new byte[i];
+		this.buf.position(this.buf.position() + space);
+		this.buf.get(bytes);
+		
+		this.skipSpace();
+		return bytes;
+	}
+	///
+	
 	
 	public byte[] readToken() {
 		int i = 0;
@@ -214,29 +287,29 @@ public class BytesReader {
 		return true;
 	}
 	
-	public byte[] peekNextToken(int offset) {
-		int pos = this.buf.position();
-		int remain = this.buf.remaining();
-		
-		int run = 0;
-		while (true) {
-			if (remain - offset == run) {
-				break;
-			}
-			byte next = this.buf.get(pos + offset + run);
-			if (isKeyword(next)) {
-				break;
-			}
-			run++;
-		}
-
-		this.buf.position(pos + offset);
-		byte[] bytes = new byte[run];
-		this.buf.get(bytes, 0, run);
-
-		this.buf.position(pos); // back to original position
-		return bytes;
-	}
+//	public byte[] peekNextToken(int offset) {
+//		int pos = this.buf.position();
+//		int remain = this.buf.remaining();
+//		
+//		int run = 0;
+//		while (true) {
+//			if (remain - offset == run) {
+//				break;
+//			}
+//			byte next = this.buf.get(pos + offset + run);
+//			if (isKeyword(next)) {
+//				break;
+//			}
+//			run++;
+//		}
+//
+//		this.buf.position(pos + offset);
+//		byte[] bytes = new byte[run];
+//		this.buf.get(bytes, 0, run);
+//
+//		this.buf.position(pos); // back to original position
+//		return bytes;
+//	}
 
 	public byte[] peekToSpace(int offset) {
 		int pos = this.buf.position();

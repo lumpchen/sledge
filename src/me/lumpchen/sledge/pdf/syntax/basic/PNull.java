@@ -1,8 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class PNull extends PObject {
 
@@ -16,32 +13,4 @@ public class PNull extends PObject {
 		return "null";
 	}
 
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-	}
-
-	@Override
-	protected void readBody(ObjectReader reader) {
-		byte[] bytes = reader.readBytes(NULL.length);
-		if (bytes[0] != NULL[0] || bytes[1] != NULL[1] || bytes[2] != NULL[2]
-				|| bytes[3] != NULL[3]) {
-			throw new InvalidTagException(new String(bytes));
-		}
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-	}
-
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
-	}
 }

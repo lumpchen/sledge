@@ -1,9 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class IndirectRef extends PObject {
 
@@ -28,24 +25,6 @@ public class IndirectRef extends PObject {
 	
 	public int getGenNum() {
 		return this.genNum;
-	}
-
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-		this.objNum = reader.readInt();
-		this.genNum = reader.readInt();
-	}
-
-	@Override
-	protected void readBody(ObjectReader reader) {
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-		byte tag = reader.readByte();
-		if (tag != BEGIN) {
-			throw new InvalidTagException();
-		}		
 	}
 	
 	@Override
@@ -75,22 +54,5 @@ public class IndirectRef extends PObject {
 	
 	public String toString() {
 		return this.objNum + " " + this.genNum + " " + "R";
-	}
-
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-		writer.writeInt(this.objNum);
-		writer.writeSpace();
-		writer.writeInt(this.genNum);
-		writer.writeSpace();
-		writer.writeBytes(IndirectRef.BEGIN);
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
 	}
 }

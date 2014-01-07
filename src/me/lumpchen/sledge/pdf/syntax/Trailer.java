@@ -128,11 +128,13 @@ public class Trailer {
 				this.startxref = new PNumber(line.readAsLong());
 			} else if (line.startsWith(PDictionary.BEGIN)) {
 				ObjectReader objReader = new ObjectReader(line);
-				PObject obj = objReader.readNextObj();
-				if (obj == null || !(obj instanceof PDictionary)) {
-					throw new InvalidElementException();
-				}
-				this.dict = (PDictionary) obj;
+				this.dict = objReader.readDict(); 
+				
+//				PObject obj = objReader.readNextObj();
+//				if (obj == null || !(obj instanceof PDictionary)) {
+//					throw new InvalidElementException();
+//				}
+//				this.dict = (PDictionary) obj;
 			}
 		}
 	}

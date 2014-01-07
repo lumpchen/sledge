@@ -170,10 +170,13 @@ public class PDFReader implements PageContentsLoader {
 	private IndirectObject readIndirectObject(long offset, PDFDocument pdfDoc) {
 		reader.setPosition(offset);
 		LineReader lineReader = new LineReader(reader);
-		ObjectReader objReader = new ObjectReader(lineReader);
+//		ObjectReader objReader = new ObjectReader(lineReader);
 
-		IndirectObject obj = new IndirectObject();
-		obj.read(objReader);
+//		IndirectObject obj = new IndirectObject();
+//		obj.read(objReader);
+		
+		ObjectReader objReader = new ObjectReader(lineReader);
+		IndirectObject obj = objReader.readIndirectObject();
 		return obj;
 	}
 

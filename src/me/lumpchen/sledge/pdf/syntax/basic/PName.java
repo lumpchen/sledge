@@ -4,9 +4,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
-
 public class PName extends PObject {
 
 	public static final byte BEGIN = '/';
@@ -261,37 +258,7 @@ public class PName extends PObject {
 		return true;
 	}
 
-	@Override
-	public void read(ObjectReader reader) {
-		// read directly, do nothing here
-	}
-
 	public String toString() {
 		return "/" + this.name;
-	}
-
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-	}
-
-	@Override
-	protected void readBody(ObjectReader reader) {
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-	}
-
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-		writer.writeString("/" + this.name);
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
 	}
 }

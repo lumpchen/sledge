@@ -11,6 +11,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.document.DocObject;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
@@ -102,6 +103,12 @@ public class PropertyTableModel extends DefaultTableModel {
 		if (inside instanceof PDictionary) {
 			PDictionary dict = (PDictionary) inside;
 			this.updateSelectedObject(dict);
+		} else if (inside instanceof PStream) {
+			PStream stream = (PStream) inside;
+			PDictionary dict = stream.getDict();
+			this.updateSelectedObject(dict);
+		} else if (inside instanceof PArray) {
+			this.updateSelectedObject((PArray) inside);
 		}
 	}
 	

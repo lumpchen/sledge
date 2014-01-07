@@ -1,8 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import me.lumpchen.sledge.pdf.reader.InvalidElementException;
-import me.lumpchen.sledge.pdf.reader.InvalidTagException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
@@ -10,7 +7,6 @@ import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public class IndirectObject extends PObject {
 
@@ -137,74 +133,4 @@ public class IndirectObject extends PObject {
 		return buf.toString();
 	}
 
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-		int iobj = reader.readInt();
-		int igen = reader.readInt();
-
-		byte[] obj = reader.readBytes(BEGIN.length);
-		for (int i = 0; i < BEGIN.length; i++) {
-			if (obj[i] != BEGIN[i]) {
-				throw new InvalidTagException();
-			}
-		}
-
-		this.objNum = iobj;
-		this.genNum = igen;
-	}
-
-	@Override
-	protected void readBody(ObjectReader reader) {
-		while (true) {
-			PObject next = reader.readNextObj();
-			if (null == next) {
-				break;
-			}
-			if (next instanceof PStream) {
-				PStream stream = (PStream) next;
-				if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
-					throw new InvalidElementException();
-				}
-				stream.setDict((PDictionary) this.insideObj);
-				stream.read(reader);
-				this.setInsideObj(stream);
-			} else {
-				this.insideObj = next;
-			}
-		}
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-		byte[] obj = reader.readBytes(END.length);
-		for (int i = 0; i < END.length; i++) {
-			if (obj[i] != END[i]) {
-				throw new InvalidTagException();
-			}
-		}
-	}
-
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-		writer.writeInt(this.objNum);
-		writer.writeSpace();
-		writer.writeInt(this.genNum);
-		writer.writeSpace();
-		writer.writeBytes(IndirectObject.BEGIN);
-		writer.writeLN();
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-		if (this.insideObj != null) {
-			this.insideObj.writer(writer);
-		}
-		writer.writeLN();
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
-		writer.writeBytes(IndirectObject.END);
-		writer.writeLN();
-	}
 }

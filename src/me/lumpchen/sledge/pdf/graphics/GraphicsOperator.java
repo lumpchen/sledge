@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
@@ -14,7 +13,6 @@ import me.lumpchen.sledge.pdf.syntax.basic.PString;
 import me.lumpchen.sledge.pdf.text.font.FontIndex;
 import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
-import me.lumpchen.sledge.pdf.writer.ObjectWriter;
 
 public abstract class GraphicsOperator extends PObject {
 
@@ -172,9 +170,11 @@ public abstract class GraphicsOperator extends PObject {
 		StringBuilder sbuf = new StringBuilder();
 		sbuf.append(new String(this.operatorBytes));
 		
-		for (int i = 0; i < this.operandNumber; i++) {
-			sbuf.append(" ");
-			sbuf.append(this.operandList.get(i).toString());
+		if (this.operandList != null && this.operandList.size() == this.operandNumber) {
+			for (int i = 0; i < this.operandNumber; i++) {
+				sbuf.append(" ");
+				sbuf.append(this.operandList.get(i).toString());
+			}			
 		}
 		
 		return sbuf.toString();
@@ -195,32 +195,7 @@ public abstract class GraphicsOperator extends PObject {
 	}
 
 	abstract public void execute(VirtualGraphics g2d);
-	
-	@Override
-	protected void readBeginTag(ObjectReader reader) {
-	}
 
-	@Override
-	protected void readBody(ObjectReader reader) {
-		reader.readBytes(this.operatorBytes.length);
-	}
-
-	@Override
-	protected void readEndTag(ObjectReader reader) {
-	}
-	
-	@Override
-	protected void writeBeginTag(ObjectWriter writer) {
-	}
-
-	@Override
-	protected void writeBody(ObjectWriter writer) {
-		writer.writeBytes(this.operatorBytes);
-	}
-
-	@Override
-	protected void writeEndTag(ObjectWriter writer) {
-	}
 }
 
 //General graphics state w, J, j, M, d, ri, i, gs

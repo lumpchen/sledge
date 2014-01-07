@@ -38,6 +38,13 @@ public class LineReader {
 			}
 		}
 		byte[] data = readNextLine();
+		if (null == this.segmentedFileReader) {
+			if (null == data) {
+				return null;
+			} else {
+				return new LineData(data);
+			}
+		}
 		
 		int i = 1;
 		while (data == null) {
