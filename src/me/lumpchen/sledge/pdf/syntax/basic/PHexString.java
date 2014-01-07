@@ -25,6 +25,10 @@ public class PHexString extends PString {
 	}
 	
 	protected void encode(byte[] data) {
+		this.charSequence = new char[data.length];
+		for (int i = 0; i < data.length; i++) {
+			this.charSequence[i] = (char) data[i];
+		}
 	}
 
 }
