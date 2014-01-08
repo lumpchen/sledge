@@ -86,6 +86,7 @@ public class EditorFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileopen = new JFileChooser();
+				fileopen.setCurrentDirectory(new File("/"));
 				FileFilter filter = new FileNameExtensionFilter(".pdf files", "pdf");
 				fileopen.addChoosableFileFilter(filter);
 				fileopen.setAcceptAllFileFilterUsed(false);

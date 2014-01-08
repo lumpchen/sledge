@@ -13,6 +13,9 @@ public class PName extends PObject {
 	public static final String PARENT = "Parent";
 	public static final PName parent = new PName(PARENT);
 	
+	public static final String XREFSTM = "XRefStm";
+	public static final PName xrefstm = new PName(XREFSTM);
+	
 	public static final String PREV = "Prev";
 	public static final PName prev = new PName(PREV);
 	
@@ -153,6 +156,7 @@ public class PName extends PObject {
 		nameMap.put(ROOT, root);
 		nameMap.put(SIZE, size);
 		nameMap.put(PREV, prev);
+		nameMap.put(XREFSTM, xrefstm);
 
 		nameMap.put(TITLE, title);
 		nameMap.put(AUTHOR, author);

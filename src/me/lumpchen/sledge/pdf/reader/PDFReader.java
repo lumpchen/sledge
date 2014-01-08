@@ -14,6 +14,7 @@ import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
@@ -235,6 +236,7 @@ public class PDFReader implements PageContentsLoader {
 		} else {
 			current.setPreTrailer(trailer);
 		}
+		
 		long prev = trailer.getPrev();
 		if (prev > 0) {
 			this.readTrailer(pdfDoc, prev, trailer);
@@ -248,23 +250,11 @@ public class PDFReader implements PageContentsLoader {
 
 		Trailer trailer = pdfDoc.getTrailer();
 		this.readXRef(pdfDoc, trailer, null);
-		
-//		long fp = trailer.getStartxref();
-//		reader.setPosition(fp);
-
-//		int size = trailer.getSize();
-		// int bufSize = (size + 2) * 20;
-		// reader.readSegment(bufSize);
-
-//		LineReader lineReader = new LineReader(this.reader);
-//		XRef xref = new XRef(size);
-//		xref.read(lineReader);
-//		pdfDoc.setXRef(xref);
 	}
 	
 	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) {
 		long fp = trailer.getStartxref();
-		reader.setPosition(fp);
+		this.reader.setPosition(fp);
 
 		int size = trailer.getSize();
 		LineReader lineReader = new LineReader(this.reader);
@@ -276,6 +266,17 @@ public class PDFReader implements PageContentsLoader {
 		} else {
 			xref.read(lineReader);
 		}
+		
+		long xrefStream = trailer.getXRefStm();
+		if (xrefStream > 0) {
+			IndirectObject refStmObj = this.readIndirectObject(xrefStream, pdfDoc);
+			if (null == refStmObj) {
+				throw new SyntaxException("not found xref stream: " + trailer.toString());
+			}
+			PStream refStream = refStmObj.getStream();
+			xref.readStream(refStream);
+		}
+		
 		if (trailer.getPrevTrailer() != null) {
 			this.readXRef(pdfDoc, trailer.getPrevTrailer(), xref);
 		}

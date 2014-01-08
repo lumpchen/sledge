@@ -16,40 +16,18 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		testUI();
 		testReader();
 	}
 	
 	static void testReader() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/incremental_update.pdf");
+		File f = new File("/xref_stream.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 			Page page = doc.getPage(1);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	static void testUI() {
-		PDFReader reader = new PDFReader();
-
-		File f = new File("/p3.pdf");
-		try {
-			PDFDocument doc = reader.read(f);
-
-			Page page = doc.getPage(3);
 			
-			System.err.println(page);
-			
-			FrameViewer viewer = new FrameViewer();
-			
-			PageCanvas pageCanvas = new PageCanvas();
-			pageCanvas.setPage(page);
-			viewer.setPageCanvas(pageCanvas);
-			
-			viewer.setVisible(true);
+			System.out.println(page);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

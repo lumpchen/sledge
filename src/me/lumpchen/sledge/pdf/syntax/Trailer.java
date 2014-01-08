@@ -59,6 +59,17 @@ public class Trailer {
 		return (IndirectRef) root;
 	}
 	
+	public long getXRefStm() {
+		PObject refStm = this.dict.get(PName.xrefstm);
+		if (null == refStm) {
+			return -1;
+		}
+		if (!(refStm instanceof PNumber)) {
+			throw new InvalidElementException(PName.XREFSTM);
+		}
+		return ((PNumber) refStm).longValue();
+	}
+	
 	public long getPrev() {
 		PObject prev = this.dict.get(PName.prev);
 		if (null == prev) {
@@ -129,12 +140,6 @@ public class Trailer {
 			} else if (line.startsWith(PDictionary.BEGIN)) {
 				ObjectReader objReader = new ObjectReader(line);
 				this.dict = objReader.readDict(); 
-				
-//				PObject obj = objReader.readNextObj();
-//				if (obj == null || !(obj instanceof PDictionary)) {
-//					throw new InvalidElementException();
-//				}
-//				this.dict = (PDictionary) obj;
 			}
 		}
 	}

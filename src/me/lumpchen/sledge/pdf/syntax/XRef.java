@@ -9,6 +9,7 @@ import me.lumpchen.sledge.pdf.reader.BytesReader;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class XRef {
 
@@ -49,14 +50,6 @@ public class XRef {
 
 	public List<XRefEntry> getEntryList() {
 		List<XRefEntry> list = new ArrayList<XRefEntry>();
-//		for (Section section : this.sectionList) {
-//			int sectionNo = section.sectionNo;
-//			int sectionCount = section.count;
-//			for (int i = sectionNo, n = sectionNo + sectionCount; i < n; i++) {
-//				XRefEntry entry = this.entryMap.get(i);
-//				list.add(entry);
-//			}
-//		}
 		for (int i = 0; i < this.entryCount; i++) {
 			XRefEntry entry = this.entryMap.get(i);
 			list.add(entry);
@@ -169,5 +162,9 @@ public class XRef {
 			buf.append(free ? "f" : "n");
 			return buf.toString();
 		}
+	}
+	
+	public void readStream(PStream xrefStream) {
+		System.out.println(xrefStream);
 	}
 }
