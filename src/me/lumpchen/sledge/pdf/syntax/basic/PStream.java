@@ -1,5 +1,7 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+
 
 public class PStream extends PObject {
 
@@ -19,6 +21,14 @@ public class PStream extends PObject {
 	
 	public void setDict(PDictionary dict) {
 		this.dict = dict;
+	}
+	
+	public int getLength() {
+		PNumber len = this.dict.getValueAsNumber(PName.Length);
+		if (null == len) {
+			throw new SyntaxException("not found stream length.");
+		}
+		return len.intValue();
 	}
 	
 	public PDictionary getDict() {
