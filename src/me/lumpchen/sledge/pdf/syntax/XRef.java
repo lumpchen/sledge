@@ -171,6 +171,15 @@ public class XRef {
 		decoder.setColumns(3);
 		
 		byte[] out = decoder.decode(xrefStream.getStream());
-		System.out.println(new String(out));
+		int i = 0;
+		for (int b : out) {
+			if (i == 2) {
+				System.out.println(b + " ");
+				i = 0;
+				continue;
+			}
+			System.out.print(b + " ");
+			i++;
+		}
 	}
 }

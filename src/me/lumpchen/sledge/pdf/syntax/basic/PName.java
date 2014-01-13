@@ -104,6 +104,8 @@ public class PName extends PObject {
 	public static final PName mediabox = new PName(MEDIABOX);
 	
 	// filter
+	public static final String FILTER = "Filter";
+	public static final PName Filter = new PName(FILTER);
 	public static final String ASCII85DECODE = "ASCII85Decode";
 	public static final PName ASCII85Decode = new PName(ASCII85DECODE);
 	public static final String ASCIIHEXDECODE = "ASCIIHexDecode";
@@ -146,7 +148,6 @@ public class PName extends PObject {
 	public static final PName Encoding = new PName(ENCODING);
 	public static final String TOUNICODE = "ToUnicode";
 	public static final PName ToUnicode = new PName(TOUNICODE);
-	
 	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
@@ -211,6 +212,8 @@ public class PName extends PObject {
 		nameMap.put(WIDTHS, Widths);
 		nameMap.put(ENCODING, Encoding);
 		nameMap.put(TOUNICODE, ToUnicode);
+		
+		nameMap.put(FILTER, Filter);
 	}
 
 	private PName(byte[] name) {

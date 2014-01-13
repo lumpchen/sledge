@@ -1,5 +1,8 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 
 
@@ -37,6 +40,23 @@ public class PStream extends PObject {
 	
 	public byte[] getStream() {
 		return this.stream;
+	}
+
+	public List<PName> getFilters() {
+		PObject filter = this.dict.get(PName.Filter);
+		if (null == filter) {
+			return new ArrayList<PName>(0);
+		}
+		List<PName> filters = new ArrayList<PName>();
+		if (filter instanceof PName) {
+			filters.add((PName) filter);
+		} else if (filter instanceof PArray) {
+			PArray arr = (PArray) filters;
+			for (int i = 0; i < arr.size(); i++) {
+				filters.add((PName) arr.getChild(i));				
+			}
+		}
+		return filters;
 	}
 	
 	public void setStream(byte[] stream) {
