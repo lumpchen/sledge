@@ -78,7 +78,7 @@ public class PropertyTableModel extends DefaultTableModel {
 		}
 		int size = array.size();
 		for (int i = 0; i < size; i++) {
-			PObject item = array.getChild(i);
+			PObject item = array.get(i);
 			PNumber index = new PNumber(i);
 			this.addRow(index, item);
 		}

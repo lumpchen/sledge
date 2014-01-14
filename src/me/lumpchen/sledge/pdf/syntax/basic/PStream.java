@@ -53,7 +53,7 @@ public class PStream extends PObject {
 		} else if (filter instanceof PArray) {
 			PArray arr = (PArray) filters;
 			for (int i = 0; i < arr.size(); i++) {
-				filters.add((PName) arr.getChild(i));				
+				filters.add((PName) arr.get(i));				
 			}
 		}
 		return filters;

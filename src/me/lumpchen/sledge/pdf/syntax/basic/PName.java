@@ -127,6 +127,12 @@ public class PName extends PObject {
 	public static final String CRYPT = "Crypt";
 	public static final PName Crypt = new PName(CRYPT);
 	
+	public static final String DECODEPARMS = "DecodeParms";
+	public static final PName DecodeParms = new PName(DECODEPARMS);
+	public static final String COLUMNS = "Columns";
+	public static final PName Columns = new PName(COLUMNS);
+	public static final String PREDICTOR = "Predictor";
+	public static final PName Predictor = new PName(PREDICTOR);
 	
 	public static final String LENGTH = "Length";
 	public static final PName Length = new PName(LENGTH);
@@ -148,6 +154,14 @@ public class PName extends PObject {
 	public static final PName Encoding = new PName(ENCODING);
 	public static final String TOUNICODE = "ToUnicode";
 	public static final PName ToUnicode = new PName(TOUNICODE);
+	
+	
+	public static final String XREF = "XRef";
+	public static final PName XRef = new PName(XREF);
+	public static final String INDEX = "Index";
+	public static final PName Index = new PName(INDEX);
+	public static final String W = "W";
+	public static final PName w = new PName(W);
 	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
@@ -202,6 +216,10 @@ public class PName extends PObject {
 		nameMap.put(JPXDECODE, JPXDecode);
 		nameMap.put(CRYPT, Crypt);
 		
+		nameMap.put(DECODEPARMS, DecodeParms);
+		nameMap.put(COLUMNS, Columns);
+		nameMap.put(PREDICTOR, Predictor);
+		
 		nameMap.put(LENGTH, Length);
 		
 		nameMap.put(BASEFONT, BaseFont);
@@ -214,6 +232,10 @@ public class PName extends PObject {
 		nameMap.put(TOUNICODE, ToUnicode);
 		
 		nameMap.put(FILTER, Filter);
+		
+		nameMap.put(XREF, XRef);
+		nameMap.put(INDEX, Index);
+		nameMap.put(W, w);
 	}
 
 	private PName(byte[] name) {

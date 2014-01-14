@@ -111,7 +111,7 @@ public class PDFReader implements PageContentsLoader {
 		PArray pages = pageTree.getKids();
 		int size = pages.size();
 		for (int i = 0; i < size; i++) {
-			PObject obj = pages.getChild(i);
+			PObject obj = pages.get(i);
 			this.readPages(obj, pageTree, pdfDoc);
 		}
 	}
@@ -163,7 +163,7 @@ public class PDFReader implements PageContentsLoader {
 	private void readPage(PArray pageArray, PageTree pageTree, PDFDocument pdfDoc) {
 		int size = pageArray.size();
 		for (int i = 0; i < size; i++) {
-			PObject obj = pageArray.getChild(i);
+			PObject obj = pageArray.get(i);
 			readPages(obj, pageTree, pdfDoc);
 		}
 	}

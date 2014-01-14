@@ -3,6 +3,7 @@ package me.lumpchen.sledge.pdf.syntax.codec;
 import java.util.List;
 import java.util.Stack;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
@@ -11,6 +12,7 @@ public class DecoderChain {
 	private Stack<Decoder> decoderChain;
 
 	public DecoderChain() {
+		this.decoderChain = new Stack<Decoder>();
 	}
 
 	public byte[] decode(PStream stream) {
@@ -19,7 +21,7 @@ public class DecoderChain {
 			return stream.getStream();
 		}
 		for (PName filter : filters) {
-			this.addDecoder(filter);
+			this.addDecoder(filter, stream.getDict().getValueAsDict(PName.DecodeParms));
 		}
 		return this.decode(stream.getStream());
 	}
@@ -35,8 +37,8 @@ public class DecoderChain {
 		return stream;
 	}
 	
-	public void addDecoder(PName filterName) {
-		Decoder decoder = Decoder.instance(filterName);
+	public void addDecoder(PName filterName, PDictionary decodeParms) {
+		Decoder decoder = Decoder.instance(filterName, decodeParms);
 		this.decoderChain.push(decoder);
 	}
 	

@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 
 public class FlateDecoder extends Decoder {
 
@@ -294,5 +296,21 @@ public class FlateDecoder extends Decoder {
 		}
 
 		return count;
+	}
+
+	@Override
+	public void setDecodeParms(PDictionary decodeParms) {
+		if (null == decodeParms) {
+			return;
+		}
+		PNumber columns = decodeParms.getValueAsNumber(PName.Columns);
+		if (columns != null) {
+			this.setColumns(columns.intValue());
+		}
+		
+		PNumber predictor = decodeParms.getValueAsNumber(PName.Predictor);
+		if (predictor != null) {
+			this.setPredictor(predictor.intValue());
+		}
 	}
 }

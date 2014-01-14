@@ -242,7 +242,7 @@ public class ObjectReader {
 			}
 			
 			PObject obj = this.readObject(token);
-			array.appendChild(obj);
+			array.add(obj);
 		}
 		
 		return array;

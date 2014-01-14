@@ -10,7 +10,6 @@ import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.codec.FlateDecoder;
 
 public class XRef {
 
@@ -165,21 +164,7 @@ public class XRef {
 		}
 	}
 	
-	public void readStream(PStream xrefStream) {
-		FlateDecoder decoder = new FlateDecoder();
-		decoder.setPredictor(12);
-		decoder.setColumns(3);
-		
-		byte[] out = decoder.decode(xrefStream.getStream());
-		int i = 0;
-		for (int b : out) {
-			if (i == 2) {
-				System.out.println(b + " ");
-				i = 0;
-				continue;
-			}
-			System.out.print(b + " ");
-			i++;
-		}
+	public void readStream(PStream stream) {
+		XRefStream xrefst = new XRefStream(stream);
 	}
 }

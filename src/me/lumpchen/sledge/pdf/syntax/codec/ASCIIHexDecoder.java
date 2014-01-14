@@ -2,11 +2,12 @@ package me.lumpchen.sledge.pdf.syntax.codec;
 
 import java.io.ByteArrayOutputStream;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public class ASCIIHexDecode extends Decoder {
+public class ASCIIHexDecoder extends Decoder {
 
-	protected ASCIIHexDecode() {
+	protected ASCIIHexDecoder() {
 		super(PName.ASCIIHexDecode);
 	}
 
@@ -39,5 +40,11 @@ public class ASCIIHexDecode extends Decoder {
         }
         return out.toByteArray();
     }
+
+	@Override
+	public void setDecodeParms(PDictionary decodeParms) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

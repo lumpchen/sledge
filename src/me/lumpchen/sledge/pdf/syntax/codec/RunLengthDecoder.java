@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.syntax.codec;
 
 import java.io.ByteArrayOutputStream;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public class RunLengthDecoder extends Decoder {
@@ -33,6 +34,12 @@ public class RunLengthDecoder extends Decoder {
 		}
 
 		return baos.toByteArray();
+	}
+
+	@Override
+	public void setDecodeParms(PDictionary decodeParms) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

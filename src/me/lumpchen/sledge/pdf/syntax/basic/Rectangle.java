@@ -23,10 +23,10 @@ public class Rectangle {
 		if (rect.size() != 4) {
 			throw new SyntaxException("mediabox array is invalid as: " + rect);
 		}
-		this.llx = (PNumber) rect.getChild(0);
-		this.lly = (PNumber) rect.getChild(1);
-		this.urx = (PNumber) rect.getChild(2);
-		this.ury = (PNumber) rect.getChild(3);
+		this.llx = (PNumber) rect.get(0);
+		this.lly = (PNumber) rect.get(1);
+		this.urx = (PNumber) rect.get(2);
+		this.ury = (PNumber) rect.get(3);
 	}
 
 	public PNumber llx() {

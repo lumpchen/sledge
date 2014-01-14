@@ -15,9 +15,9 @@ public class PArray extends PObject {
 		this.objList = new ArrayList<PObject>();
 	}
 		
-	public void appendChild(PObject child) {
+	public void add(PObject child) {
 		if (null == child) {
-			System.out.println("null");
+			return;
 		}
 		this.objList.add(child);
 	}
@@ -26,7 +26,7 @@ public class PArray extends PObject {
 		return this.objList.size();
 	}
 	
-	public PObject getChild(int index) {
+	public PObject get(int index) {
 		return this.objList.get(index);
 	}
 	
