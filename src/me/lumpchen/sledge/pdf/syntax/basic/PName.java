@@ -163,6 +163,15 @@ public class PName extends PObject {
 	public static final String W = "W";
 	public static final PName w = new PName(W);
 	
+	public static final String OBJSTM = "ObjStm";
+	public static final PName ObjStm = new PName(OBJSTM);
+	public static final String FIRST = "First";
+	public static final PName First = new PName(FIRST);
+	public static final String N = "N";
+	public static final PName n = new PName(N);
+	public static final String EXTENDS = "Extends";
+	public static final PName Extends = new PName(EXTENDS);
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	static {
 		nameMap.put(PARENT, parent);
@@ -236,6 +245,11 @@ public class PName extends PObject {
 		nameMap.put(XREF, XRef);
 		nameMap.put(INDEX, Index);
 		nameMap.put(W, w);
+		
+		nameMap.put(OBJSTM, ObjStm);
+		nameMap.put(FIRST, First);
+		nameMap.put(N, n);
+		nameMap.put(EXTENDS, Extends);
 	}
 
 	private PName(byte[] name) {

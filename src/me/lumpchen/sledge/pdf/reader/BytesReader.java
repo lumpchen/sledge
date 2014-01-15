@@ -227,7 +227,7 @@ public class BytesReader {
 		return bytes;
 	}
 
-	public int readInt() {
+	public Integer readInt() {
 		List<Integer> num = new ArrayList<Integer>();
 		while (this.buf.remaining() > 0) {
 			byte b = this.buf.get();
@@ -240,6 +240,10 @@ public class BytesReader {
 			num.add(Character.digit(b, 10));
 		}
 		
+		if (0 == num.size()) {
+			return null;	
+		}
+		
 		int value = 0;
 		for (int i = 0, n = num.size(); i < n; i++) {
 			value += num.get(i) * (int) (Math.pow(10, n - i - 1) + 0.5);
@@ -247,7 +251,7 @@ public class BytesReader {
 		return value;
 	}
 	
-	public long readLong() {
+	public Long readLong() {
 		List<Integer> num = new ArrayList<Integer>();
 		while (this.remaining() > 0) {
 			byte b = this.buf.get();
@@ -258,6 +262,10 @@ public class BytesReader {
 				break;
 			}
 			num.add(Character.digit(b, 10));
+		}
+		
+		if (0 == num.size()) {
+			return null;	
 		}
 		
 		long value = 0;

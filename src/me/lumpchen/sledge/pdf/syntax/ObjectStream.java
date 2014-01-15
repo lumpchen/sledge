@@ -1,0 +1,104 @@
+package me.lumpchen.sledge.pdf.syntax;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import me.lumpchen.sledge.pdf.reader.BytesReader;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.codec.DecoderChain;
+
+public class ObjectStream {
+
+	private int count;
+	private int first;
+	
+	private byte[] data;
+	
+	private Map<Integer, Integer> indexTable = new HashMap<Integer, Integer>();
+	
+	public ObjectStream(PStream stream) {
+		this.initialize(stream);
+	}
+	
+	private void initialize(PStream stream) {
+		PDictionary dict = stream.getDict();
+		if (null == dict) {
+			throw new SyntaxException("not found the dictionary of stream.");
+		}
+		
+		PName type = dict.getValueAsName(PName.type);
+		if (!type.equals(PName.ObjStm)) {
+			throw new SyntaxException("invalid ObjStream type: " + type);
+		}
+		
+		PNumber n = dict.getValueAsNumber(PName.n);
+		if (null == n) {
+			throw new SyntaxException("not found /N entry.");
+		}
+		this.count = n.intValue();
+		
+		n = dict.getValueAsNumber(PName.First);
+		if (null == n) {
+			throw new SyntaxException("not found /First entry.");
+		}
+		this.first = n.intValue();
+		
+		DecoderChain chain = new DecoderChain();
+		byte[] out = chain.decode(stream);
+		if (null == out || out.length == 0) {
+			throw new SyntaxException("the stream data is empty.");
+		}
+		this.data = out;
+		
+		this.readIndexTable();
+	}
+	
+	private void readIndexTable() {
+		byte[] header = new byte[this.first];
+		System.arraycopy(this.data, 0, header, 0, this.first);
+		
+		BytesReader reader = new BytesReader(header);
+		while (true) {
+			Integer objNum = reader.readInt();
+			if (null == objNum) {
+				break;
+			}
+			Integer offset = reader.readInt();
+			if (null == offset) {
+				throw new SyntaxException("index not matched");
+			}
+			this.indexTable.put(objNum, offset);
+		}
+		
+		if (this.count != this.indexTable.size()) {
+			throw new SyntaxException("object count not matched");
+		}
+	}
+	
+	public byte[] getObject(int objNum) {
+		if (!this.indexTable.containsKey(objNum)) {
+			return null;
+		}
+		Integer offset = this.indexTable.get(objNum);
+		if (null == offset) {
+			throw new SyntaxException("not found object: " + objNum);
+		}
+		
+		int start = offset + this.first;
+		
+		long end = 0;
+		if (this.indexTable.containsKey(objNum + 1)) {
+			end = this.indexTable.get(objNum + 1) + this.first;
+		} else {
+			end = this.data.length;
+		}
+		
+		int objLen = (int) (end - start);
+		byte[] objData = new byte[objLen];
+		System.arraycopy(this.data, start, objData, 0, objLen);
+		return objData;
+	}
+}
