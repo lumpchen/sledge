@@ -11,7 +11,8 @@ import me.lumpchen.sledge.pdf.syntax.codec.DecoderChain;
 public class XRefStream {
 	
 	private int size;
-	private int[] index;
+	private int start;
+	private int count;
 	private int[] w;
 	private int[][] entries;
 	
@@ -50,24 +51,25 @@ public class XRefStream {
 		this.size = num.intValue();
 		
 		arr = dict.getValueAsArray(PName.Index);
-		this.index = new int[2];
 		if (arr != null) {
 			if (arr.size() != 2) {
 				throw new SyntaxException("invalid /Index entry: " + arr.toString());
 			}
-			for (int i = 0; i < arr.size(); i++) {
-				PObject obj = arr.get(i);
-				if (!(obj instanceof PNumber)) {
-					throw new SyntaxException("invalid /W entry: " + obj.toString());	
-				}
-				this.index[i] = ((PNumber) obj).intValue();
+			PObject obj = arr.get(0);
+			if (!(obj instanceof PNumber)) {
+				throw new SyntaxException("invalid /Index entry: " + obj.toString());	
 			}
+			this.start = ((PNumber) obj).intValue();
+			obj = arr.get(1);
+			if (!(obj instanceof PNumber)) {
+				throw new SyntaxException("invalid /Index entry: " + obj.toString());	
+			}
+			this.count = ((PNumber) obj).intValue();
 		} else {
-			index[0] = 0;
-			index[1] = this.size;
+			this.start = 0;
+			this.count = this.size;
 		}
 		
-		int count = index[1];
 		this.entries = new int[count][];
 		
 		DecoderChain chain = new DecoderChain();
@@ -88,6 +90,60 @@ public class XRefStream {
 				this.entries[pos][j] = out[i++];
 			}
 			pos++;
+		}
+	}
+	
+	public int getStart() {
+		return this.start;
+	}
+	
+	public int getCount() {
+		return this.count;
+	}
+	
+	public WEntry getEntry(int index) {
+		if (index < this.start || index > this.start + this.count) {
+			throw new SyntaxException("out of range: " + index);
+		}
+		int pos = index - this.start;
+		
+		if (this.w.length == 4) {
+			
+		} else {
+			int f1 = this.entries[pos][0];
+			int f2 = this.entries[pos][1];
+			int f3 = this.entries[pos][2];
+			return new WEntry(f1, f2, f3);
+		}
+		
+		return null;
+	}
+	
+	public static class WEntry {
+		public static final int TYPE_0 = 0;
+		public static final int TYPE_1 = 1;
+		public static final int TYPE_2 = 2;
+
+		public int type = -1;
+		public int offset = -1;
+		public int objNum = -1;
+		public int genNum = -1;
+		public int index = -1;
+		
+		public WEntry(int field_1, int field_2, int field_3) {
+			if (field_1 == TYPE_0) {
+				this.type = TYPE_0;
+				this.objNum = field_2;
+				this.genNum = field_3;
+			} else if (field_1 == TYPE_1) {
+				this.type = TYPE_1;
+				this.offset = field_2;
+				this.genNum = field_3;
+			} else if (field_1 == TYPE_2) {
+				this.type = TYPE_2;
+				this.objNum = field_2;
+				this.index = field_3;				
+			}
 		}
 	}
 }

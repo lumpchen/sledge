@@ -125,4 +125,11 @@ public class LineReader {
 		
 		return data;
 	}
+	
+	public String toString() {
+		if (null == this.buf) {
+			return "";
+		}
+		return new String(buf.array());
+	}
 }

@@ -78,20 +78,20 @@ public class ObjectStream {
 		}
 	}
 	
-	public byte[] getObject(int objNum) {
-		if (!this.indexTable.containsKey(objNum)) {
+	public byte[] getContent(int index) {
+		if (!this.indexTable.containsKey(index)) {
 			return null;
 		}
-		Integer offset = this.indexTable.get(objNum);
+		Integer offset = this.indexTable.get(index);
 		if (null == offset) {
-			throw new SyntaxException("not found object: " + objNum);
+			throw new SyntaxException("not found object: " + index);
 		}
 		
 		int start = offset + this.first;
 		
 		long end = 0;
-		if (this.indexTable.containsKey(objNum + 1)) {
-			end = this.indexTable.get(objNum + 1) + this.first;
+		if (this.indexTable.containsKey(index + 1)) {
+			end = this.indexTable.get(index + 1) + this.first + 1;
 		} else {
 			end = this.data.length;
 		}

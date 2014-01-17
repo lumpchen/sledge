@@ -5,6 +5,7 @@ import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.ObjectStream;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.ResourceManager;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
@@ -20,6 +21,7 @@ public class PDFDocument {
 	private FontManager fontManager = FontManager.instance();
 	private ResourceManager resourceManager =  ResourceManager.instance();
 	private Map<IndirectRef, IndirectObject> objectCache;
+	private Map<IndirectRef, ObjectStream> objStreamCache;
 	
 	private Trailer trailer;
 	private XRef xref;
@@ -29,6 +31,7 @@ public class PDFDocument {
 	
 	public PDFDocument() {
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
+		this.objStreamCache = new HashMap<IndirectRef, ObjectStream>();
 	}
 
 	public void setTrailer(Trailer trailer) {
@@ -95,6 +98,14 @@ public class PDFDocument {
 		}
 		
 		return null;
+	}
+	
+	public void pushObjStream(IndirectRef ref, ObjectStream stream) {
+		this.objStreamCache.put(ref, stream);
+	}
+	
+	public ObjectStream getObjStream(IndirectRef ref) {
+		return this.objStreamCache.get(ref);
 	}
 	
 	public void putResource(PName key, PDFFont font) {

@@ -43,6 +43,13 @@ public class LineData {
 		return true;
 	}
 	
+	public boolean startsWith(String prefix) {
+		if (source.length < prefix.length()) {
+			return false;
+		}
+		return this.readAsString().startsWith(prefix);
+	}
+	
 	public boolean contain(byte[] dst) {
 		if (source.length < dst.length) {
 			return false;

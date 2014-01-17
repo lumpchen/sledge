@@ -7,6 +7,7 @@ import java.nio.channels.FileChannel;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.ObjectStream;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
@@ -168,19 +169,6 @@ public class PDFReader implements PageContentsLoader {
 		}
 	}
 
-	private IndirectObject readIndirectObject(long offset, PDFDocument pdfDoc) {
-		reader.setPosition(offset);
-		LineReader lineReader = new LineReader(reader);
-//		ObjectReader objReader = new ObjectReader(lineReader);
-
-//		IndirectObject obj = new IndirectObject();
-//		obj.read(objReader);
-		
-		ObjectReader objReader = new ObjectReader(lineReader);
-		IndirectObject obj = objReader.readIndirectObject();
-		return obj;
-	}
-
 	private void readDocumentInfo(PDFDocument pdfDoc) {
 		if (pdfDoc.getTrailer() == null) {
 			throw new ReadException();
@@ -237,6 +225,8 @@ public class PDFReader implements PageContentsLoader {
 			current.setPreTrailer(trailer);
 		}
 		
+		trailer.setStartxref(startxref);
+		
 		long prev = trailer.getPrev();
 		if (prev > 0) {
 			this.readTrailer(pdfDoc, prev, trailer);
@@ -285,8 +275,50 @@ public class PDFReader implements PageContentsLoader {
 	@Override
 	public IndirectObject loadObject(IndirectRef ref, PDFDocument pdfDoc) {
 		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(ref);
-		IndirectObject obj = this.readIndirectObject(entry.offset, pdfDoc);
+		
+		IndirectObject obj = null;
+		if (entry.inObjectStream) {
+			int objStreamNum = entry.objStreamNum;
+			IndirectRef osRef = new IndirectRef(objStreamNum, entry.genNum);
+
+			ObjectStream os = pdfDoc.getObjStream(osRef);
+			if (null == os) {
+				IndirectObject oStream = this.loadObject(osRef, pdfDoc);
+				
+				if (null == oStream) {
+					throw new SyntaxException("not found obj: " + osRef);
+				}
+				
+				PStream stream = oStream.getStream();
+				os = new ObjectStream(stream);
+				pdfDoc.pushObjStream(osRef, os);
+			} 
+			obj = this.readIndirectObject(ref, os.getContent(entry.objNum), pdfDoc);
+		} else {
+			obj = this.readIndirectObject(entry.offset, pdfDoc);			
+		}
 		return obj;
 	}
 	
+	private IndirectObject readIndirectObject(long offset, PDFDocument pdfDoc) {
+		reader.setPosition(offset);
+		LineReader lineReader = new LineReader(reader);
+		
+		ObjectReader objReader = new ObjectReader(lineReader);
+		IndirectObject obj = objReader.readIndirectObject();
+		return obj;
+	}
+	
+	private IndirectObject readIndirectObject(IndirectRef ref, byte[] data, PDFDocument pdfDoc) {
+		IndirectObject obj = new IndirectObject(ref.getObjNum(), ref.getGenNum());
+		LineReader lineReader = new LineReader(new LineData(data));
+		
+		ObjectReader objReader = new ObjectReader(lineReader);
+		PObject insideObj = objReader.readNextObj();
+		
+		if (insideObj != null) {
+			obj.setInsideObj(insideObj);			
+		}
+		return obj;
+	}
 }

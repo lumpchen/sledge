@@ -17,6 +17,8 @@ public class FlateDecoder extends Decoder {
 	private int colors = 1;
 	private int bitsPerComponent = 8;
 	private int columns = 1;
+	
+	private PDictionary decodeParms;
 
 	public FlateDecoder() {
 		super(PName.FlateDecode);
@@ -44,6 +46,9 @@ public class FlateDecoder extends Decoder {
 			byte[] out = this.inflate(in);
 			if (null == out) {
 				return null;
+			}
+			if (null == this.decodeParms) {
+				return out;
 			}
 			out = decode1(out);
 			return out;
@@ -303,6 +308,8 @@ public class FlateDecoder extends Decoder {
 		if (null == decodeParms) {
 			return;
 		}
+		this.decodeParms = decodeParms;
+		
 		PNumber columns = decodeParms.getValueAsNumber(PName.Columns);
 		if (columns != null) {
 			this.setColumns(columns.intValue());
