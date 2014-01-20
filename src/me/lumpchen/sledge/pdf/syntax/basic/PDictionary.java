@@ -55,6 +55,14 @@ public class PDictionary extends PObject {
 		return (PDictionary) value;
 	}
 	
+	public PBoolean getValueAsBool(PName key) {
+		PObject value = this.get(key);
+		if (null == value || !(value instanceof PBoolean)) {
+			return null;
+		}
+		return (PBoolean) value;
+	}
+	
 	public PNumber getValueAsNumber(PName key) {
 		PObject value = this.get(key);
 		if (null == value || !(value instanceof PNumber)) {

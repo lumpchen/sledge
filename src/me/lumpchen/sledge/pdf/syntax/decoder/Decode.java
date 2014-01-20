@@ -1,14 +1,17 @@
-package me.lumpchen.sledge.pdf.syntax.codec;
+package me.lumpchen.sledge.pdf.syntax.decoder;
+
+import java.nio.ByteBuffer;
 
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
-public abstract class Decoder {
+public abstract class Decode {
 
+	protected PDictionary decodeParms;
 	protected PName name;
 
-	protected Decoder(PName name) {
+	protected Decode(PName name) {
 		this.name = name;
 	}
 
@@ -16,28 +19,28 @@ public abstract class Decoder {
 		return name;
 	}
 
-	public static Decoder instance(PName filterName, PDictionary decodeParms) {
-		Decoder decoder = null;
+	public static Decode instance(PName filterName, PDictionary decodeParms) {
+		Decode decoder = null;
 		if (filterName.equals(PName.ASCII85Decode)) {
-			decoder = new ASCII85Decoder();
+			decoder = new ASCII85Decode();
 		} else if (filterName.equals(PName.FlateDecode)) {
-			decoder = new FlateDecoder();
+			decoder = new FlateDecode();
 		} else if (filterName.equals(PName.ASCIIHexDecode)) {
-			decoder = new ASCIIHexDecoder();
+			decoder = new ASCIIHexDecode();
 		} else if (filterName.equals(PName.LZWDecode)) {
-			decoder = new LZWDecoder();
+			decoder = new LZWDecode();
 		} else if (filterName.equals(PName.CCITTFaxDecode)) {
-			decoder = new CCITTFaxDecoder();
+			decoder = new CCITTFaxDecode();
 		} else if (filterName.equals(PName.Crypt)) {
 			decoder = new CryptDecoder();
 		} else if (filterName.equals(PName.DCTDecode)) {
-			decoder = new DCTDecoder();
+			decoder = new DCTDecode();
 		} else if (filterName.equals(PName.JBIG2Decode)) {
 			decoder = new JBIG2Decoder();
 		} else if (filterName.equals(PName.JPXDecode)) {
 			decoder = new JPXDecoder();
 		} else if (filterName.equals(PName.RunLengthDecode)) {
-			decoder = new RunLengthDecoder();
+			decoder = new RunLengthDecode();
 		} else { 
 			throw new SyntaxException("unknown filter: " + filterName);			
 		}
@@ -46,9 +49,12 @@ public abstract class Decoder {
 		return decoder;
 	}
 
-	abstract public void setDecodeParms(PDictionary decodeParms);
-	abstract public byte[] decode(byte[] src);
-
+	protected void setDecodeParms(PDictionary decodeParms) {
+		this.decodeParms = decodeParms;
+	}
+	
+	abstract public ByteBuffer decode(ByteBuffer src);
+	
 	public static final boolean isWhitespace(int ch) {
 		return (ch == 0 || ch == 9 || ch == 10 || ch == 12 || ch == 13 || ch == 32);
 	}

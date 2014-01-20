@@ -8,6 +8,7 @@ public class LineReader {
 	public static final byte LF = '\n'; 
 	private ByteBuffer buf;
 	private SegmentedFileReader segmentedFileReader;
+	private boolean nonEOL = false;
 	
 	public LineReader(SegmentedFileReader reader) {
 		this.segmentedFileReader = reader;
@@ -16,9 +17,8 @@ public class LineReader {
 	public LineReader(LineData data) {
 		byte[] bytes = data.getBytes();
 		this.buf = ByteBuffer.wrap(bytes);
-		if (bytes[bytes.length - 1] != '\n') {
-			this.buf.put(bytes.length - 1, LF);
-			this.buf.position(0);
+		if (bytes[bytes.length - 1] != '\n' || bytes[bytes.length - 1] != '\r') {
+			this.nonEOL = true;
 		}
 	}
 	
@@ -90,8 +90,12 @@ public class LineReader {
 		int eol = 0;
 		while (true) {
 			if (run + eol == remain) {
-				// not a valid line, need back position to \n
-				run = 0;
+				if (this.nonEOL) {
+					run = remain;
+				} else {
+					// not a valid line, need back position to \n
+					run = 0;					
+				}
 				break;
 			}
 			byte b = buf.get(pos + run + eol);

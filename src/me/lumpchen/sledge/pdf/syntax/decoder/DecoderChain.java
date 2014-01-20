@@ -1,5 +1,6 @@
-package me.lumpchen.sledge.pdf.syntax.codec;
+package me.lumpchen.sledge.pdf.syntax.decoder;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Stack;
 
@@ -9,10 +10,10 @@ import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class DecoderChain {
 
-	private Stack<Decoder> decoderChain;
+	private Stack<Decode> decoderChain;
 
 	public DecoderChain() {
-		this.decoderChain = new Stack<Decoder>();
+		this.decoderChain = new Stack<Decode>();
 	}
 
 	public byte[] decode(PStream stream) {
@@ -27,19 +28,19 @@ public class DecoderChain {
 	}
 	
 	public byte[] decode(byte[] stream) {
+		ByteBuffer buf = ByteBuffer.wrap(stream);
 		while (true) {
 			if (this.decoderChain.isEmpty()) {
 				break;
 			}
-			Decoder decoder = this.decoderChain.pop();
-			stream = decoder.decode(stream);
+			Decode decoder = this.decoderChain.pop();
+			buf = decoder.decode(buf);
 		}
-		return stream;
+		return buf.array();
 	}
 	
 	public void addDecoder(PName filterName, PDictionary decodeParms) {
-		Decoder decoder = Decoder.instance(filterName, decodeParms);
+		Decode decoder = Decode.instance(filterName, decodeParms);
 		this.decoderChain.push(decoder);
 	}
-	
 }

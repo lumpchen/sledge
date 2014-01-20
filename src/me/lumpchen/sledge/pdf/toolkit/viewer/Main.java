@@ -18,7 +18,7 @@ public class Main {
 	static void testUI() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/p3.pdf");
+		File f = new File("/c.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 

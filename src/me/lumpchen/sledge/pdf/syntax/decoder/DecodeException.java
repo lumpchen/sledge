@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.syntax.codec;
+package me.lumpchen.sledge.pdf.syntax.decoder;
 
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 

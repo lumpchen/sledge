@@ -8,7 +8,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.codec.DecoderChain;
+import me.lumpchen.sledge.pdf.syntax.decoder.DecoderChain;
 
 public class ObjectStream {
 
@@ -91,7 +91,7 @@ public class ObjectStream {
 		
 		long end = 0;
 		if (this.indexTable.containsKey(index + 1)) {
-			end = this.indexTable.get(index + 1) + this.first + 1;
+			end = this.indexTable.get(index + 1) + this.first;
 		} else {
 			end = this.data.length;
 		}

@@ -6,7 +6,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.codec.DecoderChain;
+import me.lumpchen.sledge.pdf.syntax.decoder.DecoderChain;
 
 public class XRefStream {
 	
@@ -87,7 +87,7 @@ public class XRefStream {
 		while (i < out.length) {
 			this.entries[pos] = new int[wlen];
 			for (int j = 0; j < wlen; j++) {
-				this.entries[pos][j] = out[i++];
+				this.entries[pos][j] = out[i++] & 0xFF;
 			}
 			pos++;
 		}
@@ -107,16 +107,19 @@ public class XRefStream {
 		}
 		int pos = index - this.start;
 		
-		if (this.w.length == 4) {
-			
-		} else {
-			int f1 = this.entries[pos][0];
-			int f2 = this.entries[pos][1];
-			int f3 = this.entries[pos][2];
-			return new WEntry(f1, f2, f3);
-		}
+		int[] entry = this.entries[pos];
 		
-		return null;
+		int f1, f2, f3;
+		if (entry.length == 4) {
+			f1 = entry[0];
+			f2 = ((entry[1] & 0x000000FF) << 8) | (entry[2] & 0xFF);
+			f3 = entry[3];
+		} else {
+			f1 = entry[0];
+			f2 = entry[1];
+			f3 = entry[2];
+		}
+		return new WEntry(f1, f2, f3);
 	}
 	
 	public static class WEntry {
