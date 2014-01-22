@@ -344,15 +344,16 @@ public class BytesReader {
 	}
 	
 	public void skipSpace() {
-		if (this.buf.remaining() <= 0) {
-			return;
-		}
 		while (true) {
-			byte b = this.buf.get();
-			if (!isSpace(b)) {
+			if (this.buf.remaining() <= 0) {
 				break;
 			}
+			
+			byte b = this.buf.get();
+			if (!isSpace(b)) {
+				this.buf.position(this.buf.position() - 1);
+				break;
+			} 
 		}
-		this.buf.position(this.buf.position() - 1);
 	}
 }

@@ -35,7 +35,7 @@ public class EditorFrame extends JFrame {
 	private JScrollPane rightScrollPane;
 
 	private JTextArea textarea;
-
+	
 	public EditorFrame() {
 		super();
 
@@ -82,11 +82,16 @@ public class EditorFrame extends JFrame {
 		JToolBar toolBar = new JToolBar();
 		JButton open = new JButton("open");
 		open.addActionListener(new ActionListener() {
-
+			private File lastDirectory;
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileopen = new JFileChooser();
-				fileopen.setCurrentDirectory(new File("/"));
+				if (null == this.lastDirectory) {
+					fileopen.setCurrentDirectory(new File("/"));					
+				} else {
+					fileopen.setCurrentDirectory(this.lastDirectory);
+				}
 				FileFilter filter = new FileNameExtensionFilter(".pdf files", "pdf");
 				fileopen.addChoosableFileFilter(filter);
 				fileopen.setAcceptAllFileFilterUsed(false);
@@ -94,6 +99,7 @@ public class EditorFrame extends JFrame {
 
 				if (ret == JFileChooser.APPROVE_OPTION) {
 					File file = fileopen.getSelectedFile();
+					this.lastDirectory = file.getParentFile();
 					openDocument(file);
 				}
 			}

@@ -9,7 +9,11 @@ import me.lumpchen.sledge.pdf.reader.BytesReader;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
+import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.XRefStream.WEntry;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class XRef {
@@ -117,35 +121,80 @@ public class XRef {
 	}
 	
 	public void read(LineReader reader) {
-		int n = this.size;
-		boolean foundBegin = false;
+		boolean found = false;
+		List<LineData> lineArr = new ArrayList<LineData>();
+		int read = 0;
 		while (true) {
-			if (n <= 0) {
-				break;
-			}
 			LineData line = reader.readLine();
 			if (line == null) {
 				break;
 			}
 			if (line.startsWith(begin)) {
-				foundBegin = true;
-				continue;
+				found = true;
 			} 
 			
-			if (!foundBegin) {
-				continue;
-			}
-			if (line.startsWith(Trailer.TRAILER)) {
+			if (line.startsWith(Trailer.STARTXREF)) {
 				break;
 			}
 			
-			if (line.getBytes().length < 16) {
-				this.readSectionEntry(line);
-				continue;
+			lineArr.add(line);
+			read += line.length();
+		}
+			
+		if (!found) {
+			byte[] readBytes = new byte[read + lineArr.size()];
+			int destPos = 0;
+			for (int i = 0, n = lineArr.size(); i < n;  i++) {
+				LineData line = lineArr.get(i);
+				
+				if (line.startsWith(Trailer.STARTXREF)) {
+					break;
+				}
+				
+				byte[] src = line.getBytes();
+				if (null == src) {
+					continue;
+				}
+				System.arraycopy(src, 0, readBytes, destPos, src.length);
+				
+				destPos += src.length;
+				readBytes[destPos++] = '\n';
 			}
+			
+			ObjectReader objReader = new ObjectReader(new LineReader(readBytes));
+			IndirectObject obj = objReader.readIndirectObject();
+			if (null == obj || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
+				throw new ReadException("not found xref.");
+			}
+			if (null == obj.getStream()) {
+				throw new ReadException("not found xref stream.");
+			}
+			this.readStream(obj.getStream());
+		} else {
+			boolean xrefBegin = false;
+			for (int i = 0, n = lineArr.size(); i < n;  i++) {
+				LineData line = lineArr.get(i);
+				
+				if (line.startsWith(Trailer.TRAILER)) {
+					break;
+				}
+					
+				if (line.startsWith(XRef.begin)) {
+					xrefBegin = true;
+					continue;
+				}
+				
+				if (!xrefBegin) {
+					continue;
+				}
+				
+				if (line.getBytes().length < 16) {
+					this.readSectionEntry(line);
+					continue;
+				}
 
-			this.readEntry(line);
-			n--;
+				this.readEntry(line);
+			}
 		}
 	}
 
@@ -221,27 +270,40 @@ public class XRef {
 	
 	public void readStream(PStream stream) {
 		XRefStream xrefstm = new XRefStream(stream);
-		int start = xrefstm.getStart();
-		int count = xrefstm.getCount();
 		
-		Section section = new Section();
-		section.sectionNo = start;
-		section.count = count;
-		
-		this.addSubSection(section);
-		
-		for (int i = start; i < start + count; i++) {
-			WEntry we = xrefstm.getEntry(i);
-			if (we.type == WEntry.TYPE_2) {
-				XRefEntry e = new XRefEntry();
-				e.inObjectStream = true;
-				e.objNum = i;
-				
-				e.objStreamNum = we.objNum;
-				e.objIndex = we.index;
-				e.free = false;
-				this.addEntry(e);
-			}
+		int size = xrefstm.getIndexCount();
+		for (int i = 0; i < size; i++) {
+			int start = xrefstm.getIndex(i)[0];
+			int count = xrefstm.getIndex(i)[1];
+			
+			Section section = new Section();
+			section.sectionNo = start;
+			section.count = count;
+			
+			this.addSubSection(section);
+			
+			for (int j = start; j < start + count; j++) {
+				WEntry we = xrefstm.getEntry(j);
+				if (we.type == WEntry.TYPE_2) {
+					XRefEntry e = new XRefEntry();
+					e.inObjectStream = true;
+					e.objNum = j;
+					
+					e.objStreamNum = we.objNum;
+					e.objIndex = we.index;
+					e.free = false;
+					this.addEntry(e);
+				} else if (we.type == WEntry.TYPE_1) {
+					XRefEntry e = new XRefEntry();
+					e.inObjectStream = false;
+					e.objNum = j;
+					
+					e.offset = we.offset;
+					e.genNum = we.genNum;
+					e.free = false;
+					this.addEntry(e);
+				}
+			}			
 		}
 	}
 }

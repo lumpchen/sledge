@@ -50,6 +50,9 @@ public class XRefTableModel extends DefaultTableModel {
 		}
 		
 		XRefEntry entry = this.entryList.get(row);
+		if (entry.free) {
+			return null;
+		}
 		IndirectObject obj = pdf.getObject(new IndirectRef(entry.objNum, entry.genNum));
 		return obj;
 	}

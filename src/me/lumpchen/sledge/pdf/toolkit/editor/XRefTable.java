@@ -64,7 +64,11 @@ public class XRefTable extends JTable {
 
 			@Override
 			public void run() {
-				propTableModel.updateSelectedObject(selObj);
+				if (selObj == null) {
+					propTableModel.removeAllRows();	
+				} else {
+					propTableModel.updateSelectedObject(selObj);					
+				}
 			}
 		});
 	}
@@ -78,9 +82,7 @@ public class XRefTable extends JTable {
 			}
 			XRefTableModel model = (XRefTableModel) getModel();
 			PObject selObj = model.getRowObject(row);
-			if (selObj != null) {
-				updatePropTable(selObj);
-			}
+			updatePropTable(selObj);
 		}
 	}
 	

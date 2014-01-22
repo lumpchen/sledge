@@ -311,7 +311,7 @@ public class PDFReader implements PageContentsLoader {
 	
 	private IndirectObject readIndirectObject(IndirectRef ref, byte[] data, PDFDocument pdfDoc) {
 		IndirectObject obj = new IndirectObject(ref.getObjNum(), ref.getGenNum());
-		LineReader lineReader = new LineReader(new LineData(data));
+		LineReader lineReader = new LineReader(data);
 		
 		ObjectReader objReader = new ObjectReader(lineReader);
 		PObject insideObj = objReader.readNextObj();

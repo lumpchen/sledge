@@ -340,7 +340,7 @@ public class ObjectReader {
 		}
 		
 		public boolean match(byte... tag) {
-			if (this.bytes.length != tag.length) {
+			if (this.bytes == null || this.bytes.length != tag.length) {
 				return false;
 			}
 			for (int i = 0, n = tag.length; i < n; i++) {
@@ -352,6 +352,9 @@ public class ObjectReader {
 		}
 		
 		public boolean isNumber() {
+			if (this.bytes == null || this.bytes.length == 0) {
+				return false;
+			}
 			return BytesReader.isNumber(bytes);
 		}
 	}

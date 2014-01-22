@@ -56,10 +56,17 @@ public class IndirectObject extends PObject {
 	}
 	
 	public PDictionary getDict() {
-		if (null == this.insideObj || !(this.insideObj instanceof PDictionary)) {
+		if (null == this.insideObj) {
 			return null;
 		}
-		return (PDictionary) this.insideObj;
+		if (this.insideObj instanceof PStream) {
+			return this.getStream().getDict();
+		}
+		
+		if (this.insideObj instanceof PDictionary) {
+			return (PDictionary) this.insideObj;
+		}
+		return null;
 	}
 	
 	public PObject getValue(PName key) {

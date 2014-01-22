@@ -11,8 +11,7 @@ import me.lumpchen.sledge.pdf.syntax.decoder.DecoderChain;
 public class XRefStream {
 	
 	private int size;
-	private int start;
-	private int count;
+	int[][] index;
 	private int[] w;
 	private int[][] entries;
 	
@@ -52,24 +51,36 @@ public class XRefStream {
 		
 		arr = dict.getValueAsArray(PName.Index);
 		if (arr != null) {
-			if (arr.size() != 2) {
+			if (arr.size() % 2 != 0) {
 				throw new SyntaxException("invalid /Index entry: " + arr.toString());
 			}
-			PObject obj = arr.get(0);
-			if (!(obj instanceof PNumber)) {
-				throw new SyntaxException("invalid /Index entry: " + obj.toString());	
+			this.index = new int[arr.size() / 2][];
+			int j = 0;
+			for (int i = 0, n = arr.size(); i < n; i++) {
+				this.index[j] = new int[2];
+				
+				PObject obj = arr.get(i);
+				if (!(obj instanceof PNumber)) {
+					throw new SyntaxException("invalid /Index entry: " + obj.toString());	
+				}
+				this.index[j][0] = ((PNumber) obj).intValue();	
+			
+				obj = arr.get(++i);
+				if (!(obj instanceof PNumber)) {
+					throw new SyntaxException("invalid /Index entry: " + obj.toString());	
+				}
+				this.index[j][1] = ((PNumber) obj).intValue();
+				j++;
 			}
-			this.start = ((PNumber) obj).intValue();
-			obj = arr.get(1);
-			if (!(obj instanceof PNumber)) {
-				throw new SyntaxException("invalid /Index entry: " + obj.toString());	
-			}
-			this.count = ((PNumber) obj).intValue();
 		} else {
-			this.start = 0;
-			this.count = this.size;
+			this.index = new int[1][];
+			this.index[0] = new int[]{0, this.size};
 		}
 		
+		int count = 0;
+		for (int i = 0; i < this.index.length; i++) {
+			count += this.index[i][1];
+		}
 		this.entries = new int[count][];
 		
 		DecoderChain chain = new DecoderChain();
@@ -93,33 +104,57 @@ public class XRefStream {
 		}
 	}
 	
-	public int getStart() {
-		return this.start;
+	public int[] getIndex(int i) {
+		return this.index[i];
 	}
 	
-	public int getCount() {
-		return this.count;
+	public int getIndexCount() {
+		return this.index.length;
 	}
 	
-	public WEntry getEntry(int index) {
-		if (index < this.start || index > this.start + this.count) {
+	public WEntry getEntry(int genNum) {
+		int start = -1;
+		int pos = 0;
+		for (int i = 0; i < this.index.length; i++) {
+			int[] section = this.index[i];
+			
+			if (genNum >= section[0] && genNum < section[0] + section[1]) {
+				start = section[0];
+				break;
+			} else {
+				pos += section[1];
+			}
+		}
+		
+		if (start < 0) {
 			throw new SyntaxException("out of range: " + index);
 		}
-		int pos = index - this.start;
+		
+		pos = genNum - start + pos;
 		
 		int[] entry = this.entries[pos];
 		
-		int f1, f2, f3;
-		if (entry.length == 4) {
-			f1 = entry[0];
-			f2 = ((entry[1] & 0x000000FF) << 8) | (entry[2] & 0xFF);
-			f3 = entry[3];
-		} else {
-			f1 = entry[0];
-			f2 = entry[1];
-			f3 = entry[2];
+		int f[] = new int[this.w.length];
+		int j = 0;
+		for (int i = 0; i < this.w.length; i++) {
+			int m = this.w[i];
+			
+			if (m == 0) {
+				f[i] = 0;
+			} else if (m == 1) {
+				f[i] = 0xFF & entry[j];
+			} else if (m == 2) {
+				f[i] = ((entry[j] & 0x000000FF) << 8) | (entry[j + 1] & 0xFF);
+			} else if (m == 3) {
+				f[i] = ((entry[j] & 0x000000FF) << 16) | ((entry[j + 1] & 0x000000FF) << 8) | (entry[j + 2] & 0xFF);
+			} else if (m == 4) {
+				f[i] = ((entry[j] & 0x000000FF) << 24) | ((entry[j + 1] & 0x000000FF) << 16) 
+						| ((entry[j + 2] & 0x000000FF) << 8) | (entry[j + 3] & 0xFF);
+			}
+			
+			j += m;
 		}
-		return new WEntry(f1, f2, f3);
+		return new WEntry(f[0], f[1], f[2]);
 	}
 	
 	public static class WEntry {
@@ -128,7 +163,7 @@ public class XRefStream {
 		public static final int TYPE_2 = 2;
 
 		public int type = -1;
-		public int offset = -1;
+		public long offset = -1;
 		public int objNum = -1;
 		public int genNum = -1;
 		public int index = -1;
@@ -140,7 +175,7 @@ public class XRefStream {
 				this.genNum = field_3;
 			} else if (field_1 == TYPE_1) {
 				this.type = TYPE_1;
-				this.offset = field_2;
+				this.offset = (0xFFFFFFFFL & field_2);
 				this.genNum = field_3;
 			} else if (field_1 == TYPE_2) {
 				this.type = TYPE_2;

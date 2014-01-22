@@ -112,6 +112,7 @@ public class Trailer {
 	public void read(LineReader lineReader) {
 		boolean found = false;
 		List<LineData> lineArr = new ArrayList<LineData>();
+		int read = 0;
 		while (true) {
 			LineData line = lineReader.readLine();
 			if (line == null) {
@@ -123,24 +124,49 @@ public class Trailer {
 			if (line.startsWith(TRAILER)) {
 				found = true;
 			}
-			if (found) {
-				lineArr.add(line);
-			}
+			lineArr.add(line);
+			read += line.length();
 		}
 		
 		if (!found) {
-			throw new ReadException("not found trailer.");
-		}
-		
-		for (int i = 0, n = lineArr.size(); i < n;  i++) {
-			LineData line = lineArr.get(i);
-			if (line.startsWith(STARTXREF)) {
-				line = lineArr.get(++i);
-				this.startxref = new PNumber(line.readAsLong());
-			} else if (line.startsWith(PDictionary.BEGIN)) {
-				ObjectReader objReader = new ObjectReader(line);
-				this.dict = objReader.readDict(); 
+			byte[] readBytes = new byte[read + lineArr.size()];
+			int destPos = 0;
+			for (int i = 0, n = lineArr.size(); i < n;  i++) {
+				LineData line = lineArr.get(i);
+				
+				if (line.startsWith(STARTXREF)) {
+					line = lineArr.get(++i);
+					this.startxref = new PNumber(line.readAsLong());
+					break;
+				}
+				
+				byte[] src = line.getBytes();
+				if (null == src) {
+					continue;
+				}
+				System.arraycopy(src, 0, readBytes, destPos, src.length);
+				
+				destPos += src.length;
+				readBytes[destPos++] = '\n';
 			}
+			
+			ObjectReader objReader = new ObjectReader(new LineReader(readBytes));
+			IndirectObject obj = objReader.readIndirectObject();
+			if (null == obj) {
+				throw new ReadException("not found trailer.");
+			}
+			this.dict = obj.getDict();
+		} else {
+			for (int i = 0, n = lineArr.size(); i < n;  i++) {
+				LineData line = lineArr.get(i);
+				if (line.startsWith(STARTXREF)) {
+					line = lineArr.get(++i);
+					this.startxref = new PNumber(line.readAsLong());
+				} else if (line.startsWith(PDictionary.BEGIN)) {
+					ObjectReader objReader = new ObjectReader(line);
+					this.dict = objReader.readDict(); 
+				}
+			}			
 		}
 	}
 }

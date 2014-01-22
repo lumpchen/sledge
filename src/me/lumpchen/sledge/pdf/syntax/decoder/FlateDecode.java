@@ -38,8 +38,7 @@ public class FlateDecode extends Decode {
 				read = inf.inflate(decomp);
 				if (read <= 0) {
 					if (inf.needsDictionary()) {
-						throw new DecodeException(
-								"Don't know how to ask for a dictionary in FlateDecode");
+						throw new DecodeException("Don't know how to ask for a dictionary in FlateDecode");
 					} else {
 						return ByteBuffer.allocate(0);
 					}
@@ -47,8 +46,7 @@ public class FlateDecode extends Decode {
 				baos.write(decomp, 0, read);
 			}
 		} catch (DataFormatException dfe) {
-			throw new DecodeException("Data format exception:"
-					+ dfe.getMessage());
+			throw new DecodeException("Data format exception:" + dfe.getMessage());
 		}
 
 		// return the output as a byte buffer
@@ -59,8 +57,7 @@ public class FlateDecode extends Decode {
 			PNumber pd = this.decodeParms.getValueAsNumber(PName.Predictor);
 			if (pd != null) {
 				try {
-					Predictor predictor = Predictor
-							.getPredictor(this.decodeParms);
+					Predictor predictor = Predictor.getPredictor(this.decodeParms);
 					if (predictor != null) {
 						outBytes = predictor.unpredict(outBytes);
 					}

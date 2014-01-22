@@ -14,10 +14,9 @@ public class LineReader {
 		this.segmentedFileReader = reader;
 	}
 	
-	public LineReader(LineData data) {
-		byte[] bytes = data.getBytes();
-		this.buf = ByteBuffer.wrap(bytes);
-		if (bytes[bytes.length - 1] != '\n' || bytes[bytes.length - 1] != '\r') {
+	public LineReader(byte[] data) {
+		this.buf = ByteBuffer.wrap(data);
+		if (data[data.length - 1] != '\n' || data[data.length - 1] != '\r') {
 			this.nonEOL = true;
 		}
 	}
@@ -25,6 +24,9 @@ public class LineReader {
 	public LineData readBytesDirect(int size) {
 		if (this.segmentedFileReader != null) {
 			this.readSegment(size);
+		}
+		if (size > this.buf.remaining()) {
+			size = this.buf.remaining();
 		}
 		byte[]  bytes = new byte[size];
 		this.buf.get(bytes);

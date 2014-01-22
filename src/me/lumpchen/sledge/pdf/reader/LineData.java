@@ -27,6 +27,13 @@ public class LineData {
 		return this.source;
 	}
 	
+	public int length() {
+		if (null == this.source) {
+			return 0;
+		}
+		return this.source.length;
+	}
+	
 	public String readAsString() {
 		return new String(this.source);
 	}
