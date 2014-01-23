@@ -9,11 +9,7 @@ import me.lumpchen.sledge.pdf.reader.BytesReader;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
-import me.lumpchen.sledge.pdf.reader.ObjectReader;
-import me.lumpchen.sledge.pdf.reader.ReadException;
 import me.lumpchen.sledge.pdf.syntax.XRefStream.WEntry;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public class XRef {
@@ -26,10 +22,9 @@ public class XRef {
 	private Map<Integer, XRefEntry> entryMap;
 	private int size;
 
-	public XRef(int size) {
+	public XRef() {
 		this.sectionList = new ArrayList<Section>();
 		this.entryMap = new HashMap<Integer, XRefEntry>();
-		this.size = size;
 	}
 
 	public String toString() {
@@ -111,7 +106,8 @@ public class XRef {
 	
 	public void addEntry(XRefEntry entry) {
 		if (!this.entryMap.containsKey(entry.objNum)) {
-			this.entryMap.put(entry.objNum, entry);			
+			this.entryMap.put(entry.objNum, entry);
+			this.size++;
 		} else {
 			if (this.entryMap.get(entry.objNum).free) {
 				// override free entry

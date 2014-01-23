@@ -250,7 +250,7 @@ public class PDFReader implements PageContentsLoader {
 		LineReader lineReader = new LineReader(this.reader);
 		
 		if (null == xref) {
-			xref = new XRef(size);
+			xref = new XRef();
 			pdfDoc.setXRef(xref);
 		}
 		
