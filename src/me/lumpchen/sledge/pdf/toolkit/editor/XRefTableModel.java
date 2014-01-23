@@ -40,8 +40,14 @@ public class XRefTableModel extends DefaultTableModel {
 		int iobj = entry.objNum;
 		int igen = entry.genNum;
 		boolean free = entry.free;
-		long offset = entry.offset;
-		this.addRow(new Object[]{iobj, igen, free, offset});
+		
+		long offset = -1;
+		if (entry.inObjectStream) {
+			offset = entry.objStreamNum;
+		} else {
+			offset = entry.offset;			
+		}
+		this.addRow(new Object[]{iobj, igen, free ? "F" : "-", offset});
 	}
 	
 	public PObject getRowObject(int row) {

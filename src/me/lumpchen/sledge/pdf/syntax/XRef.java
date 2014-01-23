@@ -120,10 +120,9 @@ public class XRef {
 		}
 	}
 	
-	public void read(LineReader reader) {
+	public boolean read(LineReader reader) {
 		boolean found = false;
 		List<LineData> lineArr = new ArrayList<LineData>();
-		int read = 0;
 		while (true) {
 			LineData line = reader.readLine();
 			if (line == null) {
@@ -138,38 +137,10 @@ public class XRef {
 			}
 			
 			lineArr.add(line);
-			read += line.length();
 		}
 			
 		if (!found) {
-			byte[] readBytes = new byte[read + lineArr.size()];
-			int destPos = 0;
-			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
-				
-				if (line.startsWith(Trailer.STARTXREF)) {
-					break;
-				}
-				
-				byte[] src = line.getBytes();
-				if (null == src) {
-					continue;
-				}
-				System.arraycopy(src, 0, readBytes, destPos, src.length);
-				
-				destPos += src.length;
-				readBytes[destPos++] = '\n';
-			}
-			
-			ObjectReader objReader = new ObjectReader(new LineReader(readBytes));
-			IndirectObject obj = objReader.readIndirectObject();
-			if (null == obj || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
-				throw new ReadException("not found xref.");
-			}
-			if (null == obj.getStream()) {
-				throw new ReadException("not found xref stream.");
-			}
-			this.readStream(obj.getStream());
+			return false;
 		} else {
 			boolean xrefBegin = false;
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
@@ -195,6 +166,8 @@ public class XRef {
 
 				this.readEntry(line);
 			}
+			
+			return true;
 		}
 	}
 
@@ -302,8 +275,16 @@ public class XRef {
 					e.genNum = we.genNum;
 					e.free = false;
 					this.addEntry(e);
+				} else if (we.type == WEntry.TYPE_0) {
+					XRefEntry e = new XRefEntry();
+					e.inObjectStream = false;
+					e.objNum = j;
+
+					e.genNum = we.genNum;
+					e.free = true;
+					this.addEntry(e);
 				}
-			}			
+			}
 		}
 	}
 }

@@ -81,7 +81,7 @@ public class PDFReader implements PageContentsLoader {
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
-		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (null != iobj) {
 			Catalog catalog = new Catalog(iobj);
 			pdfDoc.setCatalog(catalog);
@@ -99,7 +99,7 @@ public class PDFReader implements PageContentsLoader {
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
-		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		PageTree rootPageTree = new PageTree(iobj);
 		pdfDoc.setRootPageTree(rootPageTree);
 	}
@@ -130,7 +130,7 @@ public class PDFReader implements PageContentsLoader {
 
 	private void readPage(IndirectRef ref, PageTree pageTree, PDFDocument pdfDoc) {
 		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(ref);
-		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (iobj == null) {
 			throw new SyntaxException("lost object: " + ref.toString());
 		}
@@ -180,7 +180,7 @@ public class PDFReader implements PageContentsLoader {
 		
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 		
-		IndirectObject iobj = this.readIndirectObject(entry.offset, pdfDoc);
+		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (null != iobj) {
 			DocumentInfo docInfo = new DocumentInfo(iobj);
 			pdfDoc.setDocumentInfo(docInfo);			
@@ -251,10 +251,15 @@ public class PDFReader implements PageContentsLoader {
 		
 		if (null == xref) {
 			xref = new XRef(size);
-			xref.read(lineReader);
 			pdfDoc.setXRef(xref);
-		} else {
-			xref.read(lineReader);
+		}
+		
+		if (!xref.read(lineReader)) {
+			IndirectObject obj = this.readIndirectObject(fp, pdfDoc);
+			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
+				throw new SyntaxException("not found xref stream: " + trailer.toString());	
+			}
+			xref.readStream(obj.getStream());
 		}
 		
 		long xrefStream = trailer.getXRefStm();
@@ -276,8 +281,14 @@ public class PDFReader implements PageContentsLoader {
 	public IndirectObject loadObject(IndirectRef ref, PDFDocument pdfDoc) {
 		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(ref);
 		
+		return readIndirectObject(entry, pdfDoc);
+	}
+	
+	private IndirectObject readIndirectObject(XRef.XRefEntry entry, PDFDocument pdfDoc) {
 		IndirectObject obj = null;
 		if (entry.inObjectStream) {
+			IndirectRef ref = new IndirectRef(entry.objNum, 0);
+			
 			int objStreamNum = entry.objStreamNum;
 			IndirectRef osRef = new IndirectRef(objStreamNum, entry.genNum);
 
