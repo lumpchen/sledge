@@ -12,8 +12,7 @@ public class ContentStreamReader {
 
 	public ContentStream read(byte[] stream) {
 		ContentStream contentStream = new ContentStream();
-		LineReader lineReader = new LineReader(stream);
-		ObjectReader objReader = new ObjectReader(lineReader);
+		ObjectReader objReader = new ObjectReader(stream);
 		
 		while (true) {
 			PObject next = objReader.readNextObj();

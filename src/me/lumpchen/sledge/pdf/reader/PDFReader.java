@@ -24,9 +24,9 @@ import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 
 public class PDFReader implements PageContentsLoader {
 
+	private FileBufferedRandomByteReader reader;
 	private RandomAccessFile raf;
 	private FileChannel fc;
-	private SegmentedFileReader reader;
 	private int pageNo;
 
 	public PDFReader() {
@@ -52,7 +52,7 @@ public class PDFReader implements PageContentsLoader {
 	public PDFDocument read(File file) throws IOException {
 		this.raf = new RandomAccessFile(file, "r");
 		this.fc = this.raf.getChannel();
-		this.reader = new SegmentedFileReader(fc);
+		this.reader = new FileBufferedRandomByteReader(fc);
 
 		PDFDocument pdfDoc = new PDFDocument();
 		pdfDoc.setPageContentsLoader(this);
@@ -188,18 +188,17 @@ public class PDFReader implements PageContentsLoader {
 	}
 
 	private void readTrailer(PDFDocument pdfDoc) throws IOException {
-		this.reader.setPosition(64, true);
-		this.reader.setSegmentSize(64);
-		LineReader lineReader = new LineReader(this.reader);
+		this.reader.position(64, true);
+		Tokenizer tokenizer = new Tokenizer(this.reader);
 		long startxref = -1;
 		
 		while (true) {
-			LineData line = lineReader.readLine();
+			Token line = tokenizer.readLine();
 			if (line == null) {
 				break;
 			}
 			if (line.startsWith(Trailer.STARTXREF)) {
-				line = lineReader.readLine();
+				line = tokenizer.readLine();
 				BytesReader breader = new BytesReader(line.getBytes());
 				startxref = breader.readLong();
 				break;
@@ -213,12 +212,10 @@ public class PDFReader implements PageContentsLoader {
 		this.readTrailer(pdfDoc, startxref, null);
 	}
 	
-	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) {
-		reader.setPosition(startxref);
-		reader.setSegmentSize(1024);
-		LineReader lineReader = new LineReader(reader);
+	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) throws IOException {
+		reader.position(startxref);
 		Trailer trailer = new Trailer();
-		trailer.read(lineReader);
+		trailer.read(this.reader);
 		if (null == current) {
 			pdfDoc.setTrailer(trailer);
 		} else {
@@ -244,17 +241,16 @@ public class PDFReader implements PageContentsLoader {
 	
 	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) {
 		long fp = trailer.getStartxref();
-		this.reader.setPosition(fp);
+		this.reader.position(fp);
 
 		int size = trailer.getSize();
-		LineReader lineReader = new LineReader(this.reader);
 		
 		if (null == xref) {
 			xref = new XRef();
 			pdfDoc.setXRef(xref);
 		}
 		
-		if (!xref.read(lineReader)) {
+		if (!xref.read(this.reader)) {
 			IndirectObject obj = this.readIndirectObject(fp, pdfDoc);
 			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
 				throw new SyntaxException("not found xref stream: " + trailer.toString());	

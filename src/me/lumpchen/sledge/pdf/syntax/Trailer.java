@@ -1,13 +1,15 @@
 package me.lumpchen.sledge.pdf.syntax;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
-import me.lumpchen.sledge.pdf.reader.LineData;
-import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
+import me.lumpchen.sledge.pdf.reader.RandomByteReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
+import me.lumpchen.sledge.pdf.reader.Token;
+import me.lumpchen.sledge.pdf.reader.Tokenizer;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
@@ -109,12 +111,13 @@ public class Trailer {
 		return buf.toString();
 	}
 
-	public void read(LineReader lineReader) {
+	public void read(RandomByteReader reader) throws IOException {
+		Tokenizer tokenizer = new Tokenizer(reader); 
 		boolean found = false;
-		List<LineData> lineArr = new ArrayList<LineData>();
+		List<Token> lineArr = new ArrayList<Token>();
 		int read = 0;
 		while (true) {
-			LineData line = lineReader.readLine();
+			Token line = tokenizer.readLine();
 			if (line == null) {
 				break;
 			}
@@ -125,14 +128,14 @@ public class Trailer {
 				found = true;
 			}
 			lineArr.add(line);
-			read += line.length();
+			read += line.size();
 		}
 		
 		if (!found) {
 			byte[] readBytes = new byte[read + lineArr.size()];
 			int destPos = 0;
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
+				Token line = lineArr.get(i);
 				
 				if (line.startsWith(STARTXREF)) {
 					line = lineArr.get(++i);
@@ -150,7 +153,7 @@ public class Trailer {
 				readBytes[destPos++] = '\n';
 			}
 			
-			ObjectReader objReader = new ObjectReader(new LineReader(readBytes));
+			ObjectReader objReader = new ObjectReader(readBytes);
 			IndirectObject obj = objReader.readIndirectObject();
 			if (null == obj) {
 				throw new ReadException("not found trailer.");
@@ -158,12 +161,12 @@ public class Trailer {
 			this.dict = obj.getDict();
 		} else {
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
+				Token line = lineArr.get(i);
 				if (line.startsWith(STARTXREF)) {
 					line = lineArr.get(++i);
 					this.startxref = new PNumber(line.readAsLong());
 				} else if (line.startsWith(PDictionary.BEGIN)) {
-					ObjectReader objReader = new ObjectReader(line);
+					ObjectReader objReader = new ObjectReader(line.getBytes());
 					this.dict = objReader.readDict(); 
 				}
 			}			

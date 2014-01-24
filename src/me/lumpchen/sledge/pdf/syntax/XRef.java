@@ -9,6 +9,9 @@ import me.lumpchen.sledge.pdf.reader.BytesReader;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
+import me.lumpchen.sledge.pdf.reader.RandomByteReader;
+import me.lumpchen.sledge.pdf.reader.Token;
+import me.lumpchen.sledge.pdf.reader.Tokenizer;
 import me.lumpchen.sledge.pdf.syntax.XRefStream.WEntry;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
@@ -116,11 +119,12 @@ public class XRef {
 		}
 	}
 	
-	public boolean read(LineReader reader) {
+	public boolean read(RandomByteReader reader) {
 		boolean found = false;
-		List<LineData> lineArr = new ArrayList<LineData>();
+		Tokenizer tokenizer = new Tokenizer(reader); 
+		List<Token> lineArr = new ArrayList<Token>();
 		while (true) {
-			LineData line = reader.readLine();
+			Token line = tokenizer.readLine();
 			if (line == null) {
 				break;
 			}
@@ -140,7 +144,7 @@ public class XRef {
 		} else {
 			boolean xrefBegin = false;
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
+				Token line = lineArr.get(i);
 				
 				if (line.startsWith(Trailer.TRAILER)) {
 					break;
@@ -167,10 +171,9 @@ public class XRef {
 		}
 	}
 
-	private void readSectionEntry(LineData line) {
-		BytesReader bytesReader = new BytesReader(line.getBytes());
-		this.currSubSectionNo = bytesReader.readInt();
-		this.currSubSectionCount = bytesReader.readInt();
+	private void readSectionEntry(Token token) {
+		this.currSubSectionNo = token.readInt();
+		this.currSubSectionCount = token.readInt();
 		Section subSection = new Section();
 		subSection.sectionNo = this.currSubSectionNo;
 		subSection.count = this.currSubSectionCount;
