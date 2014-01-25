@@ -294,7 +294,7 @@ public class ObjectReader {
 	}
 
 	private Token peekNextToken() throws IOException {
-		Token next = this.nextToken();
+		Token next = this.tokenizer.nextToken();
 		
 		this.tokenQueue.add(next);
 		return next;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
+import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
 import me.lumpchen.sledge.pdf.reader.ReadException;
@@ -114,11 +115,11 @@ public class Trailer {
 	public void read(RandomByteReader reader) throws IOException {
 		Tokenizer tokenizer = new Tokenizer(reader); 
 		boolean found = false;
-		List<Token> lineArr = new ArrayList<Token>();
+		List<LineData> lineArr = new ArrayList<LineData>();
 		int read = 0;
 		while (true) {
-			Token line = tokenizer.readLine();
-			if (line == null) {
+			LineData line = new LineData(tokenizer.readLine());
+			if (line.length() == 0) {
 				break;
 			}
 			if (line.startsWith(Trailer.EOF)) {
@@ -128,14 +129,14 @@ public class Trailer {
 				found = true;
 			}
 			lineArr.add(line);
-			read += line.size();
+			read += line.length();
 		}
 		
 		if (!found) {
 			byte[] readBytes = new byte[read + lineArr.size()];
 			int destPos = 0;
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				Token line = lineArr.get(i);
+				LineData line = lineArr.get(i);
 				
 				if (line.startsWith(STARTXREF)) {
 					line = lineArr.get(++i);
@@ -161,7 +162,7 @@ public class Trailer {
 			this.dict = obj.getDict();
 		} else {
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				Token line = lineArr.get(i);
+				LineData line = lineArr.get(i);
 				if (line.startsWith(STARTXREF)) {
 					line = lineArr.get(++i);
 					this.startxref = new PNumber(line.readAsLong());

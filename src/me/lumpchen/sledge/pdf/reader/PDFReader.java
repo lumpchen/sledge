@@ -26,6 +26,7 @@ public class PDFReader implements PageContentsLoader {
 
 	private FileBufferedRandomByteReader reader;
 	private RandomAccessFile raf;
+	
 	private FileChannel fc;
 	private int pageNo;
 
@@ -193,12 +194,12 @@ public class PDFReader implements PageContentsLoader {
 		long startxref = -1;
 		
 		while (true) {
-			Token line = tokenizer.readLine();
-			if (line == null) {
+			LineData line = new LineData(tokenizer.readLine());
+			if (line.length() == 0) {
 				break;
 			}
 			if (line.startsWith(Trailer.STARTXREF)) {
-				line = tokenizer.readLine();
+				line = new LineData(tokenizer.readLine());
 				BytesReader breader = new BytesReader(line.getBytes());
 				startxref = breader.readLong();
 				break;
@@ -239,11 +240,11 @@ public class PDFReader implements PageContentsLoader {
 		this.readXRef(pdfDoc, trailer, null);
 	}
 	
-	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) {
+	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) throws IOException {
 		long fp = trailer.getStartxref();
 		this.reader.position(fp);
 
-		int size = trailer.getSize();
+//		int size = trailer.getSize();
 		
 		if (null == xref) {
 			xref = new XRef();
@@ -308,19 +309,17 @@ public class PDFReader implements PageContentsLoader {
 	}
 	
 	private IndirectObject readIndirectObject(long offset, PDFDocument pdfDoc) {
-		reader.setPosition(offset);
-		LineReader lineReader = new LineReader(reader);
+		reader.position(offset);
 		
-		ObjectReader objReader = new ObjectReader(lineReader);
+		ObjectReader objReader = new ObjectReader(reader);
 		IndirectObject obj = objReader.readIndirectObject();
 		return obj;
 	}
 	
 	private IndirectObject readIndirectObject(IndirectRef ref, byte[] data, PDFDocument pdfDoc) {
 		IndirectObject obj = new IndirectObject(ref.getObjNum(), ref.getGenNum());
-		LineReader lineReader = new LineReader(data);
 		
-		ObjectReader objReader = new ObjectReader(lineReader);
+		ObjectReader objReader = new ObjectReader(data);
 		PObject insideObj = objReader.readNextObj();
 		
 		if (insideObj != null) {

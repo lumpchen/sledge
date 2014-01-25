@@ -1,23 +1,29 @@
 package me.lumpchen.sledge.pdf.reader;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Token {
 
 	private ByteBuffer buf;
+	private int size = 0;
 
 	public Token() {
 		this.buf = ByteBuffer.allocate(32);
 	}
 
 	public Token(byte[] bytes) {
+		this.size = bytes.length;
 		this.buf = ByteBuffer.wrap(bytes);
 	}
 
 	public void add(byte b) {
 		this.buf.put(b);
+		size++;
+	}
+	
+	public void add(int b) {
+		this.buf.put((byte) (b & 0xFF));
+		size++;
 	}
 
 	public String toString() {
@@ -28,14 +34,14 @@ public class Token {
 	}
 
 	public byte[] getBytes() {
-		return this.buf.array();
+		this.buf.rewind();
+		byte[] filled = new byte[size];
+		this.buf.get(filled);
+		return filled;
 	}
 
 	public int size() {
-		if (this.buf != null) {
-			return this.buf.array().length;
-		}
-		return 0;
+		return this.size;
 	}
 
 	public boolean match(byte... tag) {
@@ -71,26 +77,13 @@ public class Token {
 		return true;
 	}
 	
-	public Integer readInt() {
-		List<Integer> num = new ArrayList<Integer>();
-		while (this.buf.remaining() > 0) {
-			byte b = this.buf.get();
-			if (!Character.isDigit(b)) {
-				if (!isSpace(b)) {
-					this.buf.position(this.buf.position() - 1);					
-				}
-				break;
-			}
-			num.add(Character.digit(b, 10));
-		}
-		
-		if (0 == num.size()) {
-			return null;	
-		}
-		
+	public Integer readAsInt() {
+		byte[] source = this.getBytes();
+		int len = source.length;
 		int value = 0;
-		for (int i = 0, n = num.size(); i < n; i++) {
-			value += num.get(i) * (int) (Math.pow(10, n - i - 1) + 0.5);
+		for (int i = 0, n = source.length; i < n; i++) {
+			int c = Character.digit(source[i], 10);
+			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);
 		}
 		return value;
 	}

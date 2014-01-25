@@ -15,7 +15,7 @@ public class FileBufferedRandomByteReader implements RandomByteReader {
 	
 	public FileBufferedRandomByteReader(FileChannel channel) throws IOException {
 		this.channel = channel;
-		this.fileSize = this.channel.size();	
+		this.fileSize = this.channel.size();
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class FileBufferedRandomByteReader implements RandomByteReader {
 
 	@Override
 	public byte read() throws IOException {
-		if (this.buffer.remaining() == 0) {
+		if (this.buffer == null || this.buffer.remaining() == 0) {
 			this.fillBuffer();
 		}
 		return this.buffer.get();
@@ -50,12 +50,14 @@ public class FileBufferedRandomByteReader implements RandomByteReader {
 
 	@Override
 	public byte[] read(int size) throws IOException {
-		long remain = this.buffer.remaining();
-		if (size > remain) {
-			this.position -= remain;
+		if (this.buffer == null || size > this.buffer.remaining()) {
+			this.position -= this.buffer == null ? 0 : this.buffer.remaining();
 			this.fillBuffer(size);
 		}
 		
+		if (size > this.buffer.remaining()) {
+			size = this.buffer.remaining();
+		}
 		byte[] dst = new byte[size];
 		this.buffer.get(dst);
 		return dst;

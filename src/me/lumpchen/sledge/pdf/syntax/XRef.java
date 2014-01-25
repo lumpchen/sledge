@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,10 +8,8 @@ import java.util.Map;
 
 import me.lumpchen.sledge.pdf.reader.BytesReader;
 import me.lumpchen.sledge.pdf.reader.LineData;
-import me.lumpchen.sledge.pdf.reader.LineReader;
 import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
-import me.lumpchen.sledge.pdf.reader.Token;
 import me.lumpchen.sledge.pdf.reader.Tokenizer;
 import me.lumpchen.sledge.pdf.syntax.XRefStream.WEntry;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
@@ -119,13 +118,13 @@ public class XRef {
 		}
 	}
 	
-	public boolean read(RandomByteReader reader) {
+	public boolean read(RandomByteReader reader) throws IOException {
 		boolean found = false;
 		Tokenizer tokenizer = new Tokenizer(reader); 
-		List<Token> lineArr = new ArrayList<Token>();
+		List<LineData> lineArr = new ArrayList<LineData>();
 		while (true) {
-			Token line = tokenizer.readLine();
-			if (line == null) {
+			LineData line = new LineData(tokenizer.readLine());
+			if (line.length() == 0) {
 				break;
 			}
 			if (line.startsWith(begin)) {
@@ -144,7 +143,7 @@ public class XRef {
 		} else {
 			boolean xrefBegin = false;
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				Token line = lineArr.get(i);
+				LineData line = lineArr.get(i);
 				
 				if (line.startsWith(Trailer.TRAILER)) {
 					break;
@@ -171,9 +170,10 @@ public class XRef {
 		}
 	}
 
-	private void readSectionEntry(Token token) {
-		this.currSubSectionNo = token.readInt();
-		this.currSubSectionCount = token.readInt();
+	private void readSectionEntry(LineData line) {
+		BytesReader bytesReader = new BytesReader(line.getBytes());
+		this.currSubSectionNo = bytesReader.readInt();
+		this.currSubSectionCount = bytesReader.readInt();
 		Section subSection = new Section();
 		subSection.sectionNo = this.currSubSectionNo;
 		subSection.count = this.currSubSectionCount;
