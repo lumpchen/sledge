@@ -1,56 +1,54 @@
 package me.lumpchen.sledge.pdf.reader;
 
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Token {
 
-	private ByteBuffer buf;
-	private int size = 0;
+	private List<Byte> array;
 
 	public Token() {
-		this.buf = ByteBuffer.allocate(32);
+		this.array = new ArrayList<Byte>();
 	}
 
 	public Token(byte[] bytes) {
-		this.size = bytes.length;
-		this.buf = ByteBuffer.wrap(bytes);
+		this.array = new ArrayList<Byte>();
+		for (byte b : bytes) {
+			this.array.add(b);
+		}
 	}
 
 	public void add(byte b) {
-		this.buf.put(b);
-		size++;
+		this.array.add(b);
 	}
 	
 	public void add(int b) {
-		this.buf.put((byte) (b & 0xFF));
-		size++;
+		this.add((byte) (b & 0xFF));
 	}
 
 	public String toString() {
-		if (this.buf != null) {
-			return new String(this.buf.array());
-		}
-		return "";
+		return new String(this.getBytes());
 	}
 
 	public byte[] getBytes() {
-		this.buf.rewind();
-		byte[] filled = new byte[size];
-		this.buf.get(filled);
-		return filled;
+		byte[] data = new byte[this.array.size()];
+		for (int i = 0; i < this.array.size(); i++) {
+			data[i] = this.array.get(i);
+		}
+		return data;
 	}
 
 	public int size() {
-		return this.size;
+		return this.array.size();
 	}
 
 	public boolean match(byte... tag) {
-		byte[] bytes = this.getBytes();
-		if (bytes == null || bytes.length != tag.length) {
+		int size = this.array.size();
+		if (size != tag.length) {
 			return false;
 		}
 		for (int i = 0, n = tag.length; i < n; i++) {
-			if (bytes[i] != tag[i]) {
+			if (this.array.get(i) != tag[i]) {
 				return false;
 			}
 		}
@@ -78,23 +76,21 @@ public class Token {
 	}
 	
 	public Integer readAsInt() {
-		byte[] source = this.getBytes();
-		int len = source.length;
+		int size = this.array.size();
 		int value = 0;
-		for (int i = 0, n = source.length; i < n; i++) {
-			int c = Character.digit(source[i], 10);
-			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);
+		for (int i = 0; i < size; i++) {
+			int c = Character.digit(this.array.get(i), 10);
+			value += c * (int) (Math.pow(10, size - i - 1) + 0.5);
 		}
 		return value;
 	}
 
 	public long readAsLong() {
-		byte[] source = this.getBytes();
-		int len = source.length;
+		int size = this.array.size();
 		long value = 0;
-		for (int i = 0, n = source.length; i < n; i++) {
-			int c = Character.digit(source[i], 10);
-			value += c * (int) (Math.pow(10, len - i - 1) + 0.5);
+		for (int i = 0; i < size; i++) {
+			int c = Character.digit(this.array.get(i), 10);
+			value += c * (int) (Math.pow(10, size - i - 1) + 0.5);
 		}
 		return value;
 	}
@@ -105,12 +101,12 @@ public class Token {
 	}
 
 	public boolean startsWith(byte[] prefix) {
-		byte[] source = this.getBytes();
-		if (source.length < prefix.length) {
+		int size = this.array.size();
+		if (size < prefix.length) {
 			return false;
 		}
 		for (int i = 0, n = prefix.length; i < n; i++) {
-			if (source[i] != prefix[i]) {
+			if (this.array.get(i) != prefix[i]) {
 				return false;
 			}
 		}
@@ -118,27 +114,27 @@ public class Token {
 	}
 
 	public boolean startsWith(String prefix) {
-		byte[] source = this.getBytes();
-		if (source.length < prefix.length()) {
+		int size = this.array.size();
+		if (size < prefix.length()) {
 			return false;
 		}
 		return this.readAsString().startsWith(prefix);
 	}
 
 	public boolean contain(byte[] dst) {
-		byte[] source = this.getBytes();
-		if (source.length < dst.length) {
+		int size = this.array.size();
+		if (size < dst.length) {
 			return false;
 		}
 		byte first = dst[0];
 		int i = 0;
 		while (true) {
-			if (i >= source.length) {
+			if (i >= size) {
 				break;
 			}
-			if (first == source[i]) {
+			if (first == this.array.get(i)) {
 				int j = 0;
-				while (source[++i] == dst[++j]) {
+				while (this.array.get(++i) == dst[++j]) {
 					if (j == dst.length - 1) {
 						return true;
 					}

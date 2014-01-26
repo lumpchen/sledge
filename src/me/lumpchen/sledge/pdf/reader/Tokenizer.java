@@ -1,7 +1,6 @@
 package me.lumpchen.sledge.pdf.reader;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class Tokenizer {
 
@@ -36,16 +35,20 @@ public class Tokenizer {
 	}
 	
 	public byte[] readBytes(int size) throws IOException {
-		this.pos += size;
-		return this.reader.read(size);
+		return this.read(size);
 	}
 	
-	public void readEOL() {
+	public void readEOL() throws IOException {
+		byte next = (byte) (this.peek() & 0xFF);
+		while (next == '\r' || next == '\n' || isSpace(next)) {
+			this.read();
+			next = (byte) (this.peek() & 0xFF);
+		}
 	}
 	
 	private int read() throws IOException {
 		if (this.pos < this.buf.length) {
-			return this.buf[pos++];
+			return this.buf[pos++] & 0xFF;
 		}
 		this.buf = this.reader.read(this.buf.length);
 		if (this.buf.length == 0) {
@@ -55,9 +58,30 @@ public class Tokenizer {
 		return this.buf[pos++] & 0xFF;
 	}
 	
+	private byte[] read(int size) throws IOException {
+		if (this.pos + size < this.buf.length) {
+			byte[] dst = new byte[size];
+			System.arraycopy(this.buf, this.pos, dst, 0, size);
+			this.pos += size;
+			return dst;
+		}
+		
+		byte[] dst = new byte[size];
+		int remain = this.buf.length - this.pos;
+		System.arraycopy(this.buf, this.pos, dst, 0, remain);
+		
+		int unread = size - remain;
+		this.buf = this.reader.read(unread);
+		System.arraycopy(this.buf, 0, dst, remain, unread);
+		
+		this.pos = this.buf.length;
+		
+		return dst;
+	}
+	
 	private int peek() throws IOException {
 		if (this.pos < this.buf.length) {
-			return this.buf[pos];
+			return this.buf[pos] & 0xFF;
 		}
 		this.buf = this.reader.read(this.buf.length);
 		if (this.buf.length == 0) {
@@ -111,9 +135,10 @@ public class Tokenizer {
 				break;
 			} else if (' ' == b || '\r' == b || '\n' == b) {
 				if (token.size() > 0) {
+					this.readEOL();
 					break;
 				} else {
-					this.read();
+					this.readEOL();
 					continue;
 				}
 			}
@@ -143,7 +168,7 @@ public class Tokenizer {
 	}
 	
 	public byte[] readLine() throws IOException {
-		ByteBuffer buf = ByteBuffer.allocate(256);
+		Token token = new Token();
 		int last = 0;
 		while (true) {
 			int b = this.read();
@@ -159,9 +184,13 @@ public class Tokenizer {
 				break;
 			}
 			last = b;
-			buf.put((byte) (b & 0xFF));
+			token.add((byte) (b & 0xFF));
 		}
 		
-		return buf.array();
+		return token.getBytes();
+	}
+	
+	public static boolean isSpace(byte b) {
+		return Character.isWhitespace(b);
 	}
 }

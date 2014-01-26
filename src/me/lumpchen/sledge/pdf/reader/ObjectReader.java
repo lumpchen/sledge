@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.reader;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Iterator;
 import java.util.Queue;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
@@ -41,18 +42,12 @@ public class ObjectReader {
 
 	public IndirectObject readIndirectObject() {
 		try {
-			Token token0 = this.nextToken();
-			PNumber objNum = (PNumber) this.readObject(token0);
-			Token token1 = this.nextToken();
-			PNumber genNum = (PNumber) this.readObject(token1);
-	
-			Token token2 = this.nextToken();
-			if (!token2.match(IndirectObject.BEGIN)) {
-				throw new SyntaxException("not matched object begin tag: "
-						+ token2.toString());
+			PObject nextObj = this.readNextObj();
+			if (nextObj == null || !(nextObj instanceof IndirectObject)) {
+				throw new SyntaxException("not matched object begin tag: " + nextObj.toString());
 			}
-	
-			IndirectObject obj = new IndirectObject(objNum.intValue(), genNum.intValue());
+			
+			IndirectObject obj = (IndirectObject) nextObj;
 			while (true) {
 				Token token = this.nextToken();
 				if (null == token) {
@@ -151,26 +146,29 @@ public class ObjectReader {
 			return this.readGraphicsOperator(token);
 		} else {
 			if (token.isNumber()) {
-				boolean isRef = false;
-				Token second = this.peekNextToken();
+				Token second = this.peekNextToken(null);
 				if (second.isNumber()) {
-					Token third = this.peekNextToken();
+					Token third = this.peekNextToken(second);
 					if (third.match(IndirectRef.BEGIN)) {
-						isRef = true;
 						PNumber objNum = this.readNumber(token);
 						second = this.nextToken();
 						PNumber genNum = this.readNumber(second);
 						third = this.nextToken();
 						return new IndirectRef(objNum.intValue(),
 								genNum.intValue());
+					} else if(third.match(IndirectObject.BEGIN)) {
+						PNumber objNum = this.readNumber(token);
+						second = this.nextToken();
+						PNumber genNum = this.readNumber(second);
+						third = this.nextToken();
+						return new IndirectObject(objNum.intValue(),
+								genNum.intValue());
 					} else {
 						return this.readNumber(token);
 					}
 				}
 
-				if (!isRef) {
-					return this.readNumber(token);
-				}
+				return this.readNumber(token);
 			}
 		}
 		return null;
@@ -293,11 +291,29 @@ public class ObjectReader {
 		return dict;
 	}
 
-	private Token peekNextToken() throws IOException {
-		Token next = this.tokenizer.nextToken();
-		
-		this.tokenQueue.add(next);
-		return next;
+	private Token peekNextToken(Token current) throws IOException {
+		if (this.tokenQueue.isEmpty()) {
+			Token next = this.tokenizer.nextToken();
+			this.tokenQueue.add(next);
+			return next;			
+		} else {
+			if (null == current || !this.tokenQueue.contains(current)) {
+				return this.tokenQueue.element();
+			}
+			Iterator<Token> it = this.tokenQueue.iterator();
+			while (it.hasNext()) {
+				if (it.next().equals(current)) {
+					if (it.hasNext()) {
+						return it.next();	
+					} else {
+						Token next = this.tokenizer.nextToken();
+						this.tokenQueue.add(next);
+						return next;
+					}
+				}
+			}
+		} 
+		return null;
 	}
 	
 	private Token nextToken() throws IOException {

@@ -8,8 +8,6 @@ import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
-import me.lumpchen.sledge.pdf.reader.ReadException;
-import me.lumpchen.sledge.pdf.reader.Token;
 import me.lumpchen.sledge.pdf.reader.Tokenizer;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
@@ -112,11 +110,10 @@ public class Trailer {
 		return buf.toString();
 	}
 
-	public void read(RandomByteReader reader) throws IOException {
+	public boolean read(RandomByteReader reader) throws IOException {
 		Tokenizer tokenizer = new Tokenizer(reader); 
 		boolean found = false;
 		List<LineData> lineArr = new ArrayList<LineData>();
-		int read = 0;
 		while (true) {
 			LineData line = new LineData(tokenizer.readLine());
 			if (line.length() == 0) {
@@ -129,38 +126,9 @@ public class Trailer {
 				found = true;
 			}
 			lineArr.add(line);
-			read += line.length();
 		}
 		
-		if (!found) {
-			byte[] readBytes = new byte[read + lineArr.size()];
-			int destPos = 0;
-			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
-				
-				if (line.startsWith(STARTXREF)) {
-					line = lineArr.get(++i);
-					this.startxref = new PNumber(line.readAsLong());
-					break;
-				}
-				
-				byte[] src = line.getBytes();
-				if (null == src) {
-					continue;
-				}
-				System.arraycopy(src, 0, readBytes, destPos, src.length);
-				
-				destPos += src.length;
-				readBytes[destPos++] = '\n';
-			}
-			
-			ObjectReader objReader = new ObjectReader(readBytes);
-			IndirectObject obj = objReader.readIndirectObject();
-			if (null == obj) {
-				throw new ReadException("not found trailer.");
-			}
-			this.dict = obj.getDict();
-		} else {
+		if (found) {
 			for (int i = 0, n = lineArr.size(); i < n;  i++) {
 				LineData line = lineArr.get(i);
 				if (line.startsWith(STARTXREF)) {
@@ -172,5 +140,11 @@ public class Trailer {
 				}
 			}			
 		}
+		
+		return found;
+	}
+	
+	public void setXRefObj(IndirectObject obj) {
+		this.dict = obj.getDict();
 	}
 }

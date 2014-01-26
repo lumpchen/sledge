@@ -216,7 +216,13 @@ public class PDFReader implements PageContentsLoader {
 	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) throws IOException {
 		reader.position(startxref);
 		Trailer trailer = new Trailer();
-		trailer.read(this.reader);
+		if (!trailer.read(this.reader)) {
+			IndirectObject obj = this.readIndirectObject(startxref, pdfDoc);
+			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
+				throw new SyntaxException("not found xref stream: " + trailer.toString());	
+			}
+			trailer.setXRefObj(obj);
+		}
 		if (null == current) {
 			pdfDoc.setTrailer(trailer);
 		} else {

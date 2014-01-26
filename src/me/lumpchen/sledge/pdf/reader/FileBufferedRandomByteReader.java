@@ -28,6 +28,7 @@ public class FileBufferedRandomByteReader implements RandomByteReader {
 
 	@Override
 	public void position(long offset, boolean fromTrailer) {
+		this.buffer = null;
 		if (fromTrailer) {
 			this.position = this.fileSize - offset;
 		} else {
