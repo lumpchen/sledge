@@ -1,20 +1,26 @@
 package me.lumpchen.sledge.pdf.graphics;
 
-public abstract class Color {
+import me.lumpchen.sledge.pdf.graphics.colorspace.PDFColorSpace;
+
+public abstract class PDFColor {
 	
-	public static Color white = new RGBColor(1.0f, 1.0f, 1.0f);
-	public static Color black = new RGBColor(0f, 0f, 0f);
-	public static Color red = new RGBColor(1.0f, 0, 0);
-	public static Color green = new RGBColor(0, 1.0f, 0);
-	public static Color blue = new RGBColor(0, 0, 1.0f);
+	public static PDFColor white = new RGBColor(1.0f, 1.0f, 1.0f);
+	public static PDFColor black = new RGBColor(0f, 0f, 0f);
+	public static PDFColor red = new RGBColor(1.0f, 0, 0);
+	public static PDFColor green = new RGBColor(0, 1.0f, 0);
+	public static PDFColor blue = new RGBColor(0, 0, 1.0f);
+
+	protected PDFColor() {
+	}
 	
-	protected Color() {
+	public PDFColor instance(PDFColorSpace cs) {
+		return null;
 	}
 	
 	abstract public java.awt.Color toJavaColor();
 }
 
-class RGBColor extends Color {
+class RGBColor extends PDFColor {
 	
 	private float red = 0;
 	private float green = 0;
@@ -39,7 +45,7 @@ class RGBColor extends Color {
 	}
 }
 
-class CMYKColor extends Color {
+class CMYKColor extends PDFColor {
 	
 	private float cyan;
 	private float megenta;

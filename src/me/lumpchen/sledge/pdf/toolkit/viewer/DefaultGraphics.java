@@ -152,7 +152,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void setColor(me.lumpchen.sledge.pdf.graphics.Color color) {
+	public void setColor(me.lumpchen.sledge.pdf.graphics.PDFColor color) {
 		this.gstate.color = color.toJavaColor();
 		this.g2.setColor(this.gstate.color);
 	}

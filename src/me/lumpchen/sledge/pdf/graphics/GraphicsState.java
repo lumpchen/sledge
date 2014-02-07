@@ -1,6 +1,6 @@
 package me.lumpchen.sledge.pdf.graphics;
 
-import me.lumpchen.sledge.pdf.graphics.colorspace.PDFColorspace;
+import me.lumpchen.sledge.pdf.graphics.colorspace.PDFColorSpace;
 import me.lumpchen.sledge.pdf.syntax.basic.PBoolean;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
@@ -10,8 +10,8 @@ public class GraphicsState {
 	// Device-independent graphics state parameters
 	public Matrix ctm;
 	public ClippingPath clippingPath;
-	public PDFColorspace colorspace;
-	public Color color;
+	public PDFColorSpace colorspace;
+	public PDFColor color;
 	public TextState textState;
 	public PNumber lineWidth;
 	public PNumber lineCap;

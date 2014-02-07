@@ -50,7 +50,7 @@ public interface VirtualGraphics {
 	 * Same as RG but used for nonstroking operations, color space to
 	 * DeviceGray.
 	 * */
-	public void setColor(Color color);
+	public void setColor(PDFColor color);
 
 	/**
 	 * Begin a text object, initializing the text matrix, Tm , and the text line

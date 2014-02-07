@@ -1010,7 +1010,7 @@ class OP_rg extends GraphicsOperator {
 		float r = operand_1.asNumber().floatValue();
 		float g = operand_2.asNumber().floatValue();
 		float b = operand_3.asNumber().floatValue();
-		Color color = new RGBColor(r, g, b);
+		PDFColor color = new RGBColor(r, g, b);
 		g2d.setColor(color);
 	}
 }

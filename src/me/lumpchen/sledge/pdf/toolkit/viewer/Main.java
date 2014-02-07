@@ -18,11 +18,11 @@ public class Main {
 	static void testUI() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/c.pdf");
+		File f = new File("/pdfs/p3.pdf");
 		try {
 			PDFDocument doc = reader.read(f);
 
-			Page page = doc.getPage(1);
+			Page page = doc.getPage(2);
 			
 			System.err.println(page);
 			
