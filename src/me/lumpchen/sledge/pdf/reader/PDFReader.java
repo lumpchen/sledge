@@ -309,7 +309,7 @@ public class PDFReader implements PageContentsLoader {
 			} 
 			obj = this.readIndirectObject(ref, os.getContent(entry.objNum), pdfDoc);
 		} else {
-			obj = this.readIndirectObject(entry.offset, pdfDoc);			
+			obj = this.readIndirectObject(entry.offset, pdfDoc);
 		}
 		return obj;
 	}
@@ -318,7 +318,7 @@ public class PDFReader implements PageContentsLoader {
 		reader.position(offset);
 		
 		ObjectReader objReader = new ObjectReader(reader);
-		IndirectObject obj = objReader.readIndirectObject();
+		IndirectObject obj = objReader.readIndirectObject(pdfDoc);
 		return obj;
 	}
 	

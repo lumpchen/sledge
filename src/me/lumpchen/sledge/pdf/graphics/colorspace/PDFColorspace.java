@@ -6,9 +6,17 @@ import me.lumpchen.sledge.pdf.graphics.PDFColor;
 
 public abstract class PDFColorSpace {
 
-	static ColorSpace rgbCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+	public static final int GRAY = ColorSpace.TYPE_GRAY;
+	
+	public static final int CMYK = ColorSpace.TYPE_CMYK;
+	
+	public static final int RGB = ColorSpace.TYPE_RGB;
 
-	static ColorSpace grapCS = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+	public static final int XYZ = ColorSpace.TYPE_XYZ;
+	
+	protected static ColorSpace rgbCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+
+	protected static ColorSpace grapCS = ColorSpace.getInstance(ColorSpace.CS_GRAY);
 
 	PDFColorSpace() {
 	}

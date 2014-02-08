@@ -20,6 +20,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
 public class ObjectReader {
 
@@ -35,12 +36,16 @@ public class ObjectReader {
 	public ObjectReader(byte[] data) {
 		this.tokenizer = new Tokenizer(data);
 	}
+	
+	public ObjectReader(Tokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
 
 	public ObjectReader(LineData lineData) {
 		this.tokenizer = new Tokenizer(lineData.getBytes());
 	}
 
-	public IndirectObject readIndirectObject() {
+	public IndirectObject readIndirectObject(PDFDocument pdfDoc) {
 		try {
 			PObject nextObj = this.readNextObj();
 			if (nextObj == null || !(nextObj instanceof IndirectObject)) {
@@ -62,7 +67,7 @@ public class ObjectReader {
 				if (inside instanceof PDictionary) {
 					PDictionary dict = (PDictionary) inside;
 					if (dict.get(PName.Length) != null) {
-						PStream stream = this.readStream(dict);
+						PStream stream = this.readStream(dict, pdfDoc);
 						obj.setInsideObj(stream);
 						continue;
 					}
@@ -73,7 +78,6 @@ public class ObjectReader {
 	
 			return obj;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -85,7 +89,6 @@ public class ObjectReader {
 			Token token = this.nextToken();
 			return this.readDict(token);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -101,14 +104,23 @@ public class ObjectReader {
 		return null;
 	}
 
-	private PStream readStream(PDictionary dict) throws IOException {
+	private PStream readStream(PDictionary dict, PDFDocument pdfDoc) throws IOException {
 		Token token = this.nextToken();
 		if (!token.match(PStream.BEGIN)) {
 			throw new SyntaxException(token.toString());
 		}
 
 		PStream stream = new PStream(dict);
-		PNumber length = (PNumber) dict.get(PName.Length);
+		
+		PNumber length = null;
+		PObject objLen = dict.get(PName.Length);
+		if (objLen instanceof PNumber) {
+			length = (PNumber) objLen; 	
+		} else if (objLen instanceof IndirectRef) {
+			IndirectObject obj = pdfDoc.getObject((IndirectRef) objLen);
+			length = (PNumber) obj.insideObj();
+		}
+		
 		byte[] bytes = this.tokenizer.readBytes(length.intValue());
 		stream.setStream(bytes);
 

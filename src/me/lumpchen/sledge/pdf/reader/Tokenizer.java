@@ -6,6 +6,7 @@ public class Tokenizer {
 
 	private RandomByteReader reader;
 	private int pos = 0;
+	private int read = 0;
 	private byte[] buf = new byte[512];
 	
 	public Tokenizer(RandomByteReader reader) {
@@ -34,6 +35,10 @@ public class Tokenizer {
 		return this.reader.position();
 	}
 	
+	public int hasRead() {
+		return this.read;
+	}
+	
 	public byte[] readBytes(int size) throws IOException {
 		return this.read(size);
 	}
@@ -48,6 +53,7 @@ public class Tokenizer {
 	
 	private int read() throws IOException {
 		if (this.pos < this.buf.length) {
+			this.read++;
 			return this.buf[pos++] & 0xFF;
 		}
 		this.buf = this.reader.read(this.buf.length);
@@ -55,6 +61,7 @@ public class Tokenizer {
 			return -1;
 		}
 		this.pos = 0;
+		this.read++;
 		return this.buf[pos++] & 0xFF;
 	}
 	
@@ -63,6 +70,7 @@ public class Tokenizer {
 			byte[] dst = new byte[size];
 			System.arraycopy(this.buf, this.pos, dst, 0, size);
 			this.pos += size;
+			this.read += size;
 			return dst;
 		}
 		
@@ -75,7 +83,7 @@ public class Tokenizer {
 		System.arraycopy(this.buf, 0, dst, remain, unread);
 		
 		this.pos = this.buf.length;
-		
+		this.read += size;
 		return dst;
 	}
 	
@@ -152,38 +160,46 @@ public class Tokenizer {
 	
 	public Token nextToken(byte end) throws IOException {
 		Token token = new Token();
-		int last = 0;
+		int last = -1;
 		while (true) {
 			int b = this.peek();
 			if (b == -1) {
 				break;
 			}
-			if (b == end && '\\' != last) {
+			if (b == end && last != '\\') {
 				break;
 			}
 			token.add(this.read());
-			last = b;
+			last = b & 0xFF;
 		}
 		return token;
 	}
 	
 	public byte[] readLine() throws IOException {
 		Token token = new Token();
-		int last = 0;
+		int last = -1;
 		while (true) {
 			int b = this.read();
 			if (b == -1) {
 				break;
 			}
-			if (b == '\n' && '\\' != last) {
-				break;
-			} else if (b == '\r' && '\\' != last) {
-				if (this.peek() == '\n') {
-					this.read();
+			if (b == '\n') {
+				if (last == '\\' || last == -1) {
+					continue;
+				} else {
+					break;
 				}
-				break;
+			} else if (b == '\r' && last != '\\' && last != -1) {
+				if (last == '\\' || last == -1) {
+					continue;
+				} else {
+					if (this.peek() == '\n') {
+						this.read();
+					}
+					break;
+				}
 			}
-			last = b;
+			last = b & 0xFF;
 			token.add((byte) (b & 0xFF));
 		}
 		

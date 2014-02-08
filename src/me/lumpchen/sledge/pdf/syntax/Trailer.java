@@ -1,8 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import me.lumpchen.sledge.pdf.reader.InvalidElementException;
 import me.lumpchen.sledge.pdf.reader.LineData;
@@ -113,32 +111,24 @@ public class Trailer {
 	public boolean read(RandomByteReader reader) throws IOException {
 		Tokenizer tokenizer = new Tokenizer(reader); 
 		boolean found = false;
-		List<LineData> lineArr = new ArrayList<LineData>();
 		while (true) {
 			LineData line = new LineData(tokenizer.readLine());
 			if (line.length() == 0) {
-				break;
-			}
+				continue;
+			} 
+			
 			if (line.startsWith(Trailer.EOF)) {
 				break;
 			}
+			
 			if (line.startsWith(TRAILER)) {
+				ObjectReader objReader = new ObjectReader(tokenizer);
+				this.dict = objReader.readDict(); 
 				found = true;
+			} else if (line.startsWith(STARTXREF)) {
+				line = new LineData(tokenizer.readLine());
+				this.startxref = new PNumber(line.readAsLong());
 			}
-			lineArr.add(line);
-		}
-		
-		if (found) {
-			for (int i = 0, n = lineArr.size(); i < n;  i++) {
-				LineData line = lineArr.get(i);
-				if (line.startsWith(STARTXREF)) {
-					line = lineArr.get(++i);
-					this.startxref = new PNumber(line.readAsLong());
-				} else if (line.startsWith(PDictionary.BEGIN)) {
-					ObjectReader objReader = new ObjectReader(line.getBytes());
-					this.dict = objReader.readDict(); 
-				}
-			}			
 		}
 		
 		return found;
