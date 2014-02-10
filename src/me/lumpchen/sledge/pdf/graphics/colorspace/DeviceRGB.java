@@ -1,6 +1,7 @@
 package me.lumpchen.sledge.pdf.graphics.colorspace;
 
 import me.lumpchen.sledge.pdf.graphics.PDFColor;
+import me.lumpchen.sledge.pdf.graphics.RGBColor;
 
 public class DeviceRGB extends PDFColorSpace {
 
@@ -9,7 +10,7 @@ public class DeviceRGB extends PDFColorSpace {
 
 	@Override
 	public PDFColor getColor(float... componenets) {
-		return null;
+		return new RGBColor(componenets);
 	}
 
 }

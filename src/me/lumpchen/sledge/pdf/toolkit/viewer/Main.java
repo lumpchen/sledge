@@ -22,7 +22,7 @@ public class Main {
 		try {
 			PDFDocument doc = reader.read(f);
 
-			Page page = doc.getPage(2);
+			Page page = doc.getPage(1);
 			
 			System.err.println(page);
 			
