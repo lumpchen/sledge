@@ -28,6 +28,7 @@ public class PDFDocument {
 	private DocumentInfo info;
 	private Catalog catalog;
 	private PageTree rootPageTree;
+	private int pageCount;
 	
 	public PDFDocument() {
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
@@ -70,9 +71,14 @@ public class PDFDocument {
 
 	public void setRootPageTree(PageTree rootPageTree) {
 		this.rootPageTree = rootPageTree;
+		this.pageCount = this.rootPageTree.getCount();
 		this.rootPageTree.setDocument(this);
 	}
 
+	public int getPageCount() {
+		return this.pageCount;
+	}
+	
 	public PageTree getRootPageTree() {
 		return this.rootPageTree;
 	}

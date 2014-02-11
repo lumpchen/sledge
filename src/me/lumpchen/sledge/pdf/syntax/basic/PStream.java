@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+import me.lumpchen.sledge.pdf.syntax.decoder.DecoderChain;
 
 
 public class PStream extends PObject {
@@ -51,7 +52,7 @@ public class PStream extends PObject {
 		if (filter instanceof PName) {
 			filters.add((PName) filter);
 		} else if (filter instanceof PArray) {
-			PArray arr = (PArray) filters;
+			PArray arr = (PArray) filter;
 			for (int i = 0; i < arr.size(); i++) {
 				filters.add((PName) arr.get(i));				
 			}
@@ -70,8 +71,12 @@ public class PStream extends PObject {
 		}
 		buf.append("stream");
 		buf.append('\n');
-		buf.append(new String(stream));
+		
+		DecoderChain chain = new DecoderChain();
+		byte[] out = chain.decode(this);
+		buf.append(new String(out));
 		buf.append('\n');
+		
 		buf.append("endstream");
 		buf.append('\n');
 		return buf.toString();
