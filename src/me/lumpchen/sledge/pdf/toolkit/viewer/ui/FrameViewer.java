@@ -51,10 +51,9 @@ public class FrameViewer extends JFrame {
 				} else {
 					fileopen.setCurrentDirectory(this.lastDirectory);
 				}
-				FileFilter filter = new FileNameExtensionFilter(".pdf files",
-						"pdf");
-				fileopen.addChoosableFileFilter(filter);
-				fileopen.setAcceptAllFileFilterUsed(false);
+				FileFilter filter = new FileNameExtensionFilter(".pdf files", "pdf");
+				fileopen.setFileFilter(filter);
+				fileopen.setAcceptAllFileFilterUsed(true);
 				int ret = fileopen.showDialog(null, "Open file");
 
 				if (ret == JFileChooser.APPROVE_OPTION) {

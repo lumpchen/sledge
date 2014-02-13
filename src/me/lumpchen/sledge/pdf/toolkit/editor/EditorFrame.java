@@ -93,8 +93,8 @@ public class EditorFrame extends JFrame {
 					fileopen.setCurrentDirectory(this.lastDirectory);
 				}
 				FileFilter filter = new FileNameExtensionFilter(".pdf files", "pdf");
-				fileopen.addChoosableFileFilter(filter);
-				fileopen.setAcceptAllFileFilterUsed(false);
+				fileopen.setFileFilter(filter);
+				fileopen.setAcceptAllFileFilterUsed(true);
 				int ret = fileopen.showDialog(null, "Open file");
 
 				if (ret == JFileChooser.APPROVE_OPTION) {
