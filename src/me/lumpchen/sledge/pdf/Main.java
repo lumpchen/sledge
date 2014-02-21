@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.toolkit.viewer.ui.FrameViewer;
@@ -29,6 +30,9 @@ public class Main {
 			
 			System.out.println(page);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (PDFAuthenticationFailureException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

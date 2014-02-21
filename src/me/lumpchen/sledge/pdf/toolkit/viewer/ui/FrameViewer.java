@@ -15,6 +15,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 
@@ -65,6 +66,9 @@ public class FrameViewer extends JFrame {
 						updatePageList();
 						setPageCanvas(1);
 					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (PDFAuthenticationFailureException e1) {
+						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}

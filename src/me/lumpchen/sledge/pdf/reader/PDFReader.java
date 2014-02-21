@@ -2,12 +2,11 @@ package me.lumpchen.sledge.pdf.reader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.ObjectStream;
+import me.lumpchen.sledge.pdf.syntax.PDFFile;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
@@ -16,6 +15,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
@@ -25,35 +25,14 @@ import me.lumpchen.sledge.pdf.syntax.document.PageTree;
 public class PDFReader implements PageContentsLoader {
 
 	private FileBufferedRandomByteReader reader;
-	private RandomAccessFile raf;
-	
-	private FileChannel fc;
 	private int pageNo;
 
 	public PDFReader() {
 	}
 
-	void close() {
-		if (fc != null) {
-			try {
-				fc.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if (raf != null) {
-			try {
-				raf.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public PDFDocument read(File file) throws IOException {
-		this.raf = new RandomAccessFile(file, "r");
-		this.fc = this.raf.getChannel();
-		this.reader = new FileBufferedRandomByteReader(fc);
+	public PDFDocument read(File file) throws IOException, PDFAuthenticationFailureException {
+		PDFFile pdfFile = new PDFFile(file);
+		this.reader = new FileBufferedRandomByteReader(pdfFile.getFileChannel());
 
 		PDFDocument pdfDoc = new PDFDocument();
 		pdfDoc.setPageContentsLoader(this);
@@ -62,7 +41,7 @@ public class PDFReader implements PageContentsLoader {
 		return pdfDoc;
 	}
 
-	private void readDocument(PDFDocument pdfDoc) throws IOException {
+	private void readDocument(PDFDocument pdfDoc) throws IOException, PDFAuthenticationFailureException {
 		this.readTrailer(pdfDoc);
 		this.readXRef(pdfDoc);
 		this.readDocumentInfo(pdfDoc);
@@ -188,7 +167,7 @@ public class PDFReader implements PageContentsLoader {
 		}
 	}
 
-	private void readTrailer(PDFDocument pdfDoc) throws IOException {
+	private void readTrailer(PDFDocument pdfDoc) throws IOException, PDFAuthenticationFailureException {
 		this.reader.position(64, true);
 		Tokenizer tokenizer = new Tokenizer(this.reader);
 		long startxref = -1;
@@ -213,7 +192,8 @@ public class PDFReader implements PageContentsLoader {
 		this.readTrailer(pdfDoc, startxref, null);
 	}
 	
-	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) throws IOException {
+	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) 
+			throws IOException, PDFAuthenticationFailureException {
 		reader.position(startxref);
 		Trailer trailer = new Trailer();
 		if (!trailer.read(this.reader)) {

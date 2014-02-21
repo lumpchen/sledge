@@ -11,6 +11,11 @@ import me.lumpchen.sledge.pdf.syntax.ResourceManager;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypter;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypterFactory;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFPassword;
 import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
@@ -19,24 +24,36 @@ public class PDFDocument {
 	private PageContentsLoader pageContentsLoader;
 
 	private FontManager fontManager = FontManager.instance();
-	private ResourceManager resourceManager =  ResourceManager.instance();
+	private ResourceManager resourceManager = ResourceManager.instance();
 	private Map<IndirectRef, IndirectObject> objectCache;
 	private Map<IndirectRef, ObjectStream> objStreamCache;
-	
+
 	private Trailer trailer;
 	private XRef xref;
 	private DocumentInfo info;
 	private Catalog catalog;
 	private PageTree rootPageTree;
 	private int pageCount;
-	
+	private PDFDecrypter decrypter;
+	private PDFPassword password;
+
 	public PDFDocument() {
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
 		this.objStreamCache = new HashMap<IndirectRef, ObjectStream>();
 	}
 
-	public void setTrailer(Trailer trailer) {
+	public void setTrailer(Trailer trailer)
+			throws PDFAuthenticationFailureException {
 		this.trailer = trailer;
+
+		PObject encrypt = this.trailer.getEncrypt();
+		if (encrypt != null) {
+			if (encrypt instanceof IndirectRef) {
+				IndirectObject encryptObj = this.getObject((IndirectRef) encrypt);
+				this.decrypter = PDFDecrypterFactory.createDecrypter(
+						encryptObj, this.trailer.getID(), PDFPassword.nonNullPassword(password));
+			}
+		}
 	}
 
 	public Trailer getTrailer() {
@@ -78,7 +95,7 @@ public class PDFDocument {
 	public int getPageCount() {
 		return this.pageCount;
 	}
-	
+
 	public PageTree getRootPageTree() {
 		return this.rootPageTree;
 	}
@@ -91,29 +108,29 @@ public class PDFDocument {
 	public void setPageContentsLoader(PageContentsLoader pageContentsLoader) {
 		this.pageContentsLoader = pageContentsLoader;
 	}
-	
+
 	public IndirectObject getObject(IndirectRef ref) {
 		if (this.objectCache.containsKey(ref)) {
 			return this.objectCache.get(ref);
 		}
-		
+
 		if (this.pageContentsLoader != null) {
 			IndirectObject obj = this.pageContentsLoader.loadObject(ref, this);
 			this.objectCache.put(ref, obj);
 			return obj;
 		}
-		
+
 		return null;
 	}
-	
+
 	public void pushObjStream(IndirectRef ref, ObjectStream stream) {
 		this.objStreamCache.put(ref, stream);
 	}
-	
+
 	public ObjectStream getObjStream(IndirectRef ref) {
 		return this.objStreamCache.get(ref);
 	}
-	
+
 	public void putResource(PName key, PDFFont font) {
 		this.fontManager.put(key, font);
 	}

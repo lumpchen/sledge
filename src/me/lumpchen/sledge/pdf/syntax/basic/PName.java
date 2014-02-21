@@ -19,6 +19,9 @@ public class PName extends PObject {
 	public static final String PREV = "Prev";
 	public static final PName prev = new PName(PREV);
 	
+	public static final String ENCRYPT = "Encrypt";
+	public static final PName encrypt = new PName(ENCRYPT);
+	
 	public static final String SIZE = "Size";
 	public static final PName size = new PName(SIZE);
 	
@@ -180,6 +183,7 @@ public class PName extends PObject {
 		nameMap.put(ROOT, root);
 		nameMap.put(SIZE, size);
 		nameMap.put(PREV, prev);
+		nameMap.put(ENCRYPT, encrypt);
 		nameMap.put(XREFSTM, xrefstm);
 
 		nameMap.put(TITLE, title);

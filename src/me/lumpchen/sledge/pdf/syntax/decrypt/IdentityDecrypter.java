@@ -13,6 +13,12 @@ import me.lumpchen.sledge.pdf.syntax.basic.PStream;
  */
 public class IdentityDecrypter implements PDFDecrypter {
 
+	private static IdentityDecrypter INSTANCE = new IdentityDecrypter();
+
+	public static IdentityDecrypter getInstance() {
+		return INSTANCE;
+	}
+
 	@Override
 	public ByteBuffer decryptBuffer(String cryptFilterName,
 			IndirectObject streamObj, PStream stream)

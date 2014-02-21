@@ -7,6 +7,7 @@ import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
 import me.lumpchen.sledge.pdf.reader.Tokenizer;
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
@@ -22,7 +23,7 @@ public class Trailer {
 	private PNumber startxref;
 	
 	private Trailer prevTrailer;
-
+	
 	public Trailer() {
 	}
 	
@@ -78,6 +79,21 @@ public class Trailer {
 			throw new InvalidElementException(PName.PREV);
 		}
 		return ((PNumber) prev).longValue();
+	}
+	
+	public PObject getEncrypt() {
+		return this.dict.get(PName.encrypt);
+	}
+	
+	public PArray getID() {
+		PObject id = this.dict.get(PName.id);
+		if (null == id) {
+			return null;
+		}
+		if (!(id instanceof PArray)) {
+			throw new InvalidElementException(PName.ID);
+		}
+		return (PArray) id;
 	}
 	
 	public PDictionary getDict() {
