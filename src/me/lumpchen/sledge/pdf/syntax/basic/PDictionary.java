@@ -47,6 +47,10 @@ public class PDictionary extends PObject {
 		return this.dict.isEmpty();
 	}
 	
+	public Iterator<Entry<PName, PObject>> entryIterator() {
+		return this.dict.entrySet().iterator();
+	}
+	
 	public PDictionary getValueAsDict(PName key) {
 		PObject value = this.get(key);
 		if (null == value || !(value instanceof PDictionary)) {

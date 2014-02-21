@@ -1,6 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.basic;
 
-
 public abstract class PString extends PObject {
 
 	public static final byte LF = '\n';
@@ -36,4 +35,21 @@ public abstract class PString extends PObject {
 
 		return "";
 	}
+	
+    /**
+     * Get the corresponding byte array for a basic string. This is effectively
+     * the char[] array cast to bytes[], as chars in basic strings only use the
+     * least significant byte.
+     *
+     * @param basicString the basic PDF string, as offered by {@link
+     *  PDFObject#getStringValue()}
+     * @return the bytes corresponding to its characters
+     */
+    public byte[] asBytes() {
+        final byte[] b = new byte[this.charSequence.length];
+        for (int i = 0; i < b.length; ++i) {
+            b[i] = (byte) this.charSequence[i];
+        }
+        return b;
+    }
 }

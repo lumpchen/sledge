@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.document;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,10 @@ import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByPlatformException;
+import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByProductException;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
+import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecryptException;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypter;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypterFactory;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFPassword;
@@ -42,20 +46,28 @@ public class PDFDocument {
 		this.objStreamCache = new HashMap<IndirectRef, ObjectStream>();
 	}
 
-	public void setTrailer(Trailer trailer)
-			throws PDFAuthenticationFailureException {
+	public void setTrailer(Trailer trailer) {
 		this.trailer = trailer;
+	}
 
+	public void checkSecurity(byte[] password) throws PDFAuthenticationFailureException {
+		this.password = new PDFPassword(password);
 		PObject encrypt = this.trailer.getEncrypt();
 		if (encrypt != null) {
 			if (encrypt instanceof IndirectRef) {
 				IndirectObject encryptObj = this.getObject((IndirectRef) encrypt);
-				this.decrypter = PDFDecrypterFactory.createDecrypter(
-						encryptObj, this.trailer.getID(), PDFPassword.nonNullPassword(password));
+				try {
+					this.decrypter = PDFDecrypterFactory.createDecrypter(
+							encryptObj, this.trailer.getID(), PDFPassword.nonNullPassword(this.password));
+				} catch (EncryptionUnsupportedByProductException
+						| EncryptionUnsupportedByPlatformException
+						| IOException | PDFDecryptException e) {
+					e.printStackTrace();
+				}
 			}
-		}
+		}		
 	}
-
+	
 	public Trailer getTrailer() {
 		return this.trailer;
 	}

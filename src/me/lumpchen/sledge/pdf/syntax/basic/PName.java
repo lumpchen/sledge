@@ -130,6 +130,30 @@ public class PName extends PObject {
 	public static final String CRYPT = "Crypt";
 	public static final PName Crypt = new PName(CRYPT);
 	
+	public static final String STANDARD = "Standard";
+	public static final PName standard = new PName(STANDARD);
+	public static final String V = "V";
+	public static final PName v = new PName(V);
+	public static final String R = "R";
+	public static final PName r = new PName(R);
+	public static final String O = "O";
+	public static final PName o = new PName(O);
+	public static final String U = "U";
+	public static final PName u = new PName(U);
+	public static final String P = "P";
+	public static final PName p = new PName(P);
+	public static final String ENCRYPTMETADATA = "EncryptMetadata";
+	public static final PName encryptMetadata = new PName(ENCRYPTMETADATA);
+	public static final String CF = "CF";
+	public static final PName cf = new PName(CF);
+	public static final String CFM = "CFM";
+	public static final PName cfm = new PName(CFM);
+	public static final String STMF = "StmF";
+	public static final PName StmF = new PName(STMF);
+	public static final String STRF = "StrF";
+	public static final PName StrF = new PName(STRF);
+	
+	
 	public static final String DECODEPARMS = "DecodeParms";
 	public static final PName DecodeParms = new PName(DECODEPARMS);
 	public static final String COLUMNS = "Columns";
@@ -254,6 +278,18 @@ public class PName extends PObject {
 		nameMap.put(FIRST, First);
 		nameMap.put(N, n);
 		nameMap.put(EXTENDS, Extends);
+		
+		nameMap.put(STANDARD, standard);
+		nameMap.put(V, v);
+		nameMap.put(R, r);
+		nameMap.put(O, o);
+		nameMap.put(U, u);
+		nameMap.put(P, p);
+		nameMap.put(ENCRYPTMETADATA, encryptMetadata);
+		nameMap.put(CF, cf);
+		nameMap.put(CFM, cfm);
+		nameMap.put(STMF, StmF);
+		nameMap.put(STRF, StrF);
 	}
 
 	private PName(byte[] name) {

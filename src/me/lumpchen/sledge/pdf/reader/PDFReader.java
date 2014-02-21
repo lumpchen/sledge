@@ -26,13 +26,14 @@ public class PDFReader implements PageContentsLoader {
 
 	private FileBufferedRandomByteReader reader;
 	private int pageNo;
+	private PDFFile pdfFile;
 
 	public PDFReader() {
 	}
 
 	public PDFDocument read(File file) throws IOException, PDFAuthenticationFailureException {
-		PDFFile pdfFile = new PDFFile(file);
-		this.reader = new FileBufferedRandomByteReader(pdfFile.getFileChannel());
+		this.pdfFile = new PDFFile(file);
+		this.reader = new FileBufferedRandomByteReader(this.pdfFile.getFileChannel());
 
 		PDFDocument pdfDoc = new PDFDocument();
 		pdfDoc.setPageContentsLoader(this);
@@ -44,6 +45,9 @@ public class PDFReader implements PageContentsLoader {
 	private void readDocument(PDFDocument pdfDoc) throws IOException, PDFAuthenticationFailureException {
 		this.readTrailer(pdfDoc);
 		this.readXRef(pdfDoc);
+		
+		this.checkSecurity(pdfDoc);
+		
 		this.readDocumentInfo(pdfDoc);
 		this.readRoot(pdfDoc);
 		this.readPageTree(pdfDoc);
@@ -258,6 +262,11 @@ public class PDFReader implements PageContentsLoader {
 		if (trailer.getPrevTrailer() != null) {
 			this.readXRef(pdfDoc, trailer.getPrevTrailer(), xref);
 		}
+	}
+	
+	public void checkSecurity(PDFDocument pdfDoc) throws PDFAuthenticationFailureException {
+		byte[] password = this.pdfFile.getPassword();
+		pdfDoc.checkSecurity(password);
 	}
 
 	@Override

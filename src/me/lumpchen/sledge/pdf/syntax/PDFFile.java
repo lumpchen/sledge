@@ -12,6 +12,7 @@ public class PDFFile {
 
 	private RandomAccessFile raf;
 	private FileChannel fc;
+	private byte[] password;
 
 	public PDFFile(String path) throws IOException {
 		this(new File(path));
@@ -25,6 +26,14 @@ public class PDFFile {
 		this.raf = new RandomAccessFile(f, mode);
 	}
 
+	public void setPassword(byte[] password) {
+		this.password = password;
+	}
+	
+	public byte[] getPassword() {
+		return this.password;
+	}
+	
 	public FileChannel getFileChannel() {
 		this.fc = this.raf.getChannel();
 		return this.fc;

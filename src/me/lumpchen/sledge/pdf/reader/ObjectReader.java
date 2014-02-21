@@ -62,18 +62,18 @@ public class ObjectReader {
 				if (token.match(IndirectObject.END)) {
 					break;
 				}
-				PObject inside = this.readObject(token);
-	
-				if (inside instanceof PDictionary) {
-					PDictionary dict = (PDictionary) inside;
-					if (dict.get(PName.Length) != null) {
-						PStream stream = this.readStream(dict, pdfDoc);
-						obj.setInsideObj(stream);
-						continue;
-					}
+				
+				if (token.match(PStream.BEGIN)) {
+					PDictionary dict = obj.getDict();
+					PStream stream = this.readStream(token, dict, pdfDoc);
+					obj.setInsideObj(stream);
+					continue;
 				}
-	
-				obj.setInsideObj(inside);
+				
+				PObject inside = this.readObject(token);
+				if (inside instanceof PDictionary) {
+					obj.setInsideObj(inside);
+				}
 			}
 	
 			return obj;
@@ -104,10 +104,9 @@ public class ObjectReader {
 		return null;
 	}
 
-	private PStream readStream(PDictionary dict, PDFDocument pdfDoc) throws IOException {
-		Token token = this.nextToken();
-		if (!token.match(PStream.BEGIN)) {
-			throw new SyntaxException(token.toString());
+	private PStream readStream(Token begin, PDictionary dict, PDFDocument pdfDoc) throws IOException {
+		if (!begin.match(PStream.BEGIN)) {
+			throw new SyntaxException(begin.toString());
 		}
 
 		PStream stream = new PStream(dict);
@@ -128,7 +127,7 @@ public class ObjectReader {
 
 		Token end = this.nextToken();
 		if (!end.match(PStream.END)) {
-			throw new SyntaxException(token.toString());
+			throw new SyntaxException(end.toString());
 		}
 
 		return stream;
