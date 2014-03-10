@@ -82,7 +82,6 @@ public class PDFDocument {
 
 	public void setDocumentInfo(DocumentInfo info) {
 		this.info = info;
-		this.info.setDocument(this);
 	}
 
 	public DocumentInfo getInfo() {
@@ -91,7 +90,6 @@ public class PDFDocument {
 
 	public void setCatalog(Catalog catalog) {
 		this.catalog = catalog;
-		this.catalog.setDocument(this);
 	}
 
 	public Catalog getCatalog() {
@@ -101,7 +99,6 @@ public class PDFDocument {
 	public void setRootPageTree(PageTree rootPageTree) {
 		this.rootPageTree = rootPageTree;
 		this.pageCount = this.rootPageTree.getCount();
-		this.rootPageTree.setDocument(this);
 	}
 
 	public int getPageCount() {

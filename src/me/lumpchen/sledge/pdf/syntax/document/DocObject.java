@@ -7,15 +7,16 @@ import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
+import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public abstract class DocObject {
 
 	protected DocObject parent;
 	protected IndirectObject insideObj;
-	protected PDFDocument document;
+	protected PDFDocument owner;
 	
-	protected DocObject(IndirectObject obj) {
+	protected DocObject(IndirectObject obj, PDFDocument owner) {
 		if (null == obj) {
 			throw new InvalidTypeException("inside object is null.");
 		}
@@ -28,6 +29,7 @@ public abstract class DocObject {
 			throw new InvalidTypeException(obj.toString());
 		}
 		this.insideObj = obj;
+		this.owner = owner;
 	}
 	
 	public String toString() {
@@ -41,8 +43,16 @@ public abstract class DocObject {
 		return this.insideObj;
 	}
 	
-	public void setDocument(PDFDocument document) {
-		this.document = document;
+	public PDFDocument getDocument() {
+		return this.owner;
+	}
+	
+	protected PObject getValue(PName name) {
+		return this.insideObj.getValue(name);
+	}
+	
+	protected PObject getValue(String name) {
+		return this.insideObj.getValue(PName.instance(name));
 	}
 	
 	protected PNumber getValueAsNumber(PName name) {
@@ -67,6 +77,30 @@ public abstract class DocObject {
 	
 	protected PDictionary getValueAsDict(PName name) {
 		return this.insideObj.getValueAsDict(name);
+	}
+	
+	protected PNumber getValueAsNumber(String name) {
+		return this.insideObj.getValueAsNumber(PName.instance(name));
+	}
+	
+	protected PArray getValueAsArray(String name) {
+		return this.insideObj.getValueAsArray(PName.instance(name));
+	}
+	
+	protected IndirectRef getValueAsRef(String name) {
+		return this.insideObj.getValueAsRef(PName.instance(name));
+	}
+	
+	protected PName getValueAsName(String name) {
+		return this.insideObj.getValueAsName(PName.instance(name));
+	}
+	
+	protected PString getValueAsString(String name) {
+		return this.insideObj.getValueAsString(PName.instance(name));
+	}
+	
+	protected PDictionary getValueAsDict(String name) {
+		return this.insideObj.getValueAsDict(PName.instance(name));
 	}
 	
 	public DocObject getParent() {

@@ -1,23 +1,25 @@
 package me.lumpchen.sledge.pdf.text.font;
 
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 
-public class PDFFont {
+public abstract class PDFFont {
 
 	public static Map<String, Font> JDK_FONT_CACHE = new HashMap<String, Font>();
 	static {
-		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		for (Font f : fonts) {
-			String psName = f.getPSName();
-			if (psName != null) {
-				JDK_FONT_CACHE.put(psName, f);
-			}
-		}
+//		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+//		for (Font f : fonts) {
+//			String psName = f.getPSName();
+//			if (psName != null) {
+//				JDK_FONT_CACHE.put(psName, f);
+//			}
+//		}
 	}
 
 	public static final String Type_0 = "Type0";
@@ -29,20 +31,67 @@ public class PDFFont {
 	public static final String CIDFontType0 = "CIDFontType0";
 	public static final String CIDFontType2 = "CIDFontType2";
 
-	private String baseFont;
-	private String subType;
-	private String postscriptName;
+	protected String baseFont;
+	protected String subType;
+	protected String name;
 
-	public PDFFont() {
+	protected int firstChar;
+	protected int lastChar;
+	protected int[] widths;
+	protected FontDescriptor fontDescriptor;
+	protected PDFEncoding encoding;
+	protected PDFCMap toUnicodeMap;
+
+	protected String postscriptName;
+
+	PDFFont() {
+	};
+
+	protected void read(FontObject fontObj) {
+		if (fontObj.getSubType() != null) {
+			this.subType = fontObj.getSubType().getName();			
+		}
+
+		if (fontObj.getName() != null) {
+			this.name = fontObj.getName().getName();
+		}
+		
+		if (fontObj.getFirstChar() != null) {
+			this.firstChar = fontObj.getFirstChar().intValue(); 
+		}
+		
+		if (fontObj.getLastChar() != null) {
+			this.lastChar = fontObj.getLastChar().intValue();
+		}
+		
+		if (fontObj.getWidths() != null) {
+			PArray arr = fontObj.getWidths();
+			this.widths = new int[arr.size()];
+			
+			for (int i = 0; i < arr.size(); i++) {
+				PNumber num = (PNumber) arr.get(i);
+				this.widths[i] = num.intValue();
+			}
+		}
+		
+		this.baseFont = fontObj.getBaseFont();
+		
+		if (fontObj.getFontDescriptor() != null) {
+			PDictionary dict = fontObj.getFontDescriptor();
+			this.fontDescriptor = new FontDescriptor(dict);
+		}
+
+		if (fontObj.getEncoding() != null) {
+			this.encoding = new PDFEncoding(fontObj.getEncoding());
+		}
 	}
-
+	
 	public static PDFFont create(FontObject fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
-			TrueTypeFont font = new TrueTypeFont();
-			font.setSubType(subType);
-			font.setBaseFont(fontObj.getBaseFont().getName());
-			return font;
+			TrueTypeFont ttf = new TrueTypeFont();
+			ttf.read(fontObj);
+			return ttf;
 		}
 
 		return null;

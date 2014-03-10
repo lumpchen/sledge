@@ -6,8 +6,8 @@ import me.lumpchen.sledge.pdf.syntax.basic.PString;
 
 public class DocumentInfo extends DocObject {
 
-	public DocumentInfo(IndirectObject obj) {
-		super(obj);
+	public DocumentInfo(IndirectObject obj, PDFDocument owner) {
+		super(obj, owner);
 	}
 
 	public PString getCreator() {

@@ -34,8 +34,8 @@ public class Page extends DocObject {
 	private double width;
 	private double height;
 	
-	public Page(IndirectObject obj) {
-		super(obj);
+	public Page(IndirectObject obj, PDFDocument owner) {
+		super(obj, owner);
 		
 		PArray rect = super.getValueAsArray(PName.mediabox);
 		this.mediaBox = new Rectangle(rect);
@@ -115,7 +115,7 @@ public class Page extends DocObject {
 			if (null == contentRef) {
 				return null;
 			}
-			this.contentStreamObj = this.document.getObject(contentRef);
+			this.contentStreamObj = this.owner.getObject(contentRef);
 		}
 		
 		PStream stream = this.contentStreamObj.getStream();
@@ -162,7 +162,7 @@ public class Page extends DocObject {
 		}
 		if (res instanceof IndirectRef) {
 			IndirectRef resRef = (IndirectRef) res;
-			IndirectObject resObj = this.document.getObject(resRef);
+			IndirectObject resObj = this.owner.getObject(resRef);
 			PDictionary dict = resObj.getDict();
 			if (null != dict) {
 				Resource resource = new Resource(dict);
@@ -187,14 +187,14 @@ public class Page extends DocObject {
 		for (PName key : keys) {
 			PObject obj = fontDict.get(key);
 			if (obj instanceof IndirectRef) {
-				IndirectObject resObj = this.document.getObject((IndirectRef) obj);
+				IndirectObject resObj = this.owner.getObject((IndirectRef) obj);
 				if (null != resObj) {
 					PName type = resObj.getValueAsName(PName.type);
 					if (null == type || !type.equals(PName.font)) {
 						throw new SyntaxException("not a font object");
 					}
-					FontObject fontObj = new FontObject(resObj);
-					this.document.putResource(key, PDFFont.create(fontObj));
+					FontObject fontObj = new FontObject(resObj, this.owner);
+					this.owner.putResource(key, PDFFont.create(fontObj));
 				} else {
 					throw new SyntaxException("null object");
 				}

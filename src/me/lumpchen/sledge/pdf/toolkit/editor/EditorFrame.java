@@ -22,6 +22,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
+import me.lumpchen.sledge.pdf.syntax.PDFFile;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
@@ -36,6 +37,8 @@ public class EditorFrame extends JFrame {
 	private JScrollPane rightScrollPane;
 
 	private JTextArea textarea;
+	
+	private PDFFile openPDF;
 	
 	public EditorFrame() {
 		super();
@@ -117,7 +120,8 @@ public class EditorFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, "File not found.");
 		}
 		try {
-			PDFDocument doc = reader.read(f);
+			this.openPDF = new PDFFile(f);
+			PDFDocument doc = reader.read(this.openPDF);
 			this.createXRefTable(doc);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -128,6 +132,12 @@ public class EditorFrame extends JFrame {
 		}
 	}
 
+	public void closeDocument() {
+		if (this.openPDF != null) {
+			this.openPDF.close();
+		}
+	}
+	
 	private void createXRefTable(PDFDocument doc) {
 		XRefTableModel tableModel = new XRefTableModel(doc);
 

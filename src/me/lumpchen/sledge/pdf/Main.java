@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
-import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.PDFFile;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
-import me.lumpchen.sledge.pdf.toolkit.viewer.ui.FrameViewer;
-import me.lumpchen.sledge.pdf.toolkit.viewer.ui.PageCanvas;
 
 public class Main {
 
@@ -25,9 +23,12 @@ public class Main {
 
 		File f = new File("/xref_stream.pdf");
 		try {
-			PDFDocument doc = reader.read(f);
-			Page page = doc.getPage(1);
+			PDFFile pdf = new PDFFile(f);
 			
+			PDFDocument doc = reader.read(pdf);
+			Page page = doc.getPage(1);
+
+			pdf.close();
 			System.out.println(page);
 		} catch (IOException e) {
 			e.printStackTrace();

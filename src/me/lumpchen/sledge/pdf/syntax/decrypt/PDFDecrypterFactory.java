@@ -140,7 +140,8 @@ public class PDFDecrypterFactory {
         PString strFObj = encryptDict.getValueAsString(PName.StrF);
         String defaultStringFilter = strFObj != null ? stmFObj.toJavaString() : CF_IDENTITY;
 
-        return new CryptFilterDecrypter(cfDecrypters, defaultStreamFilter, defaultStringFilter);
+//        return new CryptFilterDecrypter(cfDecrypters, defaultStreamFilter, defaultStringFilter);
+        return null;
     }
     
 	private static PDFDecrypter createStandardDecrypter(PDictionary encryptDict, 
@@ -189,22 +190,4 @@ public class PDFDecrypterFactory {
                 revision, o, u, p, encryptMetadata, password);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

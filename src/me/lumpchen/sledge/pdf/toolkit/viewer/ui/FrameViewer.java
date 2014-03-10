@@ -15,6 +15,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.lumpchen.sledge.pdf.reader.PDFReader;
+import me.lumpchen.sledge.pdf.syntax.PDFFile;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
@@ -23,6 +24,7 @@ public class FrameViewer extends JFrame {
 
 	private static final long serialVersionUID = -7681692658609592158L;
 
+	private PDFFile openPDF;
 	private PDFDocument pdf;
 	private int selectedPage = 1;
 	private JComboBox<String> pageList = new JComboBox<String>();
@@ -62,7 +64,8 @@ public class FrameViewer extends JFrame {
 					this.lastDirectory = file.getParentFile();
 					PDFReader reader = new PDFReader();
 					try {
-						pdf = reader.read(file);
+						openPDF = new PDFFile(file);
+						pdf = reader.read(openPDF);
 						updatePageList();
 						setPageCanvas(1);
 					} catch (IOException e1) {
@@ -95,6 +98,12 @@ public class FrameViewer extends JFrame {
 		return toolBar;
 	}
 
+	public void closeDocument() {
+		if (this.openPDF != null) {
+			this.openPDF.close();
+		}
+	}
+	
 	private void updatePageList() {
 		if (this.pdf == null) {
 			return;

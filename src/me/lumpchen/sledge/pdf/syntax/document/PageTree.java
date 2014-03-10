@@ -16,8 +16,8 @@ public class PageTree extends DocObject {
 	private Map<Integer, Page> pageMap;
 	private int count; // The number of leaf nodes(page objects)
 	
-	public PageTree(IndirectObject obj) {
-		super(obj);
+	public PageTree(IndirectObject obj, PDFDocument owner) {
+		super(obj, owner);
 		this.objList = new ArrayList<DocObject>();
 		this.pageMap = new HashMap<Integer, Page>();
 		this.count = this.getValueAsNumber(PName.count).intValue();
@@ -42,7 +42,6 @@ public class PageTree extends DocObject {
 	public void addPageObject(DocObject obj) {
 		if (obj.getType().equals(PName.page) || obj.getType().equals(PName.pages)) {
 			obj.parent = this;
-			obj.setDocument(this.document);
 			this.objList.add(obj);
 			
 			if (obj.getType().equals(PName.page)) {

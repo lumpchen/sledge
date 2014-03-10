@@ -5,8 +5,8 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 
 public class FontDescriptor extends DocObject {
 
-	public FontDescriptor(IndirectObject obj) {
-		super(obj);
+	public FontDescriptor(IndirectObject obj, PDFDocument owner) {
+		super(obj, owner);
 	}
 
 	@Override

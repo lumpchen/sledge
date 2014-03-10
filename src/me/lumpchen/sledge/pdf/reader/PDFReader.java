@@ -1,6 +1,5 @@
 package me.lumpchen.sledge.pdf.reader;
 
-import java.io.File;
 import java.io.IOException;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
@@ -31,8 +30,8 @@ public class PDFReader implements PageContentsLoader {
 	public PDFReader() {
 	}
 
-	public PDFDocument read(File file) throws IOException, PDFAuthenticationFailureException {
-		this.pdfFile = new PDFFile(file);
+	public PDFDocument read(PDFFile file) throws IOException, PDFAuthenticationFailureException {
+		this.pdfFile = file;
 		this.reader = new FileBufferedRandomByteReader(this.pdfFile.getFileChannel());
 
 		PDFDocument pdfDoc = new PDFDocument();
@@ -46,7 +45,7 @@ public class PDFReader implements PageContentsLoader {
 		this.readTrailer(pdfDoc);
 		this.readXRef(pdfDoc);
 		
-		this.checkSecurity(pdfDoc);
+//		this.checkSecurity(pdfDoc);
 		
 		this.readDocumentInfo(pdfDoc);
 		this.readRoot(pdfDoc);
@@ -67,7 +66,7 @@ public class PDFReader implements PageContentsLoader {
 
 		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (null != iobj) {
-			Catalog catalog = new Catalog(iobj);
+			Catalog catalog = new Catalog(iobj, pdfDoc);
 			pdfDoc.setCatalog(catalog);
 		}
 	}
@@ -84,7 +83,7 @@ public class PDFReader implements PageContentsLoader {
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
 		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
-		PageTree rootPageTree = new PageTree(iobj);
+		PageTree rootPageTree = new PageTree(iobj, pdfDoc);
 		pdfDoc.setRootPageTree(rootPageTree);
 	}
 
@@ -122,12 +121,12 @@ public class PDFReader implements PageContentsLoader {
 		PName type = iobj.getValueAsName(PName.type);
 		if (type != null) {
 			if (type == PName.page) {
-				Page page = new Page(iobj);
+				Page page = new Page(iobj, pdfDoc);
 				page.setPageNo(++pageNo);
 				pageTree.addPageObject(page);
 				
 			} else if (type == PName.pages) {
-				PageTree nestedPageTree = new PageTree(iobj);
+				PageTree nestedPageTree = new PageTree(iobj, pdfDoc);
 				this.readPages(nestedPageTree, pdfDoc);
 				
 				pageTree.addPageObject(nestedPageTree);
@@ -166,7 +165,7 @@ public class PDFReader implements PageContentsLoader {
 		
 		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (null != iobj) {
-			DocumentInfo docInfo = new DocumentInfo(iobj);
+			DocumentInfo docInfo = new DocumentInfo(iobj, pdfDoc);
 			pdfDoc.setDocumentInfo(docInfo);			
 		}
 	}
