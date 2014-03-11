@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.document.FontObject;
+import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
+import me.lumpchen.sledge.pdf.syntax.document.FontObj;
 
 public abstract class PDFFont {
 
@@ -39,6 +39,8 @@ public abstract class PDFFont {
 	protected int lastChar;
 	protected int[] widths;
 	protected FontDescriptor fontDescriptor;
+	
+	protected String predefinedEncoding;
 	protected PDFEncoding encoding;
 	protected PDFCMap toUnicodeMap;
 
@@ -47,7 +49,7 @@ public abstract class PDFFont {
 	PDFFont() {
 	};
 
-	protected void read(FontObject fontObj) {
+	protected void read(FontObj fontObj) {
 		if (fontObj.getSubType() != null) {
 			this.subType = fontObj.getSubType().getName();			
 		}
@@ -74,19 +76,25 @@ public abstract class PDFFont {
 			}
 		}
 		
-		this.baseFont = fontObj.getBaseFont();
+		if (fontObj.getBaseFont() != null) {
+			this.baseFont = fontObj.getBaseFont().getName();			
+		}
 		
 		if (fontObj.getFontDescriptor() != null) {
-			PDictionary dict = fontObj.getFontDescriptor();
-			this.fontDescriptor = new FontDescriptor(dict);
+			FontDescriptorObj obj = fontObj.getFontDescriptor();
+			this.fontDescriptor = new FontDescriptor(obj);
 		}
 
+		if (fontObj.getPredefinedEncoding() != null) {
+			this.predefinedEncoding = fontObj.getPredefinedEncoding().getName();
+		}
+		
 		if (fontObj.getEncoding() != null) {
 			this.encoding = new PDFEncoding(fontObj.getEncoding());
 		}
 	}
 	
-	public static PDFFont create(FontObject fontObj) {
+	public static PDFFont create(FontObj fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
 			TrueTypeFont ttf = new TrueTypeFont();

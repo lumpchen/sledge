@@ -193,7 +193,7 @@ public class Page extends DocObject {
 					if (null == type || !type.equals(PName.font)) {
 						throw new SyntaxException("not a font object");
 					}
-					FontObject fontObj = new FontObject(resObj, this.owner);
+					FontObj fontObj = new FontObj(resObj, this.owner);
 					this.owner.putResource(key, PDFFont.create(fontObj));
 				} else {
 					throw new SyntaxException("null object");

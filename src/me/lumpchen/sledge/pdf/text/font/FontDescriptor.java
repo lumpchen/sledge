@@ -1,15 +1,11 @@
 package me.lumpchen.sledge.pdf.text.font;
 
-import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
 
 public class FontDescriptor {
 
-	private String type;
 	private String fontName;
 	private String fontFamily;
 	private String fontStrech;
@@ -27,113 +23,102 @@ public class FontDescriptor {
 	private double avgWidth;
 	private double maxWidth;
 	private double missingWidth;
-	
+
 	private FontFile fontFile;
 	private FontFile fontFile2;
 	private FontFile fontFile3;
-	
+
 	private String charset;
-	
-	public FontDescriptor(PDictionary dict) {
-		this.read(dict);
-	}
-	
-	private void read(PDictionary dict) {
-		PString s = dict.getValueAsString(PName.instance("FontFamily"));
-		if (s != null) {
-			this.fontFamily = s.toJavaString();
+
+	public FontDescriptor(FontDescriptorObj obj) {
+		if (obj.getFontName() != null) {
+			this.fontName = obj.getFontName().toJavaString();
 		}
 		
-		s = dict.getValueAsString(PName.instance("FontName"));
-		if (s != null) {
-			this.fontName = s.toJavaString();
+		if (obj.getFontFamily() != null) {
+			this.fontFamily = obj.getFontFamily().toJavaString();
 		}
 		
-		s = dict.getValueAsString(PName.instance("FontStretch"));
-		if (s != null) {
-			this.fontStrech = s.toJavaString();
+		if (obj.getFontStrech() != null) {
+			this.fontStrech = obj.getFontStrech().toJavaString();
 		}
 		
-		PNumber n = dict.getValueAsNumber(PName.instance("FontWeight"));
-		if (n != null) {
-			this.fontWeight = n.doubleValue();
+		if (obj.getFontWeight() != null) {
+			this.fontWeight = obj.getFontWeight().doubleValue();
 		}
-		
-		n = dict.getValueAsNumber(PName.instance("Flags"));
-		if (n != null) {
-			this.flags = n.intValue();
+
+		if (obj.getFlags() != null) {
+			this.flags = obj.getFlags().intValue();
 		}
-		
-		PArray arr = dict.getValueAsArray(PName.instance("FontBBox"));
-		if (arr != null) {
+
+		if (obj.getFontBBox() != null) {
+			PArray arr = obj.getFontBBox();
 			this.fontBBox = new int[arr.size()];
+			
 			for (int i = 0; i < arr.size(); i++) {
 				this.fontBBox[i] = ((PNumber) arr.get(i)).intValue();
 			}
 		}
-		
-		n = dict.getValueAsNumber(PName.instance("ItalicAngle"));
-		if (n != null) {
-			this.italicAngle = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("Ascent"));
-		if (n != null) {
-			this.ascent = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("Descent"));
-		if (n != null) {
-			this.descent = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("Leading"));
-		if (n != null) {
-			this.leading = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("CapHeight"));
-		if (n != null) {
-			this.capHeight = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("XHeight"));
-		if (n != null) {
-			this.xHeight = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("StemV"));
-		if (n != null) {
-			this.stemV = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("StemH"));
-		if (n != null) {
-			this.stemH = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("AvgWidth"));
-		if (n != null) {
-			this.avgWidth = n.doubleValue();
-		}
-		
-		n = dict.getValueAsNumber(PName.instance("MaxWidth"));
-		if (n != null) {
-			this.maxWidth = n.doubleValue();
-		}
-		
-		IndirectRef ref = dict.getValueAsRef(PName.instance("FontFile"));
-		if (ref != null) {
-			
-		}
-	}
 
-	public String getType() {
-		return type;
-	}
+		if (obj.getItalicAngle() != null) {
+			this.italicAngle = obj.getItalicAngle().doubleValue();
+		}
 
-	public void setType(String type) {
-		this.type = type;
+		if (obj.getAscent() != null) {
+			this.ascent = obj.getAscent().doubleValue();
+		}
+
+		if (obj.getDescent() != null) {
+			this.descent = obj.getDescent().doubleValue();
+		}
+		
+		if (obj.getLeading() != null) {
+			this.leading = obj.getLeading().doubleValue();
+		}
+
+		if (obj.getCapHeight() != null) {
+			this.capHeight = obj.getCapHeight().doubleValue();
+		}
+
+		if (obj.getxHeight() != null) {
+			this.xHeight = obj.getxHeight().doubleValue();
+		}
+		
+		if (obj.getStemH() != null) {
+			this.stemH = obj.getStemH().doubleValue();
+		}
+		
+		if (obj.getStemV() != null) {
+			this.stemV = obj.getStemV().doubleValue();
+		}
+		
+		if (obj.getAvgWidth() != null) {
+			this.avgWidth = obj.getAvgWidth().doubleValue();
+		}
+		
+		if (obj.getMaxWidth() != null) {
+			this.maxWidth = obj.getMaxWidth().doubleValue();
+		}
+
+		if (obj.getMissingWidth() != null) {
+			this.missingWidth = obj.getMissingWidth().doubleValue();
+		}
+
+		if (obj.getFontFile() != null) {
+			this.fontFile = new FontFile(obj.getFontFile());
+		}
+		
+		if (obj.getFontFile2() != null) {
+			this.fontFile2 = new FontFile(obj.getFontFile2());
+		}
+		
+		if (obj.getFontFile3() != null) {
+			this.fontFile3 = new FontFile(obj.getFontFile3());
+		}
+		
+		if (obj.getCharSet() != null) {
+			this.charset = obj.getCharSet().toJavaString();
+		}
 	}
 
 	public String getFontName() {

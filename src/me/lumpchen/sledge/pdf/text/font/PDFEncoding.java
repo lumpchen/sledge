@@ -1,17 +1,10 @@
 package me.lumpchen.sledge.pdf.text.font;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.document.EncodingObj;
 
 public class PDFEncoding {
 
-	public PDFEncoding(PObject obj) {
-		this.read(obj);
+	public PDFEncoding(EncodingObj obj) {
 	}
 	
-	private void read(PObject obj) {
-		if (obj instanceof PString) {
-			
-		}
-	}
 }
