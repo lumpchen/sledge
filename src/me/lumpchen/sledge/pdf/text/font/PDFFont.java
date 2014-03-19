@@ -7,7 +7,7 @@ import java.util.Map;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
-import me.lumpchen.sledge.pdf.syntax.document.FontObj;
+import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 
 public abstract class PDFFont {
 
@@ -49,7 +49,7 @@ public abstract class PDFFont {
 	PDFFont() {
 	};
 
-	protected void read(FontObj fontObj) {
+	protected void read(FontObject fontObj) {
 		if (fontObj.getSubType() != null) {
 			this.subType = fontObj.getSubType().getName();			
 		}
@@ -94,7 +94,7 @@ public abstract class PDFFont {
 		}
 	}
 	
-	public static PDFFont create(FontObj fontObj) {
+	public static PDFFont create(FontObject fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
 			TrueTypeFont ttf = new TrueTypeFont();

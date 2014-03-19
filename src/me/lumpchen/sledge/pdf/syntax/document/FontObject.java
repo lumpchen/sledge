@@ -9,7 +9,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
-public class FontObj extends DocObject {
+public class FontObject extends DocObject {
 
 	private PName name;
 	private PName subtype;
@@ -23,7 +23,7 @@ public class FontObj extends DocObject {
 	private EncodingObj encoding;
 	private PStream toUnicode;
 
-	public FontObj(IndirectObject obj, PDFDocument owner) {
+	public FontObject(IndirectObject obj, PDFDocument owner) {
 		super(obj, owner);
 		
 		this.name = this.getValueAsName("Name");

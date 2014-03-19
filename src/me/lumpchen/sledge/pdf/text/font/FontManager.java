@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 
 public class FontManager {
 
@@ -16,6 +17,21 @@ public class FontManager {
 
 	public static FontManager instance() {
 		return instance;
+	}
+	
+	
+	public PDFFont getFont(FontObject fo) {
+		if (fo == null) {
+			return null;
+		}
+		
+		FontIndex index = this.getFontIndex(fo);
+		return this.findFont(index);
+	}
+	
+	
+	private FontIndex getFontIndex(FontObject fo) {
+		return null;
 	}
 	
 	public void put(PName name, PDFFont obj) {
