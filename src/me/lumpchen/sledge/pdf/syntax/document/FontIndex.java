@@ -1,4 +1,4 @@
-package me.lumpchen.sledge.pdf.text.font;
+package me.lumpchen.sledge.pdf.syntax.document;
 
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 

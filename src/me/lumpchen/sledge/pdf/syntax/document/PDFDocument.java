@@ -11,7 +11,6 @@ import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.ResourceManager;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByPlatformException;
 import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByProductException;
@@ -27,6 +26,7 @@ public class PDFDocument {
 
 	private PageContentsLoader pageContentsLoader;
 
+	private Map<FontIndex, FontObject> indexedFontCache;
 	private FontManager fontManager = FontManager.instance();
 	private ResourceManager resourceManager = ResourceManager.instance();
 	private Map<IndirectRef, IndirectObject> objectCache;
@@ -42,6 +42,7 @@ public class PDFDocument {
 	private PDFPassword password;
 
 	public PDFDocument() {
+		this.indexedFontCache = new HashMap<FontIndex, FontObject>();
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
 		this.objStreamCache = new HashMap<IndirectRef, ObjectStream>();
 	}
@@ -140,8 +141,20 @@ public class PDFDocument {
 		return this.objStreamCache.get(ref);
 	}
 
-	public void putResource(PName key, PDFFont font) {
-		this.fontManager.put(key, font);
+	public void putResource(FontIndex fontIndex, FontObject fontObj) {
+		if (this.indexedFontCache.containsKey(fontIndex)) {
+			return;
+		}
+		this.indexedFontCache.put(fontIndex, fontObj);
+	}
+	
+	public PDFFont getFont(FontIndex fontIndex) {
+		if (!this.indexedFontCache.containsKey(fontIndex)) {
+			return null;
+		}
+		
+		FontObject fontObj = this.indexedFontCache.get(fontIndex);
+		return this.fontManager.getFont(fontObj);
 	}
 
 	public String toString() {

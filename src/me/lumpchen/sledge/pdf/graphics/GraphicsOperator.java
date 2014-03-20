@@ -10,8 +10,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PString;
-import me.lumpchen.sledge.pdf.text.font.FontIndex;
-import me.lumpchen.sledge.pdf.text.font.FontManager;
+import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public abstract class GraphicsOperator extends PObject {
@@ -194,7 +193,7 @@ public abstract class GraphicsOperator extends PObject {
 		this.operandList.add(oparand);
 	}
 
-	abstract public void execute(VirtualGraphics g2d);
+	abstract public void execute(VirtualGraphics g2d, Page page);
 
 }
 
@@ -207,7 +206,7 @@ class OP_w extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -219,7 +218,7 @@ class OP_J_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -231,7 +230,7 @@ class OP_j extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -243,7 +242,7 @@ class OP_M_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -255,7 +254,7 @@ class OP_d extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -267,7 +266,7 @@ class OP_ri extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -279,7 +278,7 @@ class OP_i extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -291,7 +290,7 @@ class OP_gs extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -307,7 +306,7 @@ class OP_q extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		g2d.saveGraphicsState();
 	}
 }
@@ -323,7 +322,7 @@ class OP_Q_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		g2d.restoreGraphicsState();
 	}
 }
@@ -339,7 +338,7 @@ class OP_cm extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand_1 = this.operandList.get(0);
 		GraphicsOperand operand_2 = this.operandList.get(1);
 		GraphicsOperand operand_3 = this.operandList.get(2);
@@ -367,7 +366,7 @@ class OP_m extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -379,7 +378,7 @@ class OP_l extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -391,7 +390,7 @@ class OP_c extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -403,7 +402,7 @@ class OP_v extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -415,7 +414,7 @@ class OP_y extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -427,7 +426,7 @@ class OP_h extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -442,7 +441,7 @@ class OP_re extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand_1 = this.operandList.get(0);
 		GraphicsOperand operand_2 = this.operandList.get(1);
 		GraphicsOperand operand_3 = this.operandList.get(2);
@@ -466,7 +465,7 @@ class OP_S_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -478,7 +477,7 @@ class OP_s extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -490,7 +489,7 @@ class OP_f extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -502,7 +501,7 @@ class OP_F_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -514,7 +513,7 @@ class OP_f42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -526,7 +525,7 @@ class OP_B_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -538,7 +537,7 @@ class OP_B_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -550,7 +549,7 @@ class OP_b extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -562,7 +561,7 @@ class OP_b42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -578,7 +577,7 @@ class OP_n extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		g2d.closePath();
 	}
 }
@@ -596,7 +595,7 @@ class OP_W_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -608,7 +607,7 @@ class OP_W_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -624,7 +623,7 @@ class OP_BT_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		g2d.beginText();
 	}
 }
@@ -639,7 +638,7 @@ class OP_ET_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		g2d.endText();
 	}
 }
@@ -653,7 +652,7 @@ class OP_T_c extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -665,7 +664,7 @@ class OP_T_w extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -677,7 +676,7 @@ class OP_T_z extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -689,7 +688,7 @@ class OP_TL_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -703,14 +702,14 @@ class OP_T_f extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand_1 = this.operandList.get(0);
 		GraphicsOperand operand_2 = this.operandList.get(1);
 		
 		PName fontIndex= operand_1.asName();
 		PNumber fontSize = operand_2.asNumber();
 		
-		PDFFont font = FontManager.instance().findFont(new FontIndex(fontIndex));
+		PDFFont font = page.getFont(fontIndex);
 		g2d.setFont(font, fontSize.floatValue());
 	}
 }
@@ -723,7 +722,7 @@ class OP_T_r extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -735,7 +734,7 @@ class OP_T_s extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -748,7 +747,7 @@ class OP_T_d extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -760,7 +759,7 @@ class OP_TD_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -772,7 +771,7 @@ class OP_T_m extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand_1 = this.operandList.get(0);
 		GraphicsOperand operand_2 = this.operandList.get(1);
 		GraphicsOperand operand_3 = this.operandList.get(2);
@@ -799,7 +798,7 @@ class OP_T_42 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -814,7 +813,7 @@ class OP_T_j extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand = this.operandList.get(0);
 		PString s = operand.asString();
 		
@@ -830,7 +829,7 @@ class OP_TJ_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -842,7 +841,7 @@ class OP_39 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -854,7 +853,7 @@ class OP_34 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -867,7 +866,7 @@ class OP_d0 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -879,7 +878,7 @@ class OP_d1 extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -892,7 +891,7 @@ class OP_CS_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -904,7 +903,7 @@ class OP_cs extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -916,7 +915,7 @@ class OP_SC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -928,7 +927,7 @@ class OP_SCN_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -940,7 +939,7 @@ class OP_sc extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -952,7 +951,7 @@ class OP_scn extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -964,7 +963,7 @@ class OP_G_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -976,7 +975,7 @@ class OP_g extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -988,7 +987,7 @@ class OP_RG_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1002,7 +1001,7 @@ class OP_rg extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 		GraphicsOperand operand_1 = this.operandList.get(0);
 		GraphicsOperand operand_2 = this.operandList.get(1);
 		GraphicsOperand operand_3 = this.operandList.get(2);
@@ -1023,7 +1022,7 @@ class OP_K_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1035,7 +1034,7 @@ class OP_k extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1048,7 +1047,7 @@ class OP_sh extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1061,7 +1060,7 @@ class OP_BI_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1073,7 +1072,7 @@ class OP_ID_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1085,7 +1084,7 @@ class OP_EI_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1098,7 +1097,7 @@ class OP_D_o extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1111,7 +1110,7 @@ class OP_MP_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1123,7 +1122,7 @@ class OP_DP_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute( VirtualGraphics g2d) {
+	public void execute( VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1135,7 +1134,7 @@ class OP_BMC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1147,7 +1146,7 @@ class OP_BDC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1159,7 +1158,7 @@ class OP_EMC_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1172,7 +1171,7 @@ class OP_BX_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }
 
@@ -1184,6 +1183,6 @@ class OP_EX_ extends GraphicsOperator {
 	}
 
 	@Override
-	public void execute(VirtualGraphics g2d) {
+	public void execute(VirtualGraphics g2d, Page page) {
 	}
 }

@@ -145,11 +145,15 @@ public class Page extends DocObject {
 		g2.beginCanvas(mediaBox.getWidth(), mediaBox.getHeight());
 		
 		ContentStream cs = this.getContentStream();
-		cs.render(g2);
+		cs.render(g2, this);
 	}
 	
 	public PObject getResources() {
 		return super.getValueAsDict(PName.resources);
+	}
+	
+	public PDFFont getFont(PName name) {
+		return this.owner.getFont(new FontIndex(name));
 	}
 	
 	private void loadResource() {
@@ -193,8 +197,9 @@ public class Page extends DocObject {
 					if (null == type || !type.equals(PName.font)) {
 						throw new SyntaxException("not a font object");
 					}
+					FontIndex fontIndex = new FontIndex(key);
 					FontObject fontObj = new FontObject(resObj, this.owner);
-					this.owner.putResource(key, PDFFont.create(fontObj));
+					this.owner.putResource(fontIndex, fontObj);
 				} else {
 					throw new SyntaxException("null object");
 				}

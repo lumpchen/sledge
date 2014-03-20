@@ -7,6 +7,7 @@ import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
 import me.lumpchen.sledge.pdf.graphics.RenderObject;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
+import me.lumpchen.sledge.pdf.syntax.document.Page;
 
 public class ContentStream implements RenderObject {
 
@@ -57,11 +58,11 @@ public class ContentStream implements RenderObject {
 	}
 	
 	@Override
-	public void render(VirtualGraphics g2) {
+	public void render(VirtualGraphics g2, Page page) {
 		int size = this.operatorList.size();
 		for (int i = 0; i < size; i++) {
 			GraphicsOperator op = this.operatorList.get(i);
-			op.execute(g2);
+			op.execute(g2, page);
 		}
 	}
 }
