@@ -47,7 +47,8 @@ public abstract class PDFFont {
 
 	protected String postscriptName;
 
-	PDFFont() {
+	PDFFont(FontObject fontObj) {
+		this.read(fontObj);
 	};
 
 	protected void read(FontObject fontObj) {
@@ -98,8 +99,7 @@ public abstract class PDFFont {
 	public static PDFFont create(FontObject fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
-			TrueTypeFont ttf = new TrueTypeFont();
-			ttf.read(fontObj);
+			TTFFont ttf = new TTFFont(fontObj);
 			return ttf;
 		}
 
@@ -138,4 +138,5 @@ public abstract class PDFFont {
 		return null;
 	}
 
+	abstract public PDFGlyph getGlyph(char c);
 }
