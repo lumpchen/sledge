@@ -39,19 +39,19 @@ public class TTFFont extends PDFFont {
 	@Override
 	public PDFGlyph getGlyph(char c) {
 		PDFGlyph glyph = new PDFGlyph();
-		GeneralPath gpath = this.getOutline(c);
-		glyph.setGlyph(gpath);
+		this.getOutline(c, glyph);
 		return glyph;
 	}
 
-	private GeneralPath getOutline(char c) {
+	private void getOutline(char c, PDFGlyph glyph) {
 		// find the cmaps
 		CmapTable cmap = (CmapTable) this.ttf.getTable("cmap");
 
 		// if there are no cmaps, this is (hopefully) a cid-mapped font,
 		// so just trust the value we were given for src
 		if (cmap == null) {
-			return getOutline((int) c);
+			this.getOutline((int) c, glyph);
+			return;
 		}
 
 		CMap[] maps = cmap.getCMaps();
@@ -59,15 +59,16 @@ public class TTFFont extends PDFFont {
 		for (int i = 0; i < maps.length; i++) {
 			int idx = maps[i].map(c);
 			if (idx != 0) {
-				return getOutline(idx);
+				this.getOutline(idx, glyph);
+				return;
 			}
 		}
 
 		// not found, return the empty glyph
-		return getOutline(0);
+		this.getOutline(0, glyph);
 	}
 
-	private GeneralPath getOutline(int glyphID) {
+	private void getOutline(int glyphID, PDFGlyph glyph) {
 		// find the glyph itself
 		GlyfTable glyf = (GlyfTable) this.ttf.getTable("glyf");
 		Glyf g = glyf.getGlyph(glyphID);
@@ -84,14 +85,14 @@ public class TTFFont extends PDFFont {
 		// calculate the advance
 		HmtxTable hmtx = (HmtxTable) this.ttf.getTable("hmtx");
 		float advance = (float) hmtx.getAdvance(glyphID) / (float) unitsPerEm;
+		glyph.setAdvance(advance);
 
 		// the base transform scales the glyph to 1x1
-		AffineTransform at = AffineTransform.getScaleInstance(1 / unitsPerEm,
-				1 / unitsPerEm);
+		AffineTransform at = AffineTransform.getScaleInstance(1 / unitsPerEm, 1 / unitsPerEm);
 		at.concatenate(AffineTransform.getScaleInstance(1, 1));
 
 		gp.transform(at);
-		return gp;
+		glyph.setGlyph(gp);
 	}
 
 	protected GeneralPath renderSimpleGlyph(GlyfSimple g) {

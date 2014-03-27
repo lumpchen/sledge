@@ -35,6 +35,7 @@ public class PageCanvas extends JPanel {
 		
 		g2.setColor(background);
 		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+//		g2.scale(3, 3);
 		
 		if (this.page != null) {
 			double pw = this.toPixel(this.page.getWidth());

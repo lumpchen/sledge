@@ -4,6 +4,7 @@ import java.awt.geom.GeneralPath;
 
 public class PDFGlyph {
 
+	private double advance;
 	private GeneralPath gpath;
 	
 	public PDFGlyph() {
@@ -15,5 +16,13 @@ public class PDFGlyph {
 	
 	public GeneralPath getGlyph() {
 		return this.gpath;
+	}
+	
+	public void setAdvance(double advance) {
+		this.advance = advance;
+	}
+	
+	public double getAdvance() {
+		return this.advance;
 	}
 }

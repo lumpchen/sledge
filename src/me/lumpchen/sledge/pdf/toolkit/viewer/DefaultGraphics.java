@@ -47,7 +47,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		public static GraphicsState clone(GraphicsState current) {
 			GraphicsState gs = new GraphicsState();
 			gs.ctm = current.ctm;
-			
+			gs.font = current.font;
 			gs.color = current.color;
 			
 			gs.fontSize = current.fontSize;
@@ -200,8 +200,8 @@ public class DefaultGraphics implements VirtualGraphics {
 		
 		AffineTransform at = new AffineTransform(1, 0, 0, -1, 0, 0);
 		at.scale(this.gstate.fontSize, this.gstate.fontSize);
-		at.preConcatenate(this.gstate.ctm);
 		
+		double advance = 0;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 			PDFFont font = this.gstate.font;
@@ -209,9 +209,14 @@ public class DefaultGraphics implements VirtualGraphics {
 			PDFGlyph glyph = font.getGlyph(c);
 			GeneralPath gpath = glyph.getGlyph();
 			
+			advance = glyph.getAdvance();
+			this.g2.translate(this.toPixel(advance * this.gstate.fontSize), 0);
+			
 			gpath.transform(at);
 			
-			this.g2.draw(gpath);
+//			this.g2.draw(gpath);
+			this.g2.fill(gpath);
+//			break;
 		}
 		this.restoreGraphicsState();
 	}
