@@ -106,6 +106,10 @@ public abstract class PDFFont {
 		return null;
 	}
 
+	public boolean notEmbed() {
+		return this.fontDescriptor.notEmbed();
+	}
+	
 	public String getSubType() {
 		return subType;
 	}

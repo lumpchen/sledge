@@ -288,4 +288,8 @@ public class FontDescriptor {
 	public void setCharset(String charset) {
 		this.charset = charset;
 	}
+	
+	public boolean notEmbed() {
+		return this.fontFile == null && this.fontFile2 == null && this.fontFile3 == null;
+	}
 }

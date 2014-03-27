@@ -16,6 +16,7 @@ import java.util.Stack;
 import me.lumpchen.sledge.pdf.graphics.Matrix;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
+import me.lumpchen.sledge.pdf.text.font.PDFGlyph;
 
 public class DefaultGraphics implements VirtualGraphics {
 
@@ -25,7 +26,8 @@ public class DefaultGraphics implements VirtualGraphics {
 		public ColorSpace colorspace;
 		public Color color;
 		
-		public Font font;
+		public PDFFont font;
+		public Font awtFont;
 		public float charSpace;
 		public float wordSpace;
 		public float scale;
@@ -164,12 +166,15 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setFont(PDFFont font, float size) {
-		this.gstate.font = font.peerAWTFont();
-		if (null == this.gstate.font) {
-			this.gstate.font = this.defaultFont;
-		}
+		this.gstate.font = font;
 		this.gstate.fontSize = (int) (this.toPixel(size) + 0.5);
-		this.gstate.font = this.gstate.font.deriveFont(this.gstate.fontSize);
+		if (font.notEmbed()) {
+			this.gstate.awtFont = font.peerAWTFont();
+			if (null == this.gstate.awtFont) {
+				this.gstate.awtFont= this.defaultFont;
+				this.gstate.awtFont = this.gstate.awtFont.deriveFont(this.gstate.fontSize);
+			}			
+		}
 	}
 
 	@Override
@@ -184,10 +189,31 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void showText(String text) {
+		this.saveGraphicsState();
 //		this.g2.setColor(Color.blue);
 		
-		this.g2.setFont(this.gstate.font);
-		this.g2.drawString(text, 0, 0);
+		if (this.gstate.font.notEmbed()) {
+			this.g2.setFont(this.gstate.awtFont);
+			this.g2.drawString(text, 0, 0);	
+			return;
+		}
+		
+		AffineTransform at = new AffineTransform(1, 0, 0, -1, 0, 0);
+		at.scale(this.gstate.fontSize, this.gstate.fontSize);
+		at.preConcatenate(this.gstate.ctm);
+		
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			PDFFont font = this.gstate.font;
+			
+			PDFGlyph glyph = font.getGlyph(c);
+			GeneralPath gpath = glyph.getGlyph();
+			
+			gpath.transform(at);
+			
+			this.g2.draw(gpath);
+		}
+		this.restoreGraphicsState();
 	}
 
 	@Override
