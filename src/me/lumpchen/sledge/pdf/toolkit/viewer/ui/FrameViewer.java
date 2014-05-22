@@ -85,6 +85,9 @@ public class FrameViewer extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String s = (String) pageList.getSelectedItem();
+				if (s == null) {
+					return;
+				}
 				int sel = Integer.parseInt(s);
 				if (sel != selectedPage) {
 					setPageCanvas(sel);

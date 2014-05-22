@@ -11,10 +11,10 @@ public class Catalog extends DocObject {
 	}
 
 	public PName getType() {
-		return PName.catalog;
+		return PName.Catalog;
 	}
 
 	public IndirectRef getPages() {
-		return this.getValueAsRef(PName.pages);
+		return this.getValueAsRef(PName.Pages);
 	}
 }

@@ -63,7 +63,7 @@ public class Resource {
 
 	public PDictionary getFont() {
 		if (null == this.font) {
-			this.font = this.dict.getValueAsDict(PName.font);			
+			this.font = this.dict.getValueAsDict(PName.Font);			
 		}
 		return this.font;
 	}

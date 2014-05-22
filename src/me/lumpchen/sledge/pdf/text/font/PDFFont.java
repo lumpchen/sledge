@@ -5,7 +5,9 @@ import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.syntax.basic.PArray;
+import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
 import me.lumpchen.sledge.pdf.syntax.document.FontObject;
@@ -41,9 +43,11 @@ public abstract class PDFFont {
 	protected int[] widths;
 	protected FontDescriptor fontDescriptor;
 	
-	protected String predefinedEncoding;
-	protected PDFEncoding encoding;
+	protected PName predefinedEncoding;
+	protected PDFFontEncoding encoding;
 	protected PDFCMap toUnicodeMap;
+	
+	protected FontObject descendantFontObj;
 
 	protected String postscriptName;
 
@@ -88,18 +92,28 @@ public abstract class PDFFont {
 		}
 
 		if (fontObj.getPredefinedEncoding() != null) {
-			this.predefinedEncoding = fontObj.getPredefinedEncoding().getName();
+			this.predefinedEncoding = fontObj.getPredefinedEncoding();
+			this.encoding = new PDFFontEncoding(this.subType, this.predefinedEncoding);
+		} else if (fontObj.getEncoding() != null) {
+			this.encoding = new PDFFontEncoding(this.subType, fontObj.getEncoding());
 		}
 		
-		if (fontObj.getEncoding() != null) {
-			this.encoding = new PDFEncoding(fontObj.getEncoding());
+		if (fontObj.getDescendantFonts() != null) {
+			this.descendantFontObj = fontObj.getDescendantFonts();
 		}
 	}
 	
 	public static PDFFont create(FontObject fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
-			TTFFont ttf = new TTFFont(fontObj);
+//			TTFFont ttf = new TTFFont(fontObj);
+			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
+			return ttf;
+		} else if (Type_0.equalsIgnoreCase(subType)) {
+			Type0Font type0 = new Type0Font(fontObj);
+			return type0;
+		} else if (CIDFontType2.equalsIgnoreCase(subType)) {
+			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
 			return ttf;
 		}
 
@@ -107,6 +121,9 @@ public abstract class PDFFont {
 	}
 
 	public boolean notEmbed() {
+		if (this.fontDescriptor == null) {
+			return false;
+		}
 		return this.fontDescriptor.notEmbed();
 	}
 	
@@ -142,5 +159,5 @@ public abstract class PDFFont {
 		return null;
 	}
 
-	abstract public PDFGlyph getGlyph(char c);
+	abstract public void renderText(char[] c, VirtualGraphics gd);
 }

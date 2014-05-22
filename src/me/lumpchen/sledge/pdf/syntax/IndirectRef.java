@@ -10,11 +10,11 @@ public class IndirectRef extends PObject {
 	private int genNum;
 	
 	public IndirectRef() {
-		super.type = Type.IndirectRef;
+		super.type = TYPE.IndirectRef;
 	}
 
 	public IndirectRef(int objectNumber, int generationNumber) {
-		super.type = Type.IndirectRef;
+		super.type = TYPE.IndirectRef;
 		this.objNum = objectNumber;
 		this.genNum = generationNumber;
 	}

@@ -1,60 +1,25 @@
 package me.lumpchen.sledge.pdf.toolkit.viewer;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.Stack;
 
+import me.lumpchen.jfreetype.GlyphSlotRec;
+import me.lumpchen.sledge.pdf.graphics.GraphicsState;
 import me.lumpchen.sledge.pdf.graphics.Matrix;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
-import me.lumpchen.sledge.pdf.text.font.PDFGlyph;
 
 public class DefaultGraphics implements VirtualGraphics {
 
-	static class GraphicsState {
-		public AffineTransform ctm;
-		public GeneralPath path;
-		public ColorSpace colorspace;
-		public Color color;
-		
-		public PDFFont font;
-		public Font awtFont;
-		public float charSpace;
-		public float wordSpace;
-		public float scale;
-		public float leading;
-		public float fontSize;
-		public float render;
-		public float rise;
-		
-		public float lineWidth;
-		public int lineCap;
-		public int lineJoin;
-		public float miterLimit;
-		public int[] dashArray;
-		public int dashPhase;
-		// ...
-		
-		public static GraphicsState clone(GraphicsState current) {
-			GraphicsState gs = new GraphicsState();
-			gs.ctm = current.ctm;
-			gs.font = current.font;
-			gs.color = current.color;
-			
-			gs.fontSize = current.fontSize;
-			return gs;
-		}
-	}
-	
 	private Stack<GraphicsState> gsStack = new Stack<GraphicsState>();
 
 	private GraphicsState gstate;
@@ -65,7 +30,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	private static int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
 	
-	private double resolution = -1;
+	private float resolution = -1;
 	
 	private Font defaultFont;
 	
@@ -81,7 +46,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		this.gstate.ctm = this.g2.getTransform();
 	}
 	
-	public void setResolutoin(double deviceRes) {
+	public void setResolutoin(float deviceRes) {
 		this.resolution = deviceRes;
 	}
 	
@@ -198,26 +163,41 @@ public class DefaultGraphics implements VirtualGraphics {
 			return;
 		}
 		
-		AffineTransform at = new AffineTransform(1, 0, 0, -1, 0, 0);
-		at.scale(this.gstate.fontSize, this.gstate.fontSize);
+		this.gstate.font.renderText(text.toCharArray(), this);
 		
-		double advance = 0;
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			PDFFont font = this.gstate.font;
-			
-			PDFGlyph glyph = font.getGlyph(c);
-			GeneralPath gpath = glyph.getGlyph();
-			
-			advance = glyph.getAdvance();
-			this.g2.translate(this.toPixel(advance * this.gstate.fontSize), 0);
-			
-			gpath.transform(at);
-			
-//			this.g2.draw(gpath);
-			this.g2.fill(gpath);
-//			break;
-		}
+//		GlyphSlotRec[] bitmaps = null;
+//		if (text.length() == 4) {
+//			StringBuilder buf = new StringBuilder();
+//			char c0 = text.charAt(0);
+//			char c1 = text.charAt(1);
+//			c0 = (char) ((c0 << 8) | (c1 & 0xFF)); 
+//			
+//			char c2 = text.charAt(2);
+//			char c3 = text.charAt(3);
+//			c2 = (char) ((c2 << 8) | (c3 & 0xFF));
+//			
+//			buf.append(c0).append(c2);
+//			text = buf.toString();
+//			
+//			int[] gids = new int[2];
+//			gids[0] = c0 & 0xFFFF;
+//			gids[1] = c2 & 0xFFFF;
+//			
+//			bitmaps = this.gstate.font.getGlyphBitmap(gids, this.gstate.color);	
+//		} else {
+//			text = text.replace(' ', 'c');
+//			bitmaps = this.gstate.font.getGlyphBitmap(text, this.gstate.color);			
+//		}
+//
+//		for (GlyphSlotRec glyph : bitmaps) {
+//			BufferedImage img = glyph.getGlyphBufferImage(this.gstate.color);
+//			double advance = glyph.getHAdvance();
+//			
+//			this.g2.translate(0, -glyph.getBearingY());
+//			g2.drawImage(img, null, null);
+//			this.g2.translate(advance, glyph.getBearingY());
+//		}
+		
 		this.restoreGraphicsState();
 	}
 
@@ -230,6 +210,11 @@ public class DefaultGraphics implements VirtualGraphics {
 	public void strokePath() {
 		this.g2.draw(this.currPath);
 	}
+	
+	@Override
+	public void translate(double tx, double ty) {
+		this.g2.translate(tx, ty);
+	}
 
 	@Override
 	public void fillPath() {
@@ -241,5 +226,23 @@ public class DefaultGraphics implements VirtualGraphics {
 		doubleMatrix[4] = this.toPixel(doubleMatrix[4]);
 		doubleMatrix[5] = this.toPixel(doubleMatrix[5]);
 		return doubleMatrix;
+	}
+
+	@Override
+	public GraphicsState currentGState() {
+		return this.gstate;
+	}
+
+	@Override
+	public float[] getResolution() {
+		if (this.resolution <= 0) {
+			this.resolution = screenRes;
+		}
+		return new float[]{this.resolution, this.resolution};
+	}
+	
+	@Override
+	public boolean drawImage(Image img) {
+		return this.g2.drawImage(img, null, null);
 	}
 }

@@ -25,7 +25,7 @@ public abstract class DocObject {
 			this.insideObj = obj;
 			return;
 		}
-		if (!type.equals(obj.getValue(PName.type))) {
+		if (!type.equals(obj.getValue(PName.Type))) {
 			throw new InvalidTypeException(obj.toString());
 		}
 		this.insideObj = obj;

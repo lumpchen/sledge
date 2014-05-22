@@ -20,7 +20,7 @@ public class PageTree extends DocObject {
 		super(obj, owner);
 		this.objList = new ArrayList<DocObject>();
 		this.pageMap = new HashMap<Integer, Page>();
-		this.count = this.getValueAsNumber(PName.count).intValue();
+		this.count = this.getValueAsNumber(PName.Count).intValue();
 	}
 	
 	public String toString() {
@@ -40,11 +40,11 @@ public class PageTree extends DocObject {
 	}
 	
 	public void addPageObject(DocObject obj) {
-		if (obj.getType().equals(PName.page) || obj.getType().equals(PName.pages)) {
+		if (obj.getType().equals(PName.Page) || obj.getType().equals(PName.Pages)) {
 			obj.parent = this;
 			this.objList.add(obj);
 			
-			if (obj.getType().equals(PName.page)) {
+			if (obj.getType().equals(PName.Page)) {
 				this.pageMap.put(((Page) obj).getPageNo(), (Page) obj);
 			}
 			return;
@@ -64,10 +64,10 @@ public class PageTree extends DocObject {
 		}
 		
 		for (DocObject obj : this.objList) {
-			if (obj.getType().equals(PName.page)) {
+			if (obj.getType().equals(PName.Page)) {
 				continue;
 			}
-			if (obj.getType().equals(PName.pages)) {
+			if (obj.getType().equals(PName.Pages)) {
 				PageTree subTree = (PageTree) obj;
 				Page page = subTree.getPage(pageNo);
 				if ( page == null) {
@@ -80,11 +80,11 @@ public class PageTree extends DocObject {
 	}
 	
 	public PName getType() {
-		return PName.pages;
+		return PName.Pages;
 	}
 	
 	public PArray getKids() {
-		return this.getValueAsArray(PName.kids);
+		return this.getValueAsArray(PName.Kids);
 	}
 	
 }

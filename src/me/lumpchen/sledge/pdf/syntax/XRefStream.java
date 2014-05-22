@@ -25,12 +25,12 @@ public class XRefStream {
 			throw new SyntaxException("not found the dictionary of stream.");
 		}
 		
-		PName type = dict.getValueAsName(PName.type);
+		PName type = dict.getValueAsName(PName.Type);
 		if (!type.equals(PName.XRef)) {
 			throw new SyntaxException("invalid XRefStream type: " + type);
 		}
 
-		PArray arr = dict.getValueAsArray(PName.w);
+		PArray arr = dict.getValueAsArray(PName.W);
 		if (null == arr) {
 			throw new SyntaxException("not found /W entry.");
 		}
@@ -43,7 +43,7 @@ public class XRefStream {
 			this.w[i] = ((PNumber) obj).intValue();
 		}
 		
-		PNumber num = dict.getValueAsNumber(PName.size);
+		PNumber num = dict.getValueAsNumber(PName.Size);
 		if (null == num) {
 			throw new SyntaxException("not found /Size");
 		}

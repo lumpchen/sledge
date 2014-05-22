@@ -44,8 +44,8 @@ public class PDFDecrypterFactory {
 			throw new SyntaxException("No Filter specified in Encrypt dictionary");
 		}
 
-		if (filter.equals(PName.standard)) {
-			PNumber num = encryptDict.getValueAsNumber(PName.v);
+		if (filter.equals(PName.Standard)) {
+			PNumber num = encryptDict.getValueAsNumber(PName.V);
 			int v = num != null ? num.intValue() : 0;
 			if (v == 1 || v == 2) {
 				num = encryptDict.getValueAsNumber(PName.Length);
@@ -78,13 +78,13 @@ public class PDFDecrypterFactory {
         // appropriate), but it does affect the encryption key.
         boolean encryptMetadata = true;
         
-        PBoolean b = encryptDict.getValueAsBool(PName.encryptMetadata);
+        PBoolean b = encryptDict.getValueAsBool(PName.EncryptMetadata);
         encryptMetadata = b.getValue();
         
         // Assemble decrypters for each filter in the
         // crypt filter (CF) dictionary
         final Map<String, PDFDecrypter> cfDecrypters = new HashMap<String, PDFDecrypter>();
-        final PDictionary cfDict = encryptDict.getValueAsDict(PName.cf);
+        final PDictionary cfDict = encryptDict.getValueAsDict(PName.CF);
         if (cfDict == null) {
             throw new SyntaxException("No CF value present in Encrypt dict for V4 encryption");
         }
@@ -109,7 +109,7 @@ public class PDFDecrypterFactory {
                 // CFM is the crypt filter method, describing whether RC4,
                 // AES, or None (i.e., identity) is the encryption mechanism
                 // used for the name crypt filter
-                PString cfmObj = cryptFilter.getValueAsString(PName.cfm);
+                PString cfmObj = cryptFilter.getValueAsString(PName.CFM);
                 String cfm = cfmObj != null ? cfmObj.toJavaString() : "None";
                 
                 if ("None".equals(cfm)) {
@@ -154,14 +154,14 @@ public class PDFDecrypterFactory {
 					PDFDecryptException {
 		
         // R describes the revision of the security handler
-		PNumber num = encryptDict.getValueAsNumber(PName.r);
+		PNumber num = encryptDict.getValueAsNumber(PName.R);
         if (num == null) {
             throw new SyntaxException("No R entry present in Encrypt dictionary");
         }
         int revision = num.intValue();
         
         // O describes validation details for the owner key
-        PString s = encryptDict.getValueAsString(PName.o);
+        PString s = encryptDict.getValueAsString(PName.O);
         if (s == null) {
         	throw new SyntaxException("No O entry present in Encrypt dictionary");
         }
@@ -171,7 +171,7 @@ public class PDFDecrypterFactory {
         }
         
         // U describes validation details for the user key
-        s = encryptDict.getValueAsString(PName.u);
+        s = encryptDict.getValueAsString(PName.U);
         if (s == null) {
         	throw new SyntaxException("No U entry present in Encrypt dictionary");
         }
@@ -180,7 +180,7 @@ public class PDFDecrypterFactory {
             throw new SyntaxException("Expected user key U value of 32 bytes; found " + o.length);
         }
         
-		num = encryptDict.getValueAsNumber(PName.p);
+		num = encryptDict.getValueAsNumber(PName.P);
         if (num == null) {
             throw new SyntaxException("No P entry present in Encrypt dictionary");
         }

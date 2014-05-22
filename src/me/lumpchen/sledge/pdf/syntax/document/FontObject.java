@@ -20,8 +20,10 @@ public class FontObject extends DocObject {
 	private FontDescriptorObj fontDescriptor;
 	
 	private PName predinedEncoding;
-	private EncodingObj encoding;
+	private IndirectObject encodingObj;
 	private PStream toUnicode;
+	
+	private FontObject descendantFonts;
 
 	public FontObject(IndirectObject obj, PDFDocument owner) {
 		super(obj, owner);
@@ -53,21 +55,18 @@ public class FontObject extends DocObject {
 		IndirectRef ref = this.getValueAsRef(PName.FontDescriptor);
 		if (ref != null) {
 			IndirectObject iobj = owner.getObject(ref);
-			if (iobj != null) {
-				this.fontDescriptor = new FontDescriptorObj(iobj, owner);
-			}
+			this.fontDescriptor = new FontDescriptorObj(iobj, owner);
 		}
 		
 		PObject val = this.getValue(PName.Encoding);
 		if (val != null) {
 			if (val instanceof PName) {
 				this.predinedEncoding = (PName) val;
+				
+				
 			} else {
 				if (val instanceof IndirectRef) {
-					IndirectObject iobj = owner.getObject((IndirectRef) val);
-					if (iobj != null) {
-						this.encoding = new EncodingObj(iobj, owner);
-					}
+					this.encodingObj = owner.getObject((IndirectRef) val);
 				}
 			}
 		}
@@ -76,16 +75,23 @@ public class FontObject extends DocObject {
 		if (val != null) {
 			if (val instanceof IndirectRef) {
 				IndirectObject iobj = owner.getObject((IndirectRef) val);
-				if (iobj != null) {
-					this.toUnicode = iobj.getStream();
-				}
+				this.toUnicode = iobj.getStream();
+			}
+		}
+		
+		PArray array = this.getValueAsArray(PName.DescendantFonts);
+		if (array != null && array.size() > 0) {
+			PObject item = array.get(0);
+			if (item instanceof IndirectRef) {
+				IndirectObject iobj = owner.getObject((IndirectRef) item);
+				this.descendantFonts = new FontObject(iobj, owner);
 			}
 		}
 	}
 
 	@Override
 	public PName getType() {
-		return PName.font;
+		return PName.Font;
 	}
 
 	public PName getBaseFont() {
@@ -120,11 +126,15 @@ public class FontObject extends DocObject {
 		return this.predinedEncoding;
 	}
 	
-	public EncodingObj getEncoding() {
-		return this.encoding;
+	public IndirectObject getEncoding() {
+		return this.encodingObj;
 	}
 
 	public PStream getToUnicode() {
 		return toUnicode;
+	}
+	
+	public FontObject getDescendantFonts() {
+		return this.descendantFonts;
 	}
 }

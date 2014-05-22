@@ -63,7 +63,7 @@ public class PropertyTable extends JTable {
 				PropertyTableModel model = (PropertyTableModel) target.getModel();
 				RowClass rowClass = model.getRowClass(row);
 				
-				if (rowClass.type != null && rowClass.type == PObject.Type.IndirectRef) {
+				if (rowClass.type != null && rowClass.type == PObject.TYPE.IndirectRef) {
 					updateXRefTable((IndirectRef) rowClass.value);
 				} else {
 					updateSelectedRow(rowClass.value);					

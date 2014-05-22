@@ -19,7 +19,7 @@ public class PageCanvas extends JPanel {
 	private Color background = Color.darkGray;
 
 	private static int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
-	private double resolution = screenRes;
+	private float resolution = screenRes;
 	
 	public PageCanvas() {
 		super();

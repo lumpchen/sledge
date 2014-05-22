@@ -29,12 +29,12 @@ public class ObjectStream {
 			throw new SyntaxException("not found the dictionary of stream.");
 		}
 		
-		PName type = dict.getValueAsName(PName.type);
+		PName type = dict.getValueAsName(PName.Type);
 		if (!type.equals(PName.ObjStm)) {
 			throw new SyntaxException("invalid ObjStream type: " + type);
 		}
 		
-		PNumber n = dict.getValueAsNumber(PName.n);
+		PNumber n = dict.getValueAsNumber(PName.N);
 		if (null == n) {
 			throw new SyntaxException("not found /N entry.");
 		}

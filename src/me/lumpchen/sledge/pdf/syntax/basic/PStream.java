@@ -16,7 +16,7 @@ public class PStream extends PObject {
 	private byte[] stream;
 	
 	public PStream() {
-		super.type = Type.Stream;
+		super.type = TYPE.Stream;
 	}
 	
 	public PStream(PDictionary dict) {

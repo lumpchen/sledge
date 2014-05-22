@@ -6,26 +6,26 @@ public class PNumber extends PObject {
 	private Number number;
 	
 	public PNumber() {
-		super.type = Type.Number;
+		super.type = TYPE.Number;
 	}
 	
 	public PNumber(int i) {
-		super.type = Type.Number;
+		super.type = TYPE.Number;
 		this.number = i;
 	}
 	
 	public PNumber(long l) {
-		super.type = Type.Number;
+		super.type = TYPE.Number;
 		this.number = l;
 	}
 	
 	public PNumber(double d) {
-		super.type = Type.Number;
+		super.type = TYPE.Number;
 		this.number = d;
 	}
 	
 	public PNumber(float f) {
-		super.type = Type.Number;
+		super.type = TYPE.Number;
 		this.number = f;
 	}
 	

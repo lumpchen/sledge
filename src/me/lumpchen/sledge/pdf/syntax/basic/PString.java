@@ -15,7 +15,7 @@ public abstract class PString extends PObject {
 	protected char[] charSequence;
 
 	protected PString() {
-		super.type = Type.String;
+		super.type = TYPE.String;
 	}
 
 	abstract protected void encode(byte[] bytes);

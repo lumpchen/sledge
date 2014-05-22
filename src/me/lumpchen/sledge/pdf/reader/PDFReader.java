@@ -118,14 +118,14 @@ public class PDFReader implements PageContentsLoader {
 			throw new SyntaxException("lost object: " + ref.toString());
 		}
 		
-		PName type = iobj.getValueAsName(PName.type);
+		PName type = iobj.getValueAsName(PName.Type);
 		if (type != null) {
-			if (type == PName.page) {
+			if (type == PName.Page) {
 				Page page = new Page(iobj, pdfDoc);
 				page.setPageNo(++pageNo);
 				pageTree.addPageObject(page);
 				
-			} else if (type == PName.pages) {
+			} else if (type == PName.Pages) {
 				PageTree nestedPageTree = new PageTree(iobj, pdfDoc);
 				this.readPages(nestedPageTree, pdfDoc);
 				
@@ -201,7 +201,7 @@ public class PDFReader implements PageContentsLoader {
 		Trailer trailer = new Trailer();
 		if (!trailer.read(this.reader)) {
 			IndirectObject obj = this.readIndirectObject(startxref, pdfDoc);
-			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
+			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
 				throw new SyntaxException("not found xref stream: " + trailer.toString());	
 			}
 			trailer.setXRefObj(obj);
@@ -242,7 +242,7 @@ public class PDFReader implements PageContentsLoader {
 		
 		if (!xref.read(this.reader)) {
 			IndirectObject obj = this.readIndirectObject(fp, pdfDoc);
-			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.type).equals(PName.XRef)) {
+			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
 				throw new SyntaxException("not found xref stream: " + trailer.toString());	
 			}
 			xref.readStream(obj.getStream());

@@ -15,16 +15,16 @@ public class PBoolean extends PObject {
 	private boolean value;
 
 	public PBoolean() {
-		this.type = Type.Boolean;
+		this.type = TYPE.Boolean;
 	}
 
 	public PBoolean(boolean b) {
-		this.type = Type.Boolean;
+		this.type = TYPE.Boolean;
 		this.value = b;
 	}
 
 	public PBoolean(String s) {
-		this.type = Type.Boolean;
+		this.type = TYPE.Boolean;
 		if (TRUE.equalsIgnoreCase(s)) {
 			this.value = true;
 		} else {

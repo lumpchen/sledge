@@ -36,62 +36,62 @@ public class Trailer {
 	}
 	
 	public int getSize() {
-		PObject size = this.dict.get(PName.size);
+		PObject size = this.dict.get(PName.Size);
 		if (size == null || !(size instanceof PNumber)) {
-			throw new InvalidElementException(PName.SIZE);
+			throw new InvalidElementException(PName.Size.getName());
 		}
 		return ((PNumber) size).intValue();
 	}
 	
 	public IndirectRef getInfo() {
-		PObject info = this.dict.get(PName.info);
+		PObject info = this.dict.get(PName.Info);
 		if (info == null || !(info instanceof IndirectRef)) {
-			throw new InvalidElementException(PName.INFO);
+			throw new InvalidElementException(PName.Info.getName());
 		}
 		return (IndirectRef) info;
 	}
 	
 	public IndirectRef getRoot() {
-		PObject root = this.dict.get(PName.root);
+		PObject root = this.dict.get(PName.Root);
 		if (root == null || !(root instanceof IndirectRef)) {
-			throw new InvalidElementException(PName.ROOT);
+			throw new InvalidElementException(PName.Root.getName());
 		}
 		return (IndirectRef) root;
 	}
 	
 	public long getXRefStm() {
-		PObject refStm = this.dict.get(PName.xrefstm);
+		PObject refStm = this.dict.get(PName.XRefStm);
 		if (null == refStm) {
 			return -1;
 		}
 		if (!(refStm instanceof PNumber)) {
-			throw new InvalidElementException(PName.XREFSTM);
+			throw new InvalidElementException(PName.XRefStm.getName());
 		}
 		return ((PNumber) refStm).longValue();
 	}
 	
 	public long getPrev() {
-		PObject prev = this.dict.get(PName.prev);
+		PObject prev = this.dict.get(PName.Prev);
 		if (null == prev) {
 			return -1;
 		}
 		if (!(prev instanceof PNumber)) {
-			throw new InvalidElementException(PName.PREV);
+			throw new InvalidElementException(PName.Prev.getName());
 		}
 		return ((PNumber) prev).longValue();
 	}
 	
 	public PObject getEncrypt() {
-		return this.dict.get(PName.encrypt);
+		return this.dict.get(PName.Encrypt);
 	}
 	
 	public PArray getID() {
-		PObject id = this.dict.get(PName.id);
+		PObject id = this.dict.get(PName.ID);
 		if (null == id) {
 			return null;
 		}
 		if (!(id instanceof PArray)) {
-			throw new InvalidElementException(PName.ID);
+			throw new InvalidElementException(PName.ID.getName());
 		}
 		return (PArray) id;
 	}

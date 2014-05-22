@@ -3,7 +3,7 @@ package me.lumpchen.sledge.pdf.syntax.basic;
 
 public abstract class PObject {
 
-	public static enum Type {
+	public static enum TYPE {
 		Array("Array"), 
 		Boolean("Boolean"), 
 		Dict("Dict"), 
@@ -17,7 +17,7 @@ public abstract class PObject {
 
 		private String typeString;
 		
-		Type(String typeString) {
+		TYPE(String typeString) {
 			this.typeString = typeString;
 		}
 		
@@ -27,7 +27,7 @@ public abstract class PObject {
 	};
 
 	protected PObject parent;
-	protected Type type;
+	protected TYPE type;
 
 	protected PObject() {
 	}
@@ -40,7 +40,7 @@ public abstract class PObject {
 		this.parent = parent;
 	}
 
-	public Type getType() {
+	public TYPE getType() {
 		return this.type; 
 	}
 }

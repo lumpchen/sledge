@@ -37,18 +37,18 @@ public class Page extends DocObject {
 	public Page(IndirectObject obj, PDFDocument owner) {
 		super(obj, owner);
 		
-		PArray rect = super.getValueAsArray(PName.mediabox);
+		PArray rect = super.getValueAsArray(PName.MediaBox);
 		this.mediaBox = new Rectangle(rect);
 		this.width = this.mediaBox.getWidth();
 		this.height = this.mediaBox.getHeight();
 	}
 	
 	public PName getType() {
-		return PName.page;
+		return PName.Page;
 	}
 	
 	public IndirectRef getContentsRef() {
-		return this.getValueAsRef(PName.contents);
+		return this.getValueAsRef(PName.Contents);
 	}
 
 	public void setPageNo(int pageNo) {
@@ -149,7 +149,7 @@ public class Page extends DocObject {
 	}
 	
 	public PObject getResources() {
-		return super.getValueAsDict(PName.resources);
+		return super.getValueAsDict(PName.Resources);
 	}
 	
 	public PDFFont getFont(PName name) {
@@ -193,8 +193,8 @@ public class Page extends DocObject {
 			if (obj instanceof IndirectRef) {
 				IndirectObject resObj = this.owner.getObject((IndirectRef) obj);
 				if (null != resObj) {
-					PName type = resObj.getValueAsName(PName.type);
-					if (null == type || !type.equals(PName.font)) {
+					PName type = resObj.getValueAsName(PName.Type);
+					if (null == type || !type.equals(PName.Font)) {
 						throw new SyntaxException("not a font object");
 					}
 					FontIndex fontIndex = new FontIndex(key);

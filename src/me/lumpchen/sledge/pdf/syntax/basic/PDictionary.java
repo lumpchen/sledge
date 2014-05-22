@@ -18,7 +18,7 @@ public class PDictionary extends PObject {
 	private Map<PName, PObject> dict;
 
 	public PDictionary() {
-		this.type = Type.Dict;
+		this.type = TYPE.Dict;
 		this.dict = new HashMap<PName, PObject>();
 	}
 

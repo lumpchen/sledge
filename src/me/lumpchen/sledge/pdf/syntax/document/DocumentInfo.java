@@ -11,11 +11,11 @@ public class DocumentInfo extends DocObject {
 	}
 
 	public PString getCreator() {
-		return this.getValueAsString(PName.creator);
+		return this.getValueAsString(PName.Creator);
 	}
 	
 	public PString getProducer() {
-		return this.getValueAsString(PName.producer);
+		return this.getValueAsString(PName.Producer);
 	}
 
 	@Override

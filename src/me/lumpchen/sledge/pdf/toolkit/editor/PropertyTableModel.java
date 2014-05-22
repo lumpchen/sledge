@@ -25,7 +25,7 @@ public class PropertyTableModel extends DefaultTableModel {
 	
 	public static class RowClass {
 		public PObject key;
-		public PObject.Type type;
+		public PObject.TYPE type;
 		public PObject value;
 	}
 	
@@ -119,7 +119,7 @@ public class PropertyTableModel extends DefaultTableModel {
 		String c0 = key.toString();
 		String c1 = "", c2 = "";
 		if (value != null) {
-			PObject.Type type = value.getType();
+			PObject.TYPE type = value.getType();
 			c1 = type.toString();
 			c2 = value.toString();
 			

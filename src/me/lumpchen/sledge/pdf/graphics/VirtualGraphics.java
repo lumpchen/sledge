@@ -1,5 +1,7 @@
 package me.lumpchen.sledge.pdf.graphics;
 
+import java.awt.Image;
+
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public interface VirtualGraphics {
@@ -79,4 +81,12 @@ public interface VirtualGraphics {
 	 * End a text object, discarding the text matrix.
 	 * */
 	public void endText();
+	
+	
+	public GraphicsState currentGState();
+	
+	public float[] getResolution();
+	
+	public void translate(double tx, double ty);
+	public boolean drawImage(Image img);
 }
