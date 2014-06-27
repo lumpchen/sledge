@@ -8,10 +8,9 @@ import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 
 public abstract class PDFCMap {
 
-	private static Map<PName, PDFCMap> predefinedCMapCache;
+	private static Map<PName, PDFCMap> predefinedCMapCache = new HashMap<PName, PDFCMap>();
 
 	protected PDFCMap() {
-		predefinedCMapCache = new HashMap<PName, PDFCMap>();
 	}
 
 	public static PDFCMap getCMap(PName predefinedCMap) {

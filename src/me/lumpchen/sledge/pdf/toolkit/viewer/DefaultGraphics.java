@@ -7,14 +7,14 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Stack;
 
-import me.lumpchen.jfreetype.GlyphSlotRec;
 import me.lumpchen.sledge.pdf.graphics.GraphicsState;
 import me.lumpchen.sledge.pdf.graphics.Matrix;
+import me.lumpchen.sledge.pdf.graphics.PDFColor;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
@@ -26,7 +26,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	private Graphics2D g2;
 	
-	private Shape currPath;
+	private GeneralPath currPath;
 	
 	private static int screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
 	
@@ -85,27 +85,6 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void beginPath(double x, double y, double width, double height) {
-		double ix = this.toPixel(x);
-		double iy = this.toPixel(y);
-		double iWidth = this.toPixel(width);
-		double iHeight = this.toPixel(height);
-		this.currPath = new Rectangle2D.Double(ix, iy, iWidth, iHeight);
-	}
-
-	@Override
-	public void clip() {
-		if (null != this.currPath) {
-			this.g2.clip(this.currPath);
-		}
-	}
-
-	@Override
-	public void closePath() {
-		this.currPath = null;
-	}
-
-	@Override
 	public void concatenate(Matrix matrix) {
 		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
 		at.preConcatenate(this.gstate.ctm);
@@ -143,7 +122,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void transformTextMatrix(Matrix matrix) {
+	public void transform(Matrix matrix) {
 		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
 		AffineTransform mirror = new AffineTransform(1, 0, 0, -1, 0, 0);
 		mirror.preConcatenate(at);
@@ -163,7 +142,11 @@ public class DefaultGraphics implements VirtualGraphics {
 			return;
 		}
 		
-		this.gstate.font.renderText(text.toCharArray(), this);
+		try {
+			this.gstate.font.renderText(text, this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 //		GlyphSlotRec[] bitmaps = null;
 //		if (text.length() == 4) {
@@ -207,20 +190,10 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void strokePath() {
-		this.g2.draw(this.currPath);
-	}
-	
-	@Override
 	public void translate(double tx, double ty) {
 		this.g2.translate(tx, ty);
 	}
 
-	@Override
-	public void fillPath() {
-		this.g2.fill(this.currPath);
-	}
-	
 	private double[] flateMatrix(Matrix matrix) {
 		double[] doubleMatrix = matrix.flate();
 		doubleMatrix[4] = this.toPixel(doubleMatrix[4]);
@@ -244,5 +217,96 @@ public class DefaultGraphics implements VirtualGraphics {
 	@Override
 	public boolean drawImage(Image img) {
 		return this.g2.drawImage(img, null, null);
+	}
+
+	@Override
+	public void newPath() {
+		this.currPath = new GeneralPath();
+	}
+	
+	@Override
+	public void closePath() {
+		this.currPath.closePath();
+	}
+	
+	@Override
+	public void moveTo(double x, double y) {
+		this.currPath.moveTo(this.toPixel(x), this.toPixel(y));
+	}
+
+	@Override
+	public void lineTo(double x, double y) {
+		this.currPath.lineTo(this.toPixel(x), this.toPixel(y));
+	}
+
+	@Override
+	public void quadTo(double x1, double y1, double x2, double y2) {
+		this.currPath.quadTo(this.toPixel(x1), this.toPixel(y1), this.toPixel(x2), this.toPixel(y2));
+	}
+
+	@Override
+	public void curveTo(double x1, double y1, double x2, double y2, double x3, double y3) {
+		this.currPath.curveTo(this.toPixel(x1), this.toPixel(y1), this.toPixel(x2), this.toPixel(y2), 
+				this.toPixel(x3), this.toPixel(y3));		
+	}
+
+	@Override
+	public void stroke() {
+		if (this.currPath != null) {
+			this.g2.draw(this.currPath);			
+		}
+	}
+	
+	@Override
+	public void fill() {
+		if (this.currPath != null) {
+			this.g2.fill(this.currPath);			
+		}
+	}
+
+	@Override
+	public void rect(double x, double y, double width, double height) {
+		return;
+	}
+
+	@Override
+	public void clip() {
+		if (null != this.currPath) {
+			this.g2.clip(this.currPath);
+		}
+	}
+	
+	@Override
+	public void strokeRect(double x, double y, double width, double height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fillRect(double x, double y, double width, double height) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setStrokeColor(PDFColor color) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setFillColor(PDFColor color) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void strokeShape(Shape shape) {
+		this.g2.draw(shape);
+	}
+
+	@Override
+	public void fillShape(Shape shape) {
+		this.g2.fill(shape);
 	}
 }

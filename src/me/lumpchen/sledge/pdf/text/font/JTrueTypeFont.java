@@ -26,28 +26,47 @@ public class JTrueTypeFont extends PDFFont {
 	}
 
 	@Override
-	public void renderText(char[] cs, VirtualGraphics gd) {
+	public void renderText(String s, VirtualGraphics gd) {
 		int pt = Math.round(gd.currentGState().fontSize);
 		int hRes = Math.round(gd.getResolution()[0]);
 		int vRes = Math.round(gd.getResolution()[1]);
 
 		Color color = gd.currentGState().color;
-		this.ft.setCharSize(pt, hRes, vRes);
-		
-		if (this.encoding != null) {
-			for (int i = 0; i < cs.length; i++) {
-				cs[i] = (char) this.encoding.getGlyphID(cs[i]);				
-			}
-		} else {
+		if (color == null) {
+			color = Color.BLACK;
 		}
-		GlyphSlotRec[] glyphs = this.ft.getGlyphSlots(cs, color);
 		
+		this.ft.setCharSize(pt, hRes, vRes);
+
+		GlyphSlotRec[] glyphs = null;
+		if (this.encoding != null && this.encoding.getType() == PDFFontEncoding.CMAP) {
+			char[] cs = s.toCharArray();
+			for (int i = 0; i < cs.length; i++) {
+				int gid = this.encoding.getGlyphID((int) cs[i]);
+				cs[i] = (char) (gid);
+			}
+			glyphs = this.ft.getGlyphSlots(cs, color);
+		} else {
+			s = s.replace(' ', 'c');
+			glyphs = this.ft.getGlyphSlots(s, color);
+		}
+
+		if (glyphs == null) {
+			return;
+		}
+
 		for (GlyphSlotRec glyph : glyphs) {
 			double advance = glyph.getHAdvance();
-			
+
 			gd.translate(0, -glyph.getBearingY());
 			gd.drawImage(glyph.getGlyphBufferImage(null));
 			gd.translate(advance, glyph.getBearingY());
 		}
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 }

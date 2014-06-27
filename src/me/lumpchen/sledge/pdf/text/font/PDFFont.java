@@ -2,6 +2,7 @@ package me.lumpchen.sledge.pdf.text.font;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,19 +108,34 @@ public abstract class PDFFont {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
 //			TTFFont ttf = new TTFFont(fontObj);
-			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
-			return ttf;
+//			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
+			try {
+				TrueTypeFont ttf = new TrueTypeFont(fontObj);
+				return ttf;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else if (Type_0.equalsIgnoreCase(subType)) {
 			Type0Font type0 = new Type0Font(fontObj);
 			return type0;
 		} else if (CIDFontType2.equalsIgnoreCase(subType)) {
-			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
-			return ttf;
+//			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
+//			return ttf;
+			try {
+				TrueTypeFont ttf = new TrueTypeFont(fontObj);
+				return ttf;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
 	}
 
+	protected void setEncoding(PDFFontEncoding encoding) {
+		this.encoding = encoding;
+	}
+	
 	public boolean notEmbed() {
 		if (this.fontDescriptor == null) {
 			return false;
@@ -159,5 +175,7 @@ public abstract class PDFFont {
 		return null;
 	}
 
-	abstract public void renderText(char[] c, VirtualGraphics gd);
+	abstract public void renderText(String s, VirtualGraphics gd) throws IOException;
+	
+	abstract public void close() throws IOException;
 }

@@ -452,7 +452,7 @@ class OP_re extends GraphicsOperator {
 		double w = operand_3.asNumber().doubleValue();
 		double h = operand_4.asNumber().doubleValue();
 		
-		g2d.beginPath(x, y, w, h);
+		g2d.rect(x, y, w, h);
 	}
 }
 
@@ -578,7 +578,7 @@ class OP_n extends GraphicsOperator {
 
 	@Override
 	public void execute(VirtualGraphics g2d, Page page) {
-		g2d.closePath();
+//		g2d.closePath();
 	}
 }
 
@@ -786,7 +786,7 @@ class OP_T_m extends GraphicsOperator {
 		double e = operand_5.asNumber().doubleValue();
 		double f = operand_6.asNumber().doubleValue();
 		
-		g2d.transformTextMatrix(new Matrix(a, b, c, d, e, f));
+		g2d.transform(new Matrix(a, b, c, d, e, f));
 	}
 }
 

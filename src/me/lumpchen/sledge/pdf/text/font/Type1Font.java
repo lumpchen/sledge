@@ -10,7 +10,13 @@ public class Type1Font extends PDFFont {
 	}
 
 	@Override
-	public void renderText(char[] c, VirtualGraphics gd) {
+	public void renderText(String s, VirtualGraphics gd) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 }

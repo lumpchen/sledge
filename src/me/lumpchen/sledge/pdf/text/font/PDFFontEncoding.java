@@ -87,6 +87,10 @@ public class PDFFontEncoding {
 		}
 	}
 	
+	public int getType() {
+		return this.type;
+	}
+	
 	public int getGlyphID(int cid) {
 		if (this.type == STANDARD_ENCODING) {
 			if (this.baseEncoding != null) {
