@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Stack;
 
@@ -265,11 +266,6 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void rect(double x, double y, double width, double height) {
-		return;
-	}
-
-	@Override
 	public void clip() {
 		if (null != this.currPath) {
 			this.g2.clip(this.currPath);
@@ -278,26 +274,34 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	@Override
 	public void strokeRect(double x, double y, double width, double height) {
-		// TODO Auto-generated method stub
-		
+		x = this.toPixel(x);
+		y = this.toPixel(y);
+		width = this.toPixel(width);
+		height = this.toPixel(height);
+		Rectangle2D.Double rect = new Rectangle2D.Double(x, y, width, height);
+		this.g2.draw(rect);
 	}
 
 	@Override
 	public void fillRect(double x, double y, double width, double height) {
-		// TODO Auto-generated method stub
-		
+		x = this.toPixel(x);
+		y = this.toPixel(y);
+		width = this.toPixel(width);
+		height = this.toPixel(height);
+		Rectangle2D.Double rect = new Rectangle2D.Double(x, y, width, height);
+		this.g2.fill(rect);
 	}
 
 	@Override
 	public void setStrokeColor(PDFColor color) {
-		// TODO Auto-generated method stub
-		
+		this.gstate.color = color.toJavaColor();
+		this.g2.setColor(this.gstate.color);
 	}
 
 	@Override
 	public void setFillColor(PDFColor color) {
-		// TODO Auto-generated method stub
-		
+		this.gstate.color = color.toJavaColor();
+		this.g2.setColor(this.gstate.color);		
 	}
 
 	@Override

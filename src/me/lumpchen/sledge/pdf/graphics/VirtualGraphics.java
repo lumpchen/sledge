@@ -34,7 +34,6 @@ public interface VirtualGraphics {
 	public void curveTo(double x1, double y1, double x2, double y2, double x3, double y3);
 	public void closePath();
 	
-	public void rect(double x, double y, double width, double height);
 	public void clip();
 	
 	public void stroke();

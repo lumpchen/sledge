@@ -71,9 +71,9 @@ public class ObjectReader {
 				}
 				
 				PObject inside = this.readObject(token);
-				if (inside instanceof PDictionary) {
+//				if (inside instanceof PDictionary) {
 					obj.setInsideObj(inside);
-				}
+//				}
 			}
 	
 			return obj;

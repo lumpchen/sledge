@@ -123,10 +123,12 @@ public class Page extends DocObject {
 			return null;
 		}
 		
-		byte[] bstream = stream.getStream();
+		byte[] bstream = stream.getDecodedStream();
 		if (null == bstream || bstream.length <= 0) {
 			return null;
 		}
+		
+//		System.out.println(stream);
 		
 		ContentStreamReader csReader = new ContentStreamReader();
 		ContentStream contentStream = csReader.read(bstream);
@@ -140,7 +142,7 @@ public class Page extends DocObject {
 		this.loadResource();
 		
 		Rectangle mediaBox = this.getMediaBox();
-//		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
+		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
 		
 		g2.beginCanvas(mediaBox.getWidth(), mediaBox.getHeight());
 		

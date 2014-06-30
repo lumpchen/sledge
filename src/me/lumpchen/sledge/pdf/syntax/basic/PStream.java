@@ -14,6 +14,7 @@ public class PStream extends PObject {
 	
 	private PDictionary dict;
 	private byte[] stream;
+	private byte[] decodedStream;
 	
 	public PStream() {
 		super.type = TYPE.Stream;
@@ -41,6 +42,20 @@ public class PStream extends PObject {
 	
 	public byte[] getStream() {
 		return this.stream;
+	}
+	
+	public byte[] getDecodedStream() {
+		if (this.decodedStream != null) {
+			return this.decodedStream;
+		}
+		
+		if (this.stream == null) {
+			return null;
+		}
+		
+		DecoderChain chain = new DecoderChain();
+		this.decodedStream = chain.decode(this);
+		return this.decodedStream;
 	}
 
 	public List<PName> getFilters() {
@@ -72,8 +87,7 @@ public class PStream extends PObject {
 		buf.append("stream");
 		buf.append('\n');
 		
-		DecoderChain chain = new DecoderChain();
-		byte[] out = chain.decode(this);
+		byte[] out = this.getDecodedStream(); 
 		buf.append(new String(out));
 		buf.append('\n');
 		

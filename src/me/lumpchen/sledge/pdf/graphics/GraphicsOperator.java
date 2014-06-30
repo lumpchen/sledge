@@ -452,7 +452,7 @@ class OP_re extends GraphicsOperator {
 		double w = operand_3.asNumber().doubleValue();
 		double h = operand_4.asNumber().doubleValue();
 		
-		g2d.rect(x, y, w, h);
+//		g2d.rect(x, y, w, h);
 	}
 }
 
@@ -648,7 +648,7 @@ class OP_T_c extends GraphicsOperator {
 
 	public OP_T_c() {
 		super(new byte[] { 'T', 'c'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -755,7 +755,7 @@ class OP_TD_ extends GraphicsOperator {
 
 	public OP_TD_() {
 		super(new byte[] { 'T', 'D'});
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override
@@ -825,7 +825,7 @@ class OP_TJ_ extends GraphicsOperator {
 
 	public OP_TJ_() {
 		super(new byte[] { 'T', 'J'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -1142,7 +1142,7 @@ class OP_BDC_ extends GraphicsOperator {
 
 	public OP_BDC_() {
 		super(new byte[] { 'B', 'D', 'C' });
-		this.operandNumber = 0;
+		this.operandNumber = 2;
 	}
 
 	@Override

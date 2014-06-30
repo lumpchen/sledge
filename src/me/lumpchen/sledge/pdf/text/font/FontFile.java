@@ -7,7 +7,7 @@ public class FontFile {
 	private byte[] fontBytes;
 	
 	public FontFile(PStream stream) {
-		this.fontBytes = stream.getStream();
+		this.fontBytes = stream.getDecodedStream();
 	}
 	
 	public byte[] getBytes() {

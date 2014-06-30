@@ -102,7 +102,7 @@ public class FunctionType0 extends PDFFunction {
 			setDecode(decode);
 		}
 		// finally, read the samples
-		byte[] stream = obj.getStream().getStream();
+		byte[] stream = obj.getStream().getDecodedStream();
 		setSamples(readSamples(ByteBuffer.wrap(stream)));
 	}
 

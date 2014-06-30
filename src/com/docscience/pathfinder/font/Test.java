@@ -27,10 +27,24 @@ public class Test {
 	static int unitsPerEM;
 
 	public static void main(String[] args) throws IOException {
+		testType1();
+	}
+	
+	static void testType1() throws IOException {
+		File file = new File("C:/temp/AT015___.PFM");
 
+		FontReader reader = FontReaderFactory.getInstance().createFontReader(file,
+				FontReaderFactory.Type.Type1);
+		
+		String family = reader.getFontFamily();
+		System.out.println(family);
+	}
+	
+	static void testTT() throws IOException {
 		File file = new File("C:/temp/simhei.ttf");
 
-		FontReader reader = FontReaderFactory.getInstance().createFontReader(file);
+		FontReader reader = FontReaderFactory.getInstance().createFontReader(file,
+				FontReaderFactory.Type.TrueType);
 
 		System.out.println(reader.getNumFonts());
 
@@ -50,6 +64,7 @@ public class Test {
 		System.out.println(unitsPerEM);
 
 		showGlyph(glyph);
+	
 	}
 
 	static void showGlyph(GlyphDescription glyph) {
