@@ -108,25 +108,28 @@ public abstract class PDFFont {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
 //			TTFFont ttf = new TTFFont(fontObj);
-//			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
-			try {
-				TrueTypeFont ttf = new TrueTypeFont(fontObj);
+			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
+//			try {
+//				TrueTypeFont ttf = new TrueTypeFont(fontObj);
 				return ttf;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		} else if (Type_0.equalsIgnoreCase(subType)) {
 			Type0Font type0 = new Type0Font(fontObj);
 			return type0;
+		} else if (Type_1.equalsIgnoreCase(subType)) {
+			Type1Font type1 = new Type1Font(fontObj);
+			return type1;
 		} else if (CIDFontType2.equalsIgnoreCase(subType)) {
-//			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
-//			return ttf;
-			try {
-				TrueTypeFont ttf = new TrueTypeFont(fontObj);
-				return ttf;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
+			return ttf;
+//			try {
+//				TrueTypeFont ttf = new TrueTypeFont(fontObj);
+//				return ttf;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}
 
 		return null;

@@ -45,10 +45,9 @@ public class JTrueTypeFont extends PDFFont {
 				int gid = this.encoding.getGlyphID((int) cs[i]);
 				cs[i] = (char) (gid);
 			}
-			glyphs = this.ft.getGlyphSlots(cs, color);
+			glyphs = this.ft.getGlyphSlots(cs);
 		} else {
-			s = s.replace(' ', 'c');
-			glyphs = this.ft.getGlyphSlots(s, color);
+			glyphs = this.ft.getGlyphSlots(s);
 		}
 
 		if (glyphs == null) {
@@ -59,14 +58,13 @@ public class JTrueTypeFont extends PDFFont {
 			double advance = glyph.getHAdvance();
 
 			gd.translate(0, -glyph.getBearingY());
-			gd.drawImage(glyph.getGlyphBufferImage(null));
+			gd.drawImage(glyph.getGlyphBitmap(color));
 			gd.translate(advance, glyph.getBearingY());
 		}
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-		
+		this.ft.close();
 	}
 }

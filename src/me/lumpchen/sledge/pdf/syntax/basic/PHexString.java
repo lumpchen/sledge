@@ -18,17 +18,38 @@ public class PHexString extends PString {
 		StringBuilder buf = new StringBuilder();
 		buf.append("<");
 		if (charSequence != null) {
-			buf.append(new String(charSequence));
+			for (int i = 0; i < this.charSequence.length; i++) {
+				String s = Integer.toHexString(this.charSequence[i]);
+				if (s.length() == 1) {
+					s = "0" + s;
+				}
+				buf.append(s.toUpperCase());
+			}
 		}
 		buf.append(">");
 		return buf.toString();
 	}
 	
 	protected void encode(byte[] data) {
-		this.charSequence = new char[data.length];
+		int n = data.length;
+		if (n % 2 > 0) {
+			n++;
+		}
+		char[] cs = new char[n];
 		for (int i = 0; i < data.length; i++) {
-			this.charSequence[i] = (char) data[i];
+			cs[i] = 0;
+			cs[i] = (char) data[i]; 
+		}
+		
+		this.charSequence = new char[n / 2];
+		int i = 0;
+		while (i < n) {
+			String s = "" + cs[i];
+			i++;
+			s += cs[i];
+			int hex = Integer.parseInt(s, 16);
+			this.charSequence[i / 2] = (char) (hex & 0xFF);
+			i++;
 		}
 	}
-
 }

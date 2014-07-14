@@ -128,7 +128,7 @@ public class Page extends DocObject {
 			return null;
 		}
 		
-//		System.out.println(stream);
+		System.err.println(stream);
 		
 		ContentStreamReader csReader = new ContentStreamReader();
 		ContentStream contentStream = csReader.read(bstream);

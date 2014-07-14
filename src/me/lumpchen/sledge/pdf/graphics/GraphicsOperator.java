@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
@@ -718,7 +719,7 @@ class OP_T_r extends GraphicsOperator {
 
 	public OP_T_r() {
 		super(new byte[] { 'T', 'r'});
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override
@@ -786,7 +787,7 @@ class OP_T_m extends GraphicsOperator {
 		double e = operand_5.asNumber().doubleValue();
 		double f = operand_6.asNumber().doubleValue();
 		
-		g2d.transform(new Matrix(a, b, c, d, e, f));
+		g2d.transformTextMatrix(new Matrix(a, b, c, d, e, f));
 	}
 }
 
@@ -830,6 +831,20 @@ class OP_TJ_ extends GraphicsOperator {
 
 	@Override
 	public void execute(VirtualGraphics g2d, Page page) {
+		GraphicsOperand operand = this.operandList.get(0);
+		
+		PArray arr = operand.asArray();
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < arr.size(); i++) {
+			PObject obj = arr.get(i);
+			if (obj instanceof PString) {
+				buf.append(((PString) obj).toJavaString());
+			} else if (obj instanceof PNumber) {
+				
+			}
+		}
+		
+		g2d.showText(buf.toString());
 	}
 }
 
@@ -971,7 +986,7 @@ class OP_g extends GraphicsOperator {
 
 	public OP_g() {
 		super(new byte[] { 'g' });
-		this.operandNumber = 0;
+		this.operandNumber = 1;
 	}
 
 	@Override

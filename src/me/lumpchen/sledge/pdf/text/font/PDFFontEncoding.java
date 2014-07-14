@@ -125,6 +125,9 @@ public class PDFFontEncoding {
 				} else if (item.getType() == PObject.TYPE.String) {
 					this.differences.put(pos, ((PString) item).toJavaString());
 					pos++;
+				} else if (item.getType() == PObject.TYPE.Name) {
+					this.differences.put(pos, ((PName) item).toString());
+					pos++;
 				} else {
 					throw new IllegalArgumentException("Unexpected type in differences: " + item.toString());
 				}

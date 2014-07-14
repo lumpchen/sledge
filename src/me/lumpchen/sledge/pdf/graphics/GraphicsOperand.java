@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.graphics;
 
+import me.lumpchen.sledge.pdf.syntax.basic.PArray;
 import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
@@ -23,6 +24,10 @@ public class GraphicsOperand {
 
 	public PString asString() {
 		return (PString) operand;
+	}
+	
+	public PArray asArray() {
+		return (PArray) operand;
 	}
 	
 	public PName asName() {

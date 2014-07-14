@@ -78,11 +78,11 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void beginCanvas(double width, double height) {
-		Matrix base = new Matrix(1, 0, 0, -1, 0, toPixel(height));
+		Matrix base = new Matrix(1, 0, 0, 1, 0, toPixel(height));
 		AffineTransform at = new AffineTransform(base.flate());
 		at.preConcatenate(this.gstate.ctm);
 		this.gstate.ctm = at;
-		this.g2.setTransform(at);
+		this.g2.setTransform(this.gstate.ctm);
 	}
 
 	@Override
@@ -111,6 +111,9 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setFont(PDFFont font, float size) {
+		if (font == null) {
+			return;
+		}
 		this.gstate.font = font;
 		this.gstate.fontSize = (int) (this.toPixel(size) + 0.5);
 		if (font.notEmbed()) {
@@ -123,19 +126,28 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	@Override
-	public void transform(Matrix matrix) {
+	public void transformTextMatrix(Matrix matrix) {
 		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
-		AffineTransform mirror = new AffineTransform(1, 0, 0, -1, 0, 0);
-		mirror.preConcatenate(at);
-		mirror.preConcatenate(this.gstate.ctm);
-		this.gstate.ctm = mirror;
-		this.g2.setTransform(mirror);
+		double sx = at.getScaleX();
+		double sy = at.getScaleY();
+		
+		double rx = at.getShearX();
+		double ry = at.getShearY();
+		
+		this.gstate.fontSize = (float) this.toPixel(sx);
+		
+		double tx = at.getTranslateX();
+		double ty = at.getTranslateY();
+		
+		at = new AffineTransform(1, 0, 0, 1, tx, -ty);
+		AffineTransform m = new AffineTransform(this.gstate.ctm); 
+		m.preConcatenate(at);
+		this.g2.setTransform(m);
 	}
 
 	@Override
 	public void showText(String text) {
 		this.saveGraphicsState();
-//		this.g2.setColor(Color.blue);
 		
 		if (this.gstate.font.notEmbed()) {
 			this.g2.setFont(this.gstate.awtFont);
@@ -148,41 +160,6 @@ public class DefaultGraphics implements VirtualGraphics {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-//		GlyphSlotRec[] bitmaps = null;
-//		if (text.length() == 4) {
-//			StringBuilder buf = new StringBuilder();
-//			char c0 = text.charAt(0);
-//			char c1 = text.charAt(1);
-//			c0 = (char) ((c0 << 8) | (c1 & 0xFF)); 
-//			
-//			char c2 = text.charAt(2);
-//			char c3 = text.charAt(3);
-//			c2 = (char) ((c2 << 8) | (c3 & 0xFF));
-//			
-//			buf.append(c0).append(c2);
-//			text = buf.toString();
-//			
-//			int[] gids = new int[2];
-//			gids[0] = c0 & 0xFFFF;
-//			gids[1] = c2 & 0xFFFF;
-//			
-//			bitmaps = this.gstate.font.getGlyphBitmap(gids, this.gstate.color);	
-//		} else {
-//			text = text.replace(' ', 'c');
-//			bitmaps = this.gstate.font.getGlyphBitmap(text, this.gstate.color);			
-//		}
-//
-//		for (GlyphSlotRec glyph : bitmaps) {
-//			BufferedImage img = glyph.getGlyphBufferImage(this.gstate.color);
-//			double advance = glyph.getHAdvance();
-//			
-//			this.g2.translate(0, -glyph.getBearingY());
-//			g2.drawImage(img, null, null);
-//			this.g2.translate(advance, glyph.getBearingY());
-//		}
-		
-		this.restoreGraphicsState();
 	}
 
 	@Override
