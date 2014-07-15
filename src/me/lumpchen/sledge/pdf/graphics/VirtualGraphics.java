@@ -13,12 +13,14 @@ public interface VirtualGraphics {
 	public void beginCanvas(double width, double height);
 	
 	public void concatenate(Matrix matrix);
-	public void transformTextMatrix(Matrix matrix);
 
 	public void setFont(PDFFont font, float size);
 	public void beginText();
 	public void showText(String text);
 	public void endText();
+	
+	public void transformTextMatrix(Matrix matrix);
+	public void transformTextPosition(double tx, double ty);
 	
 	public GraphicsState currentGState();
 	

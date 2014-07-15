@@ -23,14 +23,14 @@ public class FontManager {
 			return null;
 		}
 		
-		String key = this.keyedFontObject(fo);
-		if (this.fontPool.containsKey(key)) {
-			return this.fontPool.get(key);
-		} else {
+//		String key = this.keyedFontObject(fo);
+//		if (this.fontPool.containsKey(key)) {
+//			return this.fontPool.get(key);
+//		} else {
 			PDFFont font = this.loadFont(fo);
-			this.fontPool.put(key, font);
+//			this.fontPool.put(key, font);
 			return font;
-		}
+//		}
 	}
 	
 	private PDFFont loadFont(FontObject fo) {

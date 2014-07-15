@@ -17,13 +17,13 @@ public abstract class PDFFont {
 
 	public static Map<String, Font> JDK_FONT_CACHE = new HashMap<String, Font>();
 	static {
-		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		for (Font f : fonts) {
-			String psName = f.getPSName();
-			if (psName != null) {
-				JDK_FONT_CACHE.put(psName, f);
-			}
-		}
+//		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+//		for (Font f : fonts) {
+//			String psName = f.getPSName();
+//			if (psName != null) {
+//				JDK_FONT_CACHE.put(psName, f);
+//			}
+//		}
 	}
 
 	public static final String Type_0 = "Type0";

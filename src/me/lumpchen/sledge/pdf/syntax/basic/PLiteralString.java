@@ -121,7 +121,46 @@ public class PLiteralString extends PString {
 				}
 				break;
 			}
-			// case '\ddd':{}
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7': {
+				if (bsFound) {
+					char b0 = '0';
+					char b1 = '0';
+					char b2 = (char) b;
+					char next;
+					if (i + 1 < size) {
+						next = (char) data[i + 1];
+						if (next >= '0' && next <= '7') {
+							b1 = next;
+							skip++;
+							i++;
+							
+							if (i + 1 < size) {
+								next = (char) data[i + 1];
+								if (next >= '0' && next <= '7') {
+									b0 = next;
+									skip++;
+									i++;
+								} 
+							}
+						}
+					}
+					
+					String s = "" + b2 + b1 + b0;
+					int dec = Integer.parseInt(s, 8);
+					chars[i - skip] = (char) dec;
+					bsFound = false;
+				} else {
+					chars[i - skip] = (char) b;	
+				}
+				break;
+			}
 			default:
 				chars[i - skip] = (char) b;
 				break;

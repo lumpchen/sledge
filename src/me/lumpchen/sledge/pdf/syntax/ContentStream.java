@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
-import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
 import me.lumpchen.sledge.pdf.graphics.RenderObject;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
+import me.lumpchen.sledge.pdf.graphics.operator.GraphicsOperator;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 
 public class ContentStream implements RenderObject {

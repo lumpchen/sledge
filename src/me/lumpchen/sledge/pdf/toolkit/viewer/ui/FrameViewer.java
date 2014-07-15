@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -37,7 +38,9 @@ public class FrameViewer extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.getContentPane().add(this.createToolBar(), BorderLayout.NORTH);
-		this.add(pageCanvas, BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane();
+		this.add(scrollPane, BorderLayout.CENTER);
+		scrollPane.setViewportView(pageCanvas);
 	}
 
 	private JToolBar createToolBar() {
@@ -91,6 +94,7 @@ public class FrameViewer extends JFrame {
 				int sel = Integer.parseInt(s);
 				if (sel != selectedPage) {
 					setPageCanvas(sel);
+					selectedPage = sel;
 				}
 			} 
 			
@@ -114,6 +118,10 @@ public class FrameViewer extends JFrame {
 		this.pageList.removeAllItems();
 
 		int count = this.pdf.getPageCount();
+		
+		// for quick view
+		count = count > 100 ? 100 : count;
+		
 		for (int i = 1; i <= count; i++) {
 			this.pageList.addItem(i + "");
 		}

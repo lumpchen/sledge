@@ -35,6 +35,8 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	private Font defaultFont;
 	
+	private AffineTransform textCTM;
+	
 	public DefaultGraphics(Graphics2D g2) {
 		this.g2 = g2;
 		
@@ -114,8 +116,16 @@ public class DefaultGraphics implements VirtualGraphics {
 		if (font == null) {
 			return;
 		}
+		
 		this.gstate.font = font;
-		this.gstate.fontSize = (int) (this.toPixel(size) + 0.5);
+		
+		if (this.textCTM != null) {
+			double sx = textCTM.getScaleX();
+			this.gstate.fontSize = (float) sx * size;
+		} else {
+			this.gstate.fontSize = (int) (this.toPixel(size) + 0.5);	
+		}
+		
 		if (font.notEmbed()) {
 			this.gstate.awtFont = font.peerAWTFont();
 			if (null == this.gstate.awtFont) {
@@ -127,28 +137,45 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void transformTextMatrix(Matrix matrix) {
-		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
-		double sx = at.getScaleX();
-		double sy = at.getScaleY();
+		this.textCTM = new AffineTransform(this.flateMatrix(matrix));
+		double sx = textCTM.getScaleX();
+		double sy = textCTM.getScaleY();
 		
-		double rx = at.getShearX();
-		double ry = at.getShearY();
+		double rx = textCTM.getShearX();
+		double ry = textCTM.getShearY();
 		
-		this.gstate.fontSize = (float) this.toPixel(sx);
+		this.gstate.fontSize = (float) sx;
 		
-		double tx = at.getTranslateX();
-		double ty = at.getTranslateY();
+		double tx = textCTM.getTranslateX();
+		double ty = textCTM.getTranslateY();
 		
-		at = new AffineTransform(1, 0, 0, 1, tx, -ty);
-		AffineTransform m = new AffineTransform(this.gstate.ctm); 
+		AffineTransform at = new AffineTransform(1, 0, 0, 1, tx, -ty);
+		AffineTransform m = new AffineTransform(this.gstate.ctm);
 		m.preConcatenate(at);
 		this.g2.setTransform(m);
 	}
 
 	@Override
+	public void transformTextPosition(double tx, double ty) {
+		if (this.textCTM != null) {
+			double sx = textCTM.getScaleX();
+			double sy = textCTM.getScaleY();
+			tx = this.toPixel(tx);
+			ty = this.toPixel(ty);
+			AffineTransform lineMatrix = new AffineTransform(1, 0, 0, 1, tx * sx, ty * sy);
+			this.textCTM.preConcatenate(lineMatrix);
+			
+			tx = this.textCTM.getTranslateX();
+			ty = this.textCTM.getTranslateY();
+		}
+		AffineTransform at = new AffineTransform(1, 0, 0, 1, tx, -ty);
+		AffineTransform m = new AffineTransform(this.gstate.ctm);
+		m.preConcatenate(at);
+		this.g2.setTransform(m);	
+	}
+	
+	@Override
 	public void showText(String text) {
-		this.saveGraphicsState();
-		
 		if (this.gstate.font.notEmbed()) {
 			this.g2.setFont(this.gstate.awtFont);
 			this.g2.drawString(text, 0, 0);	
@@ -164,6 +191,13 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void endText() {
+		this.gstate.font = null;
+		this.textCTM = null;
+//		try {
+//			this.gstate.font.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		this.restoreGraphicsState();
 	}
 

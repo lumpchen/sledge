@@ -1,5 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.document;
 
+import java.io.IOException;
 import java.util.List;
 
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
@@ -147,15 +148,32 @@ public class Page extends DocObject {
 		g2.beginCanvas(mediaBox.getWidth(), mediaBox.getHeight());
 		
 		ContentStream cs = this.getContentStream();
-		cs.render(g2, this);
+		if (cs != null) {
+			cs.render(g2, this);			
+		}
 	}
 	
 	public PObject getResources() {
 		return super.getValueAsDict(PName.Resources);
 	}
 	
+	
+	private FontIndex lastFontIndex;
+	private PDFFont lastFont;
 	public PDFFont getFont(PName name) {
-		return this.owner.getFont(new FontIndex(name));
+		FontIndex fi = new FontIndex(name);
+//		if (!fi.equals(lastFontIndex)) {
+			if (this.lastFont != null) {
+				try {
+					this.lastFont.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+//		}
+		this.lastFont = this.owner.getFont(fi);
+		this.lastFontIndex = fi;
+		return this.lastFont;
 	}
 	
 	private void loadResource() {

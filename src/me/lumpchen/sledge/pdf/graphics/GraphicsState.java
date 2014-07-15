@@ -76,8 +76,11 @@ public class GraphicsState {
 
 	public static GraphicsState clone(GraphicsState current) {
 		GraphicsState gs = new GraphicsState();
-		gs.ctm = current.ctm;
-		gs.font = current.font;
+		
+		if (current.ctm != null) {
+			gs.ctm = new AffineTransform(current.ctm);			
+		}
+//		gs.font = current.font;
 		gs.color = current.color;
 
 		gs.fontSize = current.fontSize;

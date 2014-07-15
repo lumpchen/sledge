@@ -5,7 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
 
-import me.lumpchen.sledge.pdf.graphics.GraphicsOperator;
+import me.lumpchen.sledge.pdf.graphics.operator.GraphicsOperator;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
