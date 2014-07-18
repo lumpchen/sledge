@@ -40,50 +40,61 @@ public class GraphicsState {
 	public PNumber flatness;
 	public PNumber smoothness;
 
-	class TextState {
-		double charSpace;
-		double wordSpace;
-		double scale;
-		double leading;
-		double fontSize;
-		double render;
-		double rise;
-	}
+	public class TextState {
+		public double charSpace;
+		public double wordSpace;
+		public double scale;
+		public double leading;
+		public double fontSize;
+		public double render;
+		public double rise;
+		public double adjustment;
 
+		public TextState() {
+		}
+
+		public TextState(TextState state) {
+			this.charSpace = state.charSpace;
+			this.wordSpace = state.wordSpace;
+			this.scale = state.scale;
+			this.leading = state.leading;
+			this.fontSize = state.fontSize;
+			this.render = state.render;
+			this.rise = state.rise;
+			this.adjustment = state.adjustment;
+		}
+	}
+	public TextState textState;
+	public double baseFontSize;
+	
+	public PDFFont font;
+	public Font awtFont;
+	
 	public AffineTransform ctm;
 	public GeneralPath path;
 	public ColorSpace colorspace;
 	public Color color;
 
-	public PDFFont font;
-	public Font awtFont;
-	public float charSpace;
-	public float wordSpace;
-	public float scale;
-	public float leading;
-	public float fontSize;
-	public float render;
-	public float rise;
-
-	public float lineWidth;
+	public double lineWidth;
 	public int lineCap;
 	public int lineJoin;
-	public float miterLimit;
+	public double miterLimit;
 	public int[] dashArray;
 	public int dashPhase;
 
 	// ...
 
-	public static GraphicsState clone(GraphicsState current) {
-		GraphicsState gs = new GraphicsState();
-		
-		if (current.ctm != null) {
-			gs.ctm = new AffineTransform(current.ctm);			
-		}
-//		gs.font = current.font;
-		gs.color = current.color;
+	public GraphicsState() {
+		this.textState = new TextState();
+	}
 
-		gs.fontSize = current.fontSize;
-		return gs;
+	public GraphicsState(GraphicsState current) {
+		if (current.ctm != null) {
+			this.ctm = new AffineTransform(current.ctm);
+		}
+		this.font = current.font;
+		this.color = current.color;
+
+		this.textState = new TextState(current.textState);
 	}
 }

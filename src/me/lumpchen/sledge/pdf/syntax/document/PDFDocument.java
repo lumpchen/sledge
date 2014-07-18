@@ -19,15 +19,11 @@ import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecryptException;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypter;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypterFactory;
 import me.lumpchen.sledge.pdf.syntax.decrypt.PDFPassword;
-import me.lumpchen.sledge.pdf.text.font.FontManager;
-import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class PDFDocument {
 
 	private PageContentsLoader pageContentsLoader;
 
-	private Map<FontIndex, FontObject> indexedFontCache;
-	private FontManager fontManager = FontManager.instance();
 	private ResourceManager resourceManager = ResourceManager.instance();
 	private Map<IndirectRef, IndirectObject> objectCache;
 	private Map<IndirectRef, ObjectStream> objStreamCache;
@@ -42,7 +38,6 @@ public class PDFDocument {
 	private PDFPassword password;
 
 	public PDFDocument() {
-		this.indexedFontCache = new HashMap<FontIndex, FontObject>();
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
 		this.objStreamCache = new HashMap<IndirectRef, ObjectStream>();
 	}
@@ -139,22 +134,6 @@ public class PDFDocument {
 
 	public ObjectStream getObjStream(IndirectRef ref) {
 		return this.objStreamCache.get(ref);
-	}
-
-	public void putResource(FontIndex fontIndex, FontObject fontObj) {
-		if (this.indexedFontCache.containsKey(fontIndex)) {
-			return;
-		}
-		this.indexedFontCache.put(fontIndex, fontObj);
-	}
-	
-	public PDFFont getFont(FontIndex fontIndex) {
-		if (!this.indexedFontCache.containsKey(fontIndex)) {
-			return null;
-		}
-		
-		FontObject fontObj = this.indexedFontCache.get(fontIndex);
-		return this.fontManager.getFont(fontObj);
 	}
 
 	public String toString() {

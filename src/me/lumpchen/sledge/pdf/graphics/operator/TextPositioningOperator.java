@@ -39,6 +39,8 @@ public class TextPositioningOperator {
 			
 			double tx = operand_1.asNumber().doubleValue();
 			double ty = operand_2.asNumber().doubleValue();
+			
+			g2d.setTextLeading(ty);
 			g2d.transformTextPosition(tx, ty);
 		}
 	}
@@ -79,6 +81,7 @@ public class TextPositioningOperator {
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			g2d.moveToNextTextLine();
 		}
 	}
 }

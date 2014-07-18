@@ -1,9 +1,15 @@
 package me.lumpchen.sledge.pdf.text.font;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import me.lumpchen.jfreetype.GlyphSlotRec;
 import me.lumpchen.jfreetype.JFreeType;
+import me.lumpchen.sledge.pdf.graphics.GraphicsState;
+import me.lumpchen.sledge.pdf.graphics.GraphicsState.TextState;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 
@@ -20,7 +26,20 @@ public class Type1Font extends PDFFont {
 		}
 		if (fontFile != null) {
 			this.parse(fontFile.getBytes());
-		}
+			
+			try {
+				byte[] data = fontFile.getBytes();
+				FileOutputStream fos = new FileOutputStream(new File("c:/temp/t1/" + fontObj.getBaseFont().toString()));
+				fos.write(data, 0, data.length);
+				fos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}    
 	}
 
 	private void parse(byte[] fontBytes) {
@@ -30,7 +49,7 @@ public class Type1Font extends PDFFont {
 	
 	@Override
 	public void renderText(String s, VirtualGraphics gd) {
-		int pt = Math.round(gd.currentGState().fontSize);
+		int pt = (int) Math.round(gd.currentGState().textState.fontSize);
 		int hRes = Math.round(gd.getResolution()[0]);
 		int vRes = Math.round(gd.getResolution()[1]);
 
@@ -60,6 +79,10 @@ public class Type1Font extends PDFFont {
 		for (GlyphSlotRec glyph : glyphs) {
 			double advance = glyph.getHAdvance();
 
+			double adjustH = gd.getAdjustmentH(glyph.getChar());
+			
+			advance += adjustH;
+			
 			gd.translate(0, -glyph.getBearingY());
 			gd.drawImage(glyph.getGlyphBitmap(color));
 			gd.translate(advance, glyph.getBearingY());

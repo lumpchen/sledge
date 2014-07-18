@@ -1,7 +1,9 @@
 package me.lumpchen.sledge.pdf.syntax.document;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphicsHelper;
@@ -17,6 +19,7 @@ import me.lumpchen.sledge.pdf.syntax.basic.PName;
 import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
+import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class Page extends DocObject {
@@ -25,29 +28,33 @@ public class Page extends DocObject {
 
 	private boolean resourceLoaded = false;
 	private IndirectObject contentStreamObj;
-	
+
 	private Rectangle mediaBox;
 	private Rectangle cropBox;
 	private Rectangle bleedBox;
 	private Rectangle trimBox;
 	private Rectangle artBox;
-	
+
 	private double width;
 	private double height;
-	
+
+	private Map<FontIndex, FontObject> indexedFontMap;
+	private FontManager fontManager = FontManager.instance();
+
 	public Page(IndirectObject obj, PDFDocument owner) {
 		super(obj, owner);
-		
+
+		this.indexedFontMap = new HashMap<FontIndex, FontObject>();
 		PArray rect = super.getValueAsArray(PName.MediaBox);
 		this.mediaBox = new Rectangle(rect);
 		this.width = this.mediaBox.getWidth();
 		this.height = this.mediaBox.getHeight();
 	}
-	
+
 	public PName getType() {
 		return PName.Page;
 	}
-	
+
 	public IndirectRef getContentsRef() {
 		return this.getValueAsRef(PName.Contents);
 	}
@@ -55,7 +62,7 @@ public class Page extends DocObject {
 	public void setPageNo(int pageNo) {
 		this.pageNo = pageNo;
 	}
-	
+
 	public int getPageNo() {
 		return this.pageNo;
 	}
@@ -63,11 +70,11 @@ public class Page extends DocObject {
 	public double getWidth() {
 		return this.width;
 	}
-	
+
 	public double getHeight() {
 		return this.height;
 	}
-	
+
 	public Rectangle getMediaBox() {
 		return mediaBox;
 	}
@@ -109,7 +116,7 @@ public class Page extends DocObject {
 	public void setArtBox(Rectangle artBox) {
 		this.artBox = artBox;
 	}
-	
+
 	private ContentStream getContentStream() {
 		if (null == this.contentStreamObj) {
 			IndirectRef contentRef = this.getContentsRef();
@@ -118,64 +125,70 @@ public class Page extends DocObject {
 			}
 			this.contentStreamObj = this.owner.getObject(contentRef);
 		}
-		
+
 		PStream stream = this.contentStreamObj.getStream();
 		if (null == stream) {
 			return null;
 		}
-		
+
 		byte[] bstream = stream.getDecodedStream();
 		if (null == bstream || bstream.length <= 0) {
 			return null;
 		}
-		
+
 		System.err.println(stream);
-		
+
 		ContentStreamReader csReader = new ContentStreamReader();
 		ContentStream contentStream = csReader.read(bstream);
-		
+
 		System.out.println(contentStream);
-		
+
 		return contentStream;
 	}
-	
+
 	public void render(VirtualGraphics g2) {
 		this.loadResource();
-		
+
 		Rectangle mediaBox = this.getMediaBox();
 		VirtualGraphicsHelper.drawRectangle(mediaBox, g2);
-		
+
 		g2.beginCanvas(mediaBox.getWidth(), mediaBox.getHeight());
-		
+
 		ContentStream cs = this.getContentStream();
 		if (cs != null) {
-			cs.render(g2, this);			
+			cs.render(g2, this);
 		}
 	}
-	
+
 	public PObject getResources() {
 		return super.getValueAsDict(PName.Resources);
 	}
-	
-	
+
 	private FontIndex lastFontIndex;
-	private PDFFont lastFont;
+	private PDFFont lastPDFFont;
+
 	public PDFFont getFont(PName name) {
-		FontIndex fi = new FontIndex(name);
-//		if (!fi.equals(lastFontIndex)) {
-			if (this.lastFont != null) {
+		FontIndex fontIndex = new FontIndex(name);
+		if (!this.indexedFontMap.containsKey(fontIndex)) {
+			throw new SyntaxException("not found the font: " + fontIndex.toString());
+		}
+
+		if (fontIndex.equals(this.lastFontIndex)) {
+			return this.lastPDFFont;
+		} else {
+			if (this.lastPDFFont != null) {
 				try {
-					this.lastFont.close();
+					this.lastPDFFont.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-//		}
-		this.lastFont = this.owner.getFont(fi);
-		this.lastFontIndex = fi;
-		return this.lastFont;
+		}
+		FontObject fontObj = this.indexedFontMap.get(fontIndex);
+		this.lastPDFFont = this.fontManager.getFont(fontObj);
+		return this.lastPDFFont;
 	}
-	
+
 	private void loadResource() {
 		if (this.resourceLoaded) {
 			return;
@@ -198,11 +211,11 @@ public class Page extends DocObject {
 		}
 		this.resourceLoaded = true;
 	}
-	
+
 	private void loadResource(Resource res) {
 		this.loadFont(res.getFont());
 	}
-	
+
 	private void loadFont(PDictionary fontDict) {
 		if (null == fontDict || fontDict.isEmpty()) {
 			return;
@@ -219,7 +232,7 @@ public class Page extends DocObject {
 					}
 					FontIndex fontIndex = new FontIndex(key);
 					FontObject fontObj = new FontObject(resObj, this.owner);
-					this.owner.putResource(fontIndex, fontObj);
+					this.indexedFontMap.put(fontIndex, fontObj);
 				} else {
 					throw new SyntaxException("null object");
 				}

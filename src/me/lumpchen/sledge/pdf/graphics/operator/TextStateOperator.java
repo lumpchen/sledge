@@ -18,6 +18,9 @@ public class TextStateOperator {
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			GraphicsOperand operand_1 = this.operandList.get(0);
+			PNumber charSpace = operand_1.asNumber();
+			g2d.setCharSpacing(charSpace.doubleValue());
 		}
 	}
 
@@ -30,6 +33,9 @@ public class TextStateOperator {
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			GraphicsOperand operand_1 = this.operandList.get(0);
+			PNumber wordSpace = operand_1.asNumber();
+			g2d.setWordSpacing(wordSpace.doubleValue());
 		}
 	}
 
@@ -37,11 +43,12 @@ public class TextStateOperator {
 
 		public OP_T_z() {
 			super(new byte[] { 'T', 'z' });
-			this.operandNumber = 0;
+			this.operandNumber = 1;
 		}
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			throw new GraphicsOperatorException("not implement yet!");
 		}
 	}
 
@@ -49,11 +56,14 @@ public class TextStateOperator {
 
 		public OP_TL_() {
 			super(new byte[] { 'T', 'L' });
-			this.operandNumber = 0;
+			this.operandNumber = 1;
 		}
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			GraphicsOperand operand_1 = this.operandList.get(0);
+			PNumber leading = operand_1.asNumber();
+			g2d.setTextLeading(leading.doubleValue());
 		}
 	}
 
@@ -95,7 +105,7 @@ public class TextStateOperator {
 
 		public OP_T_s() {
 			super(new byte[] { 'T', 's' });
-			this.operandNumber = 0;
+			this.operandNumber = 1;
 		}
 
 		@Override

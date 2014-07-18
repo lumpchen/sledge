@@ -96,10 +96,10 @@ public class PathConstructionOperator {
 			GraphicsOperand operand_3 = this.operandList.get(2);
 			GraphicsOperand operand_4 = this.operandList.get(3);
 
-			double x = operand_1.asNumber().doubleValue();
-			double y = operand_2.asNumber().doubleValue();
-			double w = operand_3.asNumber().doubleValue();
-			double h = operand_4.asNumber().doubleValue();
+//			double x = operand_1.asNumber().doubleValue();
+//			double y = operand_2.asNumber().doubleValue();
+//			double w = operand_3.asNumber().doubleValue();
+//			double h = operand_4.asNumber().doubleValue();
 
 			// g2d.rect(x, y, w, h);
 		}

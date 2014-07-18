@@ -19,8 +19,18 @@ public interface VirtualGraphics {
 	public void showText(String text);
 	public void endText();
 	
+	
+	// text operator
 	public void transformTextMatrix(Matrix matrix);
 	public void transformTextPosition(double tx, double ty);
+	public void setCharSpacing(double charSpace);
+	public void setWordSpacing(double wordSpace);
+	public void setTextLeading(double leading);
+	public void moveToNextTextLine();
+	public void beginTextLine();
+	public void endTextLine();
+	public void setTextAdjustment(double adjustment);
+	public double getAdjustmentH(char c);
 	
 	public GraphicsState currentGState();
 	

@@ -1,7 +1,6 @@
 package me.lumpchen.sledge.pdf.text.font;
 
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +16,14 @@ public abstract class PDFFont {
 
 	public static Map<String, Font> JDK_FONT_CACHE = new HashMap<String, Font>();
 	static {
-//		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-//		for (Font f : fonts) {
-//			String psName = f.getPSName();
-//			if (psName != null) {
-//				JDK_FONT_CACHE.put(psName, f);
-//			}
-//		}
+		// Font[] fonts =
+		// GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+		// for (Font f : fonts) {
+		// String psName = f.getPSName();
+		// if (psName != null) {
+		// JDK_FONT_CACHE.put(psName, f);
+		// }
+		// }
 	}
 
 	public static final String Type_0 = "Type0";
@@ -43,11 +43,11 @@ public abstract class PDFFont {
 	protected int lastChar;
 	protected int[] widths;
 	protected FontDescriptor fontDescriptor;
-	
+
 	protected PName predefinedEncoding;
 	protected PDFFontEncoding encoding;
 	protected PDFCMap toUnicodeMap;
-	
+
 	protected FontObject descendantFontObj;
 
 	protected String postscriptName;
@@ -58,35 +58,35 @@ public abstract class PDFFont {
 
 	protected void read(FontObject fontObj) {
 		if (fontObj.getSubType() != null) {
-			this.subType = fontObj.getSubType().getName();			
+			this.subType = fontObj.getSubType().getName();
 		}
 
 		if (fontObj.getName() != null) {
 			this.name = fontObj.getName().getName();
 		}
-		
+
 		if (fontObj.getFirstChar() != null) {
-			this.firstChar = fontObj.getFirstChar().intValue(); 
+			this.firstChar = fontObj.getFirstChar().intValue();
 		}
-		
+
 		if (fontObj.getLastChar() != null) {
 			this.lastChar = fontObj.getLastChar().intValue();
 		}
-		
+
 		if (fontObj.getWidths() != null) {
 			PArray arr = fontObj.getWidths();
 			this.widths = new int[arr.size()];
-			
+
 			for (int i = 0; i < arr.size(); i++) {
 				PNumber num = (PNumber) arr.get(i);
 				this.widths[i] = num.intValue();
 			}
 		}
-		
+
 		if (fontObj.getBaseFont() != null) {
-			this.baseFont = fontObj.getBaseFont().getName();			
+			this.baseFont = fontObj.getBaseFont().getName();
 		}
-		
+
 		if (fontObj.getFontDescriptor() != null) {
 			FontDescriptorObj obj = fontObj.getFontDescriptor();
 			this.fontDescriptor = new FontDescriptor(obj);
@@ -98,23 +98,17 @@ public abstract class PDFFont {
 		} else if (fontObj.getEncoding() != null) {
 			this.encoding = new PDFFontEncoding(this.subType, fontObj.getEncoding());
 		}
-		
+
 		if (fontObj.getDescendantFonts() != null) {
 			this.descendantFontObj = fontObj.getDescendantFonts();
 		}
 	}
-	
+
 	public static PDFFont create(FontObject fontObj) {
 		String subType = fontObj.getSubType().getName();
 		if (TrueType.equalsIgnoreCase(subType)) {
-//			TTFFont ttf = new TTFFont(fontObj);
 			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
-//			try {
-//				TrueTypeFont ttf = new TrueTypeFont(fontObj);
-				return ttf;
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			return ttf;
 		} else if (Type_0.equalsIgnoreCase(subType)) {
 			Type0Font type0 = new Type0Font(fontObj);
 			return type0;
@@ -124,12 +118,6 @@ public abstract class PDFFont {
 		} else if (CIDFontType2.equalsIgnoreCase(subType)) {
 			JTrueTypeFont ttf = new JTrueTypeFont(fontObj);
 			return ttf;
-//			try {
-//				TrueTypeFont ttf = new TrueTypeFont(fontObj);
-//				return ttf;
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
 		}
 
 		return null;
@@ -138,14 +126,14 @@ public abstract class PDFFont {
 	protected void setEncoding(PDFFontEncoding encoding) {
 		this.encoding = encoding;
 	}
-	
+
 	public boolean notEmbed() {
 		if (this.fontDescriptor == null) {
 			return false;
 		}
 		return this.fontDescriptor.notEmbed();
 	}
-	
+
 	public String getSubType() {
 		return subType;
 	}
@@ -179,6 +167,6 @@ public abstract class PDFFont {
 	}
 
 	abstract public void renderText(String s, VirtualGraphics gd) throws IOException;
-	
+
 	abstract public void close() throws IOException;
 }

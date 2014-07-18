@@ -54,10 +54,10 @@ public class PageTree extends DocObject {
 	}
 	
 	public Page getPage(int pageNo) {
-		if (pageNo < 1 || pageNo > count) {
-			throw new java.lang.IllegalArgumentException("Page number " + pageNo
-					+ " exceeds page count " + count);
-		}
+//		if (pageNo < 1 || pageNo > count) {
+//			throw new java.lang.IllegalArgumentException("Page number " + pageNo
+//					+ " exceeds page count " + count);
+//		}
 		
 		if (this.pageMap.containsKey(pageNo)) {
 			return this.pageMap.get(pageNo);

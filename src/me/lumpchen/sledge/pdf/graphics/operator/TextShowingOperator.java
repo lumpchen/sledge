@@ -24,7 +24,9 @@ public class TextShowingOperator {
 			GraphicsOperand operand = this.operandList.get(0);
 			PString s = operand.asString();
 
+			g2d.beginTextLine();
 			g2d.showText(s.toJavaString());
+			g2d.endTextLine();
 		}
 	}
 
@@ -40,17 +42,20 @@ public class TextShowingOperator {
 			GraphicsOperand operand = this.operandList.get(0);
 
 			PArray arr = operand.asArray();
-			StringBuilder buf = new StringBuilder();
+			String text = null;
+			
+			g2d.beginTextLine();
 			for (int i = 0; i < arr.size(); i++) {
 				PObject obj = arr.get(i);
 				if (obj instanceof PString) {
-					buf.append(((PString) obj).toJavaString());
+					text = ((PString) obj).toJavaString();
+					g2d.showText(text);
 				} else if (obj instanceof PNumber) {
-
+					g2d.setTextAdjustment(((PNumber) obj).doubleValue());
 				}
 			}
-
-			g2d.showText(buf.toString());
+			
+			g2d.endTextLine();
 		}
 	}
 
@@ -58,11 +63,12 @@ public class TextShowingOperator {
 
 		public OP_39() {
 			super(new byte[] { '\'' });
-			this.operandNumber = 0;
+			this.operandNumber = 1;
 		}
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			throw new GraphicsOperatorException("not implement yet!");
 		}
 	}
 
@@ -70,11 +76,12 @@ public class TextShowingOperator {
 
 		public OP_34() {
 			super(new byte[] { '\"' });
-			this.operandNumber = 0;
+			this.operandNumber = 3;
 		}
 
 		@Override
 		public void execute(VirtualGraphics g2d, Page page) {
+			throw new GraphicsOperatorException("not implement yet!");
 		}
 	}
 }

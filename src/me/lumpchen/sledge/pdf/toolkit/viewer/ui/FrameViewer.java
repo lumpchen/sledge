@@ -34,13 +34,14 @@ public class FrameViewer extends JFrame {
 	public FrameViewer() {
 		super();
 
-		this.setSize(800, 800);
+		this.setSize(800, 1000);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.getContentPane().add(this.createToolBar(), BorderLayout.NORTH);
-		JScrollPane scrollPane = new JScrollPane();
-		this.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setViewportView(pageCanvas);
+//		JScrollPane scrollPane = new JScrollPane();
+//		this.add(scrollPane, BorderLayout.CENTER);
+//		scrollPane.setViewportView(pageCanvas);
+		this.add(pageCanvas, BorderLayout.CENTER);
 	}
 
 	private JToolBar createToolBar() {
