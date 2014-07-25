@@ -2,23 +2,32 @@ package me.lumpchen.sledge.pdf.syntax.document;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import me.lumpchen.sledge.pdf.reader.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.ObjectStream;
 import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.ResourceManager;
+import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByPlatformException;
-import me.lumpchen.sledge.pdf.syntax.decrypt.EncryptionUnsupportedByProductException;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecryptException;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypter;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFDecrypterFactory;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFPassword;
+import me.lumpchen.sledge.pdf.syntax.ecryption.BadSecurityHandlerException;
+import me.lumpchen.sledge.pdf.syntax.ecryption.CryptographyException;
+import me.lumpchen.sledge.pdf.syntax.ecryption.DecryptionMaterial;
+import me.lumpchen.sledge.pdf.syntax.ecryption.PDEncryptionDictionary;
+import me.lumpchen.sledge.pdf.syntax.ecryption.SecurityHandler;
+import me.lumpchen.sledge.pdf.syntax.ecryption.SecurityHandlersManager;
+import me.lumpchen.sledge.pdf.syntax.ecryption.StandardDecryptionMaterial;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
+import me.lumpchen.sledge.pdf.syntax.lang.PString;
 
 public class PDFDocument {
 
@@ -34,8 +43,8 @@ public class PDFDocument {
 	private Catalog catalog;
 	private PageTree rootPageTree;
 	private int pageCount;
-	private PDFDecrypter decrypter;
-	private PDFPassword password;
+
+	private SecurityHandler securityHandler;
 
 	public PDFDocument() {
 		this.objectCache = new HashMap<IndirectRef, IndirectObject>();
@@ -44,26 +53,96 @@ public class PDFDocument {
 
 	public void setTrailer(Trailer trailer) {
 		this.trailer = trailer;
+		if (this.trailer.getXRefObj() != null) {
+			IndirectObject obj = this.trailer.getXRefObj();
+			this.objectCache.put(new IndirectRef(obj.getObjNum(), obj.getGenNumb()), obj);
+		}
 	}
 
-	public void checkSecurity(byte[] password) throws PDFAuthenticationFailureException {
-		this.password = new PDFPassword(password);
-		PObject encrypt = this.trailer.getEncrypt();
-		if (encrypt != null) {
-			if (encrypt instanceof IndirectRef) {
-				IndirectObject encryptObj = this.getObject((IndirectRef) encrypt);
-				try {
-					this.decrypter = PDFDecrypterFactory.createDecrypter(
-							encryptObj, this.trailer.getID(), PDFPassword.nonNullPassword(this.password));
-				} catch (EncryptionUnsupportedByProductException
-						| EncryptionUnsupportedByPlatformException
-						| IOException | PDFDecryptException e) {
-					e.printStackTrace();
-				}
-			}
-		}		
+	public void checkSecurity(byte[] password, String keyStore, String alias)
+			throws PDFAuthenticationFailureException, BadSecurityHandlerException,
+			CryptographyException, IOException {
+		PObject obj = this.trailer.getEncrypt();
+		if (obj == null) {
+			return;
+		}
+
+		PDictionary encryptDict;
+		if (obj instanceof IndirectRef) {
+			encryptDict = this.getObject((IndirectRef) obj).getDict();
+		} else if (obj instanceof IndirectObject) {
+			encryptDict = ((IndirectObject) obj).getDict();
+		} else if (obj instanceof IndirectObject) {
+			encryptDict = (PDictionary) obj;
+		} else {
+			throw new SyntaxException("invalid encrypt object: " + obj);
+		}
+
+		DecryptionMaterial decryptionMaterial = null;
+		PDEncryptionDictionary encryption = new PDEncryptionDictionary(encryptDict);
+		if (encryption.isStandard()) {
+			decryptionMaterial = new StandardDecryptionMaterial(password);
+			this.securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler(
+					encryption.getFilter());
+			this.securityHandler.prepareForDecryption(encryption, this.getTrailer().getID(),
+					decryptionMaterial);
+		}
 	}
-	
+
+	public void decrypt(IndirectObject obj) throws CryptographyException, IOException {
+		if (this.securityHandler == null) {
+			return;
+		}
+		this.decrpt(obj.getObjNum(), obj.getGenNumb(), obj.insideObj());
+	}
+
+	private void decrpt(int objNum, int genNum, PObject obj) throws CryptographyException,
+			IOException {
+		if (obj.getClassType() == PObject.ClassType.Stream) {
+			this.decrpt(objNum, genNum, (PStream) obj);
+		} else if (obj.getClassType() == PObject.ClassType.String) {
+			this.decrpt(objNum, genNum, (PString) obj);
+		} else if (obj.getClassType() == PObject.ClassType.Dict) {
+			this.decrpt(objNum, genNum, (PDictionary) obj);
+		} else if (obj.getClassType() == PObject.ClassType.Array) {
+			this.decrpt(objNum, genNum, (PArray) obj);
+		} else {
+			return;
+		}
+	}
+
+	private void decrpt(int objNum, int genNum, PArray arr) throws CryptographyException,
+			IOException {
+		for (int i = 0; i < arr.size(); i++) {
+			PObject item = arr.get(i);
+			this.decrpt(objNum, genNum, item);
+		}
+	}
+
+	private void decrpt(int objNum, int genNum, PDictionary dict) throws CryptographyException,
+			IOException {
+		Iterator<Entry<PName, PObject>> iter = dict.entryIterator();
+		while (iter.hasNext()) {
+			Entry<PName, PObject> next = iter.next();
+			this.decrpt(objNum, genNum, next.getValue());
+		}
+	}
+
+	private void decrpt(int objNum, int genNum, PString s) throws CryptographyException,
+			IOException {
+		byte[] in = s.getBytes();
+		byte[] out = this.securityHandler.decryptData(objNum, genNum, in);
+		s.encode(out);
+	}
+
+	private void decrpt(int objNum, int genNum, PStream stream) throws CryptographyException,
+			IOException {
+		byte[] in = stream.getStream();
+		byte[] out = this.securityHandler.decryptData(objNum, genNum, in);
+
+		stream.setStream(out);
+	}
+
 	public Trailer getTrailer() {
 		return this.trailer;
 	}
@@ -121,6 +200,7 @@ public class PDFDocument {
 
 		if (this.pageContentsLoader != null) {
 			IndirectObject obj = this.pageContentsLoader.loadObject(ref, this);
+
 			this.objectCache.put(ref, obj);
 			return obj;
 		}

@@ -10,16 +10,17 @@ import me.lumpchen.sledge.pdf.syntax.PageContentsLoader;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
 import me.lumpchen.sledge.pdf.syntax.Trailer;
 import me.lumpchen.sledge.pdf.syntax.XRef;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.Catalog;
 import me.lumpchen.sledge.pdf.syntax.document.DocumentInfo;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 import me.lumpchen.sledge.pdf.syntax.document.PageTree;
+import me.lumpchen.sledge.pdf.syntax.ecryption.BadSecurityHandlerException;
+import me.lumpchen.sledge.pdf.syntax.ecryption.CryptographyException;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public class PDFReader implements PageContentsLoader {
 
@@ -41,18 +42,19 @@ public class PDFReader implements PageContentsLoader {
 		return pdfDoc;
 	}
 
-	private void readDocument(PDFDocument pdfDoc) throws IOException, PDFAuthenticationFailureException {
+	private void readDocument(PDFDocument pdfDoc) throws IOException,
+			PDFAuthenticationFailureException {
 		this.readTrailer(pdfDoc);
 		this.readXRef(pdfDoc);
-		
-//		this.checkSecurity(pdfDoc);
-		
+
+		this.checkSecurity(pdfDoc);
+
 		this.readDocumentInfo(pdfDoc);
 		this.readRoot(pdfDoc);
 		this.readPageTree(pdfDoc);
 		this.readPages(pdfDoc.getRootPageTree(), pdfDoc);
 	}
-	
+
 	private void readRoot(PDFDocument pdfDoc) {
 		if (pdfDoc.getTrailer() == null) {
 			throw new ReadException();
@@ -60,7 +62,7 @@ public class PDFReader implements PageContentsLoader {
 
 		Trailer trailer = pdfDoc.getTrailer();
 		IndirectRef ref = trailer.getRoot();
-		
+
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
@@ -75,10 +77,10 @@ public class PDFReader implements PageContentsLoader {
 		if (pdfDoc.getCatalog() == null) {
 			return;
 		}
-		
+
 		Catalog catalog = pdfDoc.getCatalog();
 		IndirectRef ref = catalog.getPages();
-		
+
 		XRef xref = pdfDoc.getXRef();
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
 
@@ -117,18 +119,18 @@ public class PDFReader implements PageContentsLoader {
 		if (iobj == null) {
 			throw new SyntaxException("lost object: " + ref.toString());
 		}
-		
+
 		PName type = iobj.getValueAsName(PName.Type);
 		if (type != null) {
 			if (type == PName.Page) {
 				Page page = new Page(iobj, pdfDoc);
 				page.setPageNo(++pageNo);
 				pageTree.addPageObject(page);
-				
+
 			} else if (type == PName.Pages) {
 				PageTree nestedPageTree = new PageTree(iobj, pdfDoc);
 				this.readPages(nestedPageTree, pdfDoc);
-				
+
 				pageTree.addPageObject(nestedPageTree);
 			} else {
 				throw new SyntaxException("mark here");
@@ -160,21 +162,22 @@ public class PDFReader implements PageContentsLoader {
 		Trailer trailer = pdfDoc.getTrailer();
 		IndirectRef ref = trailer.getInfo();
 		XRef xref = pdfDoc.getXRef();
-		
+
 		XRef.XRefEntry entry = xref.getRefEntry(ref);
-		
+
 		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
 		if (null != iobj) {
 			DocumentInfo docInfo = new DocumentInfo(iobj, pdfDoc);
-			pdfDoc.setDocumentInfo(docInfo);			
+			pdfDoc.setDocumentInfo(docInfo);
 		}
 	}
 
-	private void readTrailer(PDFDocument pdfDoc) throws IOException, PDFAuthenticationFailureException {
+	private void readTrailer(PDFDocument pdfDoc) throws IOException,
+			PDFAuthenticationFailureException {
 		this.reader.position(64, true);
 		Tokenizer tokenizer = new Tokenizer(this.reader);
 		long startxref = -1;
-		
+
 		while (true) {
 			LineData line = new LineData(tokenizer.readLine());
 			if (line.length() == 0) {
@@ -187,22 +190,23 @@ public class PDFReader implements PageContentsLoader {
 				break;
 			}
 		}
-		
+
 		if (startxref < 0) {
 			throw new SyntaxException("not found startxref.");
 		}
-		
+
 		this.readTrailer(pdfDoc, startxref, null);
 	}
-	
-	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current) 
+
+	private void readTrailer(PDFDocument pdfDoc, long startxref, Trailer current)
 			throws IOException, PDFAuthenticationFailureException {
 		reader.position(startxref);
 		Trailer trailer = new Trailer();
 		if (!trailer.read(this.reader)) {
 			IndirectObject obj = this.readIndirectObject(startxref, pdfDoc);
-			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
-				throw new SyntaxException("not found xref stream: " + trailer.toString());	
+			if (null == obj || obj.getStream() == null
+					|| !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
+				throw new SyntaxException("not found xref stream: " + trailer.toString());
 			}
 			trailer.setXRefObj(obj);
 		}
@@ -211,9 +215,9 @@ public class PDFReader implements PageContentsLoader {
 		} else {
 			current.setPreTrailer(trailer);
 		}
-		
+
 		trailer.setStartxref(startxref);
-		
+
 		long prev = trailer.getPrev();
 		if (prev > 0) {
 			this.readTrailer(pdfDoc, prev, trailer);
@@ -228,26 +232,27 @@ public class PDFReader implements PageContentsLoader {
 		Trailer trailer = pdfDoc.getTrailer();
 		this.readXRef(pdfDoc, trailer, null);
 	}
-	
+
 	private void readXRef(PDFDocument pdfDoc, Trailer trailer, XRef xref) throws IOException {
 		long fp = trailer.getStartxref();
 		this.reader.position(fp);
 
-//		int size = trailer.getSize();
-		
+		// int size = trailer.getSize();
+
 		if (null == xref) {
 			xref = new XRef();
 			pdfDoc.setXRef(xref);
 		}
-		
+
 		if (!xref.read(this.reader)) {
 			IndirectObject obj = this.readIndirectObject(fp, pdfDoc);
-			if (null == obj || obj.getStream() == null || !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
-				throw new SyntaxException("not found xref stream: " + trailer.toString());	
+			if (null == obj || obj.getStream() == null
+					|| !obj.getValueAsName(PName.Type).equals(PName.XRef)) {
+				throw new SyntaxException("not found xref stream: " + trailer.toString());
 			}
 			xref.readStream(obj.getStream());
 		}
-		
+
 		long xrefStream = trailer.getXRefStm();
 		if (xrefStream > 0) {
 			IndirectObject refStmObj = this.readIndirectObject(xrefStream, pdfDoc);
@@ -257,67 +262,90 @@ public class PDFReader implements PageContentsLoader {
 			PStream refStream = refStmObj.getStream();
 			xref.readStream(refStream);
 		}
-		
+
 		if (trailer.getPrevTrailer() != null) {
 			this.readXRef(pdfDoc, trailer.getPrevTrailer(), xref);
 		}
 	}
-	
+
 	public void checkSecurity(PDFDocument pdfDoc) throws PDFAuthenticationFailureException {
 		byte[] password = this.pdfFile.getPassword();
-		pdfDoc.checkSecurity(password);
+		String keyStore = this.pdfFile.getKeyStore();
+		String alias = this.pdfFile.getAlias();
+		try {
+			pdfDoc.checkSecurity(password, keyStore, alias);
+		} catch (BadSecurityHandlerException | IOException e) {
+			e.printStackTrace();
+		} catch (CryptographyException e) {
+			if (e.causedByWrongPassword()) {
+				e.printStackTrace();
+				throw new PDFAuthenticationFailureException("Password is wrong.");
+			} else {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
-	public IndirectObject loadObject(IndirectRef ref, PDFDocument pdfDoc) {
+	public IndirectObject loadObject(IndirectRef ref, PDFDocument pdfDoc) throws ReadException {
 		XRef.XRefEntry entry = pdfDoc.getXRef().getRefEntry(ref);
+
+		IndirectObject obj = this.readIndirectObject(entry, pdfDoc);
 		
-		return readIndirectObject(entry, pdfDoc);
+		if (!entry.inObjectStream && !PName.XRef.equals(obj.getValueAsName(PName.Type))) {
+			try {
+				pdfDoc.decrypt(obj);
+			} catch (CryptographyException | IOException e) {
+				throw new ReadException(e);
+			}	
+		}
+		
+		return obj;
 	}
-	
+
 	private IndirectObject readIndirectObject(XRef.XRefEntry entry, PDFDocument pdfDoc) {
 		IndirectObject obj = null;
 		if (entry.inObjectStream) {
 			IndirectRef ref = new IndirectRef(entry.objNum, 0);
-			
+
 			int objStreamNum = entry.objStreamNum;
 			IndirectRef osRef = new IndirectRef(objStreamNum, entry.genNum);
 
 			ObjectStream os = pdfDoc.getObjStream(osRef);
 			if (null == os) {
 				IndirectObject oStream = this.loadObject(osRef, pdfDoc);
-				
+
 				if (null == oStream) {
 					throw new SyntaxException("not found obj: " + osRef);
 				}
-				
+
 				PStream stream = oStream.getStream();
 				os = new ObjectStream(stream);
 				pdfDoc.pushObjStream(osRef, os);
-			} 
+			}
 			obj = this.readIndirectObject(ref, os.getContent(entry.objNum), pdfDoc);
 		} else {
 			obj = this.readIndirectObject(entry.offset, pdfDoc);
 		}
 		return obj;
 	}
-	
+
 	private IndirectObject readIndirectObject(long offset, PDFDocument pdfDoc) {
 		reader.position(offset);
-		
+
 		ObjectReader objReader = new ObjectReader(reader);
 		IndirectObject obj = objReader.readIndirectObject(pdfDoc);
 		return obj;
 	}
-	
+
 	private IndirectObject readIndirectObject(IndirectRef ref, byte[] data, PDFDocument pdfDoc) {
 		IndirectObject obj = new IndirectObject(ref.getObjNum(), ref.getGenNum());
-		
+
 		ObjectReader objReader = new ObjectReader(data);
 		PObject insideObj = objReader.readNextObj();
-		
+
 		if (insideObj != null) {
-			obj.setInsideObj(insideObj);			
+			obj.setInsideObj(insideObj);
 		}
 		return obj;
 	}

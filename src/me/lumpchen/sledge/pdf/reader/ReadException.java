@@ -12,4 +12,7 @@ public class ReadException extends RuntimeException {
 		super(message);
 	}
 
+	public ReadException(Throwable message) {
+		super(message);
+	}
 }

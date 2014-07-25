@@ -3,12 +3,12 @@ package me.lumpchen.sledge.pdf.syntax.document;
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.InvalidTypeException;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PString;
 
 public abstract class DocObject {
 

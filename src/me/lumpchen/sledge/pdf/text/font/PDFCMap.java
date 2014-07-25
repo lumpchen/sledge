@@ -3,8 +3,8 @@ package me.lumpchen.sledge.pdf.text.font;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public abstract class PDFCMap {
 

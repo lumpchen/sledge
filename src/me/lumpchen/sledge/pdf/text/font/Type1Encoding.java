@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PString;
 
 public class Type1Encoding {
 
@@ -40,12 +40,12 @@ public class Type1Encoding {
 			int pos = -1;
 			for (int i = 0; i < size; i++) {
 				PObject item = differencesArr.get(i);
-				if (item.getType() == PObject.TYPE.Number) {
+				if (item.getClassType() == PObject.ClassType.Number) {
 					pos = ((PNumber) item).intValue();
-				} else if (item.getType() == PObject.TYPE.String) {
+				} else if (item.getClassType() == PObject.ClassType.String) {
 					this.differences.put(pos, ((PString) item).toJavaString());
 					pos++;
-				} else if (item.getType() == PObject.TYPE.Name) {
+				} else if (item.getClassType() == PObject.ClassType.Name) {
 					this.differences.put(pos, ((PName) item).toString());
 					pos++;
 				} else {

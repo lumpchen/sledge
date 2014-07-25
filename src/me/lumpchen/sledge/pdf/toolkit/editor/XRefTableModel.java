@@ -8,8 +8,8 @@ import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.XRef;
 import me.lumpchen.sledge.pdf.syntax.XRef.XRefEntry;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class XRefTableModel extends DefaultTableModel {
 

@@ -7,8 +7,8 @@ import java.util.Map;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.InvalidTypeException;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
 
 public class PageTree extends DocObject {
 	

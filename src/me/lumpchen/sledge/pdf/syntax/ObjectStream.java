@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.reader.BytesReader;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.decoder.DecoderChain;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public class ObjectStream {
 
@@ -46,12 +45,10 @@ public class ObjectStream {
 		}
 		this.first = n.intValue();
 		
-		DecoderChain chain = new DecoderChain();
-		byte[] out = chain.decode(stream);
-		if (null == out || out.length == 0) {
+		this.data = stream.getDecodedStream();
+		if (null == this.data || this.data.length == 0) {
 			throw new SyntaxException("the stream data is empty.");
 		}
-		this.data = out;
 		
 		this.readIndexTable();
 	}

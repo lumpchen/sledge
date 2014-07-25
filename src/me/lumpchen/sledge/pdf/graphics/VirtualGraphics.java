@@ -31,6 +31,7 @@ public interface VirtualGraphics {
 	public void endTextLine();
 	public void setTextAdjustment(double adjustment);
 	public double getAdjustmentH(char c);
+	public void advanceH(double advance, char c);
 	
 	public GraphicsState currentGState();
 	

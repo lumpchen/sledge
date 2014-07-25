@@ -81,8 +81,8 @@ import me.lumpchen.sledge.pdf.graphics.operator.Type3FontsOperator.OP_d0;
 import me.lumpchen.sledge.pdf.graphics.operator.Type3FontsOperator.OP_d1;
 import me.lumpchen.sledge.pdf.graphics.operator.XObjectsOperator.OP_D_o;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public abstract class GraphicsOperator extends PObject {
 

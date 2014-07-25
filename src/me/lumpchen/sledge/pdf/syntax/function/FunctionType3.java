@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 /**
  * 3.9.3 - A stitching function define a <i>stitching</i> of the subdomains of

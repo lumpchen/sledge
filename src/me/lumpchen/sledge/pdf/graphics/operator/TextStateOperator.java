@@ -2,9 +2,9 @@ package me.lumpchen.sledge.pdf.graphics.operator;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class TextStateOperator {

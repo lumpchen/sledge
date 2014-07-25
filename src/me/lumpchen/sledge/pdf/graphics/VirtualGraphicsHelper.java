@@ -1,6 +1,6 @@
 package me.lumpchen.sledge.pdf.graphics;
 
-import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
+import me.lumpchen.sledge.pdf.syntax.lang.Rectangle;
 
 public class VirtualGraphicsHelper {
 

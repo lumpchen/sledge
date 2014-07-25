@@ -1,6 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class IndirectRef extends PObject {
 
@@ -10,11 +10,11 @@ public class IndirectRef extends PObject {
 	private int genNum;
 	
 	public IndirectRef() {
-		super.type = TYPE.IndirectRef;
+		super.classType = ClassType.IndirectRef;
 	}
 
 	public IndirectRef(int objectNumber, int generationNumber) {
-		super.type = TYPE.IndirectRef;
+		super.classType = ClassType.IndirectRef;
 		this.objNum = objectNumber;
 		this.genNum = generationNumber;
 	}

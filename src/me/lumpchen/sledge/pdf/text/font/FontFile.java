@@ -1,6 +1,6 @@
 package me.lumpchen.sledge.pdf.text.font;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public class FontFile {
 	

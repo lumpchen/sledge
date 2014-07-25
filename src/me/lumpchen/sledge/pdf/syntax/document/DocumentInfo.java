@@ -1,8 +1,8 @@
 package me.lumpchen.sledge.pdf.syntax.document;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PString;
 
 public class DocumentInfo extends DocObject {
 

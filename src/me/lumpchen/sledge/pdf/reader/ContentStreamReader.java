@@ -3,7 +3,7 @@ package me.lumpchen.sledge.pdf.reader;
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
 import me.lumpchen.sledge.pdf.graphics.operator.GraphicsOperator;
 import me.lumpchen.sledge.pdf.syntax.ContentStream;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class ContentStreamReader {
 

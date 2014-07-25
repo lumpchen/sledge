@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
 import me.lumpchen.sledge.pdf.syntax.document.FontObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
 
 public abstract class PDFFont {
 

@@ -13,12 +13,12 @@ import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
 import me.lumpchen.sledge.pdf.syntax.Resource;
 import me.lumpchen.sledge.pdf.syntax.SyntaxException;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
-import me.lumpchen.sledge.pdf.syntax.basic.Rectangle;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
+import me.lumpchen.sledge.pdf.syntax.lang.Rectangle;
 import me.lumpchen.sledge.pdf.text.font.FontManager;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
@@ -27,7 +27,7 @@ public class Page extends DocObject {
 	private int pageNo;
 
 	private boolean resourceLoaded = false;
-	private IndirectObject contentStreamObj;
+	private ContentStream contentStream;
 
 	private Rectangle mediaBox;
 	private Rectangle cropBox;
@@ -55,8 +55,48 @@ public class Page extends DocObject {
 		return PName.Page;
 	}
 
-	public IndirectRef getContentsRef() {
-		return this.getValueAsRef(PName.Contents);
+	public PStream getContents() {
+		PObject obj = this.getValue(PName.Contents);
+		if (obj == null) {
+			return null;
+		}
+		
+		if (obj.getClassType() == PObject.ClassType.IndirectRef) {
+			return this.getContents((IndirectRef) obj);
+		} else if (obj.getClassType() == PObject.ClassType.Array) {
+			PStream contents = null;
+			PArray arr = (PArray) obj;
+			for (int i = 0; i < arr.size(); i++) {
+				PObject item = arr.get(i);
+				if (item.getClassType() == PObject.ClassType.IndirectRef) {
+					PStream si = this.getContents((IndirectRef) item);
+					
+					if (contents == null) {
+						//need clone dict here
+						contents = new PStream(si.getDict(), si.getStream());
+					} else {
+						byte[] s1 = contents.getStream();
+						byte[] s2 = si.getStream();
+						
+						byte[] ss = new byte[s1.length + s2.length];
+						System.arraycopy(s1, 0, ss, 0, s1.length);
+						System.arraycopy(s2, 0, ss, s1.length, s2.length);
+						contents.setStream(ss);
+					}
+				}
+			}
+			return contents;
+		}
+		
+		return null;
+	}
+	
+	private PStream getContents(IndirectRef ref) {
+		IndirectObject obj = this.owner.getObject(ref);
+		if (obj != null && obj.getStream() != null) {
+			return obj.getStream();
+		}
+		return null;
 	}
 
 	public void setPageNo(int pageNo) {
@@ -118,15 +158,11 @@ public class Page extends DocObject {
 	}
 
 	private ContentStream getContentStream() {
-		if (null == this.contentStreamObj) {
-			IndirectRef contentRef = this.getContentsRef();
-			if (null == contentRef) {
-				return null;
-			}
-			this.contentStreamObj = this.owner.getObject(contentRef);
+		if (this.contentStream != null) {
+			return this.contentStream;
 		}
-
-		PStream stream = this.contentStreamObj.getStream();
+		
+		PStream stream = this.getContents();
 		if (null == stream) {
 			return null;
 		}
@@ -139,7 +175,7 @@ public class Page extends DocObject {
 		System.err.println(stream);
 
 		ContentStreamReader csReader = new ContentStreamReader();
-		ContentStream contentStream = csReader.read(bstream);
+		contentStream = csReader.read(bstream);
 
 		System.out.println(contentStream);
 

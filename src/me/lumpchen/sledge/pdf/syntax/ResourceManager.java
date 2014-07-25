@@ -3,7 +3,7 @@ package me.lumpchen.sledge.pdf.syntax;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
 import me.lumpchen.sledge.pdf.text.font.PDFFont;
 
 public class ResourceManager {

@@ -11,7 +11,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class XRefTable extends JTable {
 

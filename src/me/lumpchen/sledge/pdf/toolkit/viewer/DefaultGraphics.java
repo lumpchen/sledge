@@ -123,17 +123,17 @@ public class DefaultGraphics implements VirtualGraphics {
 
 		if (this.textCTM != null) {
 			double sx = textCTM.getScaleX();
-			this.gstate.textState.fontSize = (float) sx * size;
+//			this.gstate.textState.fontSize = (float) sx * size;
 		} else {
-			this.gstate.textState.fontSize = (int) (this.toPixel(size) + 0.5);
+//			this.gstate.textState.fontSize = (int) (this.toPixel(size) + 0.5);
 		}
 
 		if (font.notEmbed()) {
 			this.gstate.awtFont = font.peerAWTFont();
 			if (null == this.gstate.awtFont) {
 				this.gstate.awtFont = this.defaultFont;
-				this.gstate.awtFont = this.gstate.awtFont
-						.deriveFont((float) this.gstate.textState.fontSize);
+//				this.gstate.awtFont = this.gstate.awtFont
+//						.deriveFont((float) this.gstate.textState.fontSize);
 			}
 		}
 	}
@@ -153,30 +153,34 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void setTextLeading(double leading) {
-		this.gstate.textState.leading = leading;
+//		this.gstate.textState.leading = leading;
+		this.gstate.textState.setLeading(leading);
 	}
 
 	@Override
 	public void moveToNextTextLine() {
-		if (!(this.gstate.textState.leading != 0)) {
-			return;
-		}
-		this.transformTextPosition(0, this.gstate.textState.leading);
+//		if (!(this.gstate.textState.leading != 0)) {
+//			return;
+//		}
+//		this.transformTextPosition(0, this.gstate.textState.leading);
+		this.gstate.textState.moveToNextLine();
 	}
 	
 	@Override
 	public void setCharSpacing(double charSpace) {
-		this.gstate.textState.charSpace = charSpace;
+//		this.gstate.textState.charSpace = charSpace;
+		this.gstate.textState.setCharSpace(charSpace);
 	}
 	
 	@Override
 	public void setWordSpacing(double wordSpace) {
-		this.gstate.textState.wordSpace = wordSpace;
+//		this.gstate.textState.wordSpace = wordSpace;
+		this.gstate.textState.setWordSpace(wordSpace);
 	}
 
 	@Override
 	public void setTextAdjustment(double adjustment) {
-		this.gstate.textState.adjustment = adjustment;
+//		this.gstate.textState.adjustment = adjustment;
 	}
 	
 	@Override
@@ -186,11 +190,16 @@ public class DefaultGraphics implements VirtualGraphics {
 		TextState tstate = this.gstate.textState;
 		double adjustment = 0;
 		if (c == ' ') {
-			adjustment += tstate.wordSpace;
+//			adjustment += tstate.wordSpace;
 		} else {
-			adjustment += tstate.charSpace;
+//			adjustment += tstate.charSpace;
 		}
 		return this.toPixel(adjustment * sx);
+	}
+	
+	@Override
+	public void advanceH(double advance, char c) {
+		this.gstate.textState.advance(advance, c);
 	}
 	
 	@Override
@@ -202,6 +211,12 @@ public class DefaultGraphics implements VirtualGraphics {
 		}
 
 		try {
+			if (true) {
+				
+				return;
+			}
+			
+			
 			if (this.textCTM != null) {
 				double sx = textCTM.getScaleX();
 				double sy = textCTM.getScaleY();
@@ -209,7 +224,7 @@ public class DefaultGraphics implements VirtualGraphics {
 				double rx = textCTM.getShearX();
 				double ry = textCTM.getShearY();
 
-				this.gstate.textState.fontSize = (float) sx * this.gstate.baseFontSize;
+//				this.gstate.textState.fontSize = (float) sx * this.gstate.baseFontSize;
 		
 				double tx = textCTM.getTranslateX();
 				double ty = textCTM.getTranslateY();
@@ -222,10 +237,10 @@ public class DefaultGraphics implements VirtualGraphics {
 				this.g2.setTransform(m);
 				
 				TextState tstate = this.gstate.textState;
-				double adjustment = (tstate.adjustment / 1000) * tstate.fontSize;
-				if (adjustment != 0) {
-					this.translate(this.toPixel(adjustment), 0);				
-				}
+//				double adjustment = (tstate.adjustment / 1000) * tstate.fontSize;
+//				if (adjustment != 0) {
+//					this.translate(-this.toPixel(adjustment), 0);		
+//				}
 			}
 			
 			this.gstate.font.renderText(text, this);
@@ -244,7 +259,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	@Override
 	public void endTextLine() {
 		this.gstate.ctm = restCTM;
-		this.gstate.textState.adjustment = 0;
+//		this.gstate.textState.adjustment = 0;
 	}
 	
 	@Override

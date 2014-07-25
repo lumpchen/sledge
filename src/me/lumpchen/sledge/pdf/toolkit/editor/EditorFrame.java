@@ -21,9 +21,9 @@ import javax.swing.JToolBar;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import me.lumpchen.sledge.pdf.reader.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.reader.PDFReader;
 import me.lumpchen.sledge.pdf.syntax.PDFFile;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 
 public class EditorFrame extends JFrame {

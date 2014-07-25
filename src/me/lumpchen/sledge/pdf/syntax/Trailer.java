@@ -7,11 +7,11 @@ import me.lumpchen.sledge.pdf.reader.LineData;
 import me.lumpchen.sledge.pdf.reader.ObjectReader;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
 import me.lumpchen.sledge.pdf.reader.Tokenizer;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class Trailer {
 
@@ -19,6 +19,7 @@ public class Trailer {
 	public static byte[] STARTXREF = {'s', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f'};
 	public static final byte[] EOF = {'%', '%', 'E', 'O', 'F'};
 	
+	private IndirectObject trailerObj;
 	private PDictionary dict;
 	private PNumber startxref;
 	
@@ -151,6 +152,11 @@ public class Trailer {
 	}
 	
 	public void setXRefObj(IndirectObject obj) {
+		this.trailerObj = obj;
 		this.dict = obj.getDict();
+	}
+	
+	public IndirectObject getXRefObj() {
+		return this.trailerObj;
 	}
 }

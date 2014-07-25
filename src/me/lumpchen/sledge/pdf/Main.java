@@ -3,9 +3,9 @@ package me.lumpchen.sledge.pdf;
 import java.io.File;
 import java.io.IOException;
 
+import me.lumpchen.sledge.pdf.reader.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.reader.PDFReader;
 import me.lumpchen.sledge.pdf.syntax.PDFFile;
-import me.lumpchen.sledge.pdf.syntax.decrypt.PDFAuthenticationFailureException;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
 
@@ -17,14 +17,14 @@ public class Main {
 	public static void main(String[] args) {
 		testReader();
 	}
-	
+
 	static void testReader() {
 		PDFReader reader = new PDFReader();
 
-		File f = new File("/xref_stream.pdf");
+		File f = new File("C:/pdfs/AGB.pdf");
 		try {
 			PDFFile pdf = new PDFFile(f);
-			
+
 			PDFDocument doc = reader.read(pdf);
 			Page page = doc.getPage(1);
 

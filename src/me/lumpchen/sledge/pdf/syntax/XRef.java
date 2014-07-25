@@ -12,7 +12,7 @@ import me.lumpchen.sledge.pdf.reader.NotMatchObjectException;
 import me.lumpchen.sledge.pdf.reader.RandomByteReader;
 import me.lumpchen.sledge.pdf.reader.Tokenizer;
 import me.lumpchen.sledge.pdf.syntax.XRefStream.WEntry;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public class XRef {
 

@@ -6,14 +6,14 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PDictionary;
-import me.lumpchen.sledge.pdf.syntax.basic.PName;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PStream;
 import me.lumpchen.sledge.pdf.syntax.document.DocObject;
 import me.lumpchen.sledge.pdf.syntax.document.PDFDocument;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PDictionary;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PStream;
 
 public class PropertyTableModel extends DefaultTableModel {
 
@@ -25,7 +25,7 @@ public class PropertyTableModel extends DefaultTableModel {
 	
 	public static class RowClass {
 		public PObject key;
-		public PObject.TYPE type;
+		public PObject.ClassType type;
 		public PObject value;
 	}
 	
@@ -119,7 +119,7 @@ public class PropertyTableModel extends DefaultTableModel {
 		String c0 = key.toString();
 		String c1 = "", c2 = "";
 		if (value != null) {
-			PObject.TYPE type = value.getType();
+			PObject.ClassType type = value.getClassType();
 			c1 = type.toString();
 			c2 = value.toString();
 			

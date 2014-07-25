@@ -2,11 +2,11 @@ package me.lumpchen.sledge.pdf.graphics.operator;
 
 import me.lumpchen.sledge.pdf.graphics.GraphicsOperand;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
-import me.lumpchen.sledge.pdf.syntax.basic.PString;
 import me.lumpchen.sledge.pdf.syntax.document.Page;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PString;
 
 public class TextShowingOperator {
 	// Text showing Tj, TJ, ', "

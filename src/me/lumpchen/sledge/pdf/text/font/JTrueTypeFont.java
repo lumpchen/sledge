@@ -27,7 +27,8 @@ public class JTrueTypeFont extends PDFFont {
 
 	@Override
 	public void renderText(String s, VirtualGraphics gd) {
-		int pt = (int) Math.round(gd.currentGState().textState.fontSize);
+//		int pt = (int) Math.round(gd.currentGState().textState.fontSize);
+		int pt = (int) Math.round(gd.currentGState().textState.getFontSize());
 		int hRes = Math.round(gd.getResolution()[0]);
 		int vRes = Math.round(gd.getResolution()[1]);
 
@@ -65,6 +66,8 @@ public class JTrueTypeFont extends PDFFont {
 
 	@Override
 	public void close() {
-		this.ft.close();
+		if (this.ft != null) {
+			this.ft.close();			
+		}
 	}
 }

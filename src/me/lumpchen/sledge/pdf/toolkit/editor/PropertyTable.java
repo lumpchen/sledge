@@ -10,7 +10,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
-import me.lumpchen.sledge.pdf.syntax.basic.PObject;
+import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 import me.lumpchen.sledge.pdf.toolkit.editor.PropertyTableModel.RowClass;
 
 public class PropertyTable extends JTable {
@@ -63,7 +63,7 @@ public class PropertyTable extends JTable {
 				PropertyTableModel model = (PropertyTableModel) target.getModel();
 				RowClass rowClass = model.getRowClass(row);
 				
-				if (rowClass.type != null && rowClass.type == PObject.TYPE.IndirectRef) {
+				if (rowClass.type != null && rowClass.type == PObject.ClassType.IndirectRef) {
 					updateXRefTable((IndirectRef) rowClass.value);
 				} else {
 					updateSelectedRow(rowClass.value);					

@@ -1,8 +1,8 @@
 package me.lumpchen.sledge.pdf.text.font;
 
-import me.lumpchen.sledge.pdf.syntax.basic.PArray;
-import me.lumpchen.sledge.pdf.syntax.basic.PNumber;
 import me.lumpchen.sledge.pdf.syntax.document.FontDescriptorObj;
+import me.lumpchen.sledge.pdf.syntax.lang.PArray;
+import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
 
 public class FontDescriptor {
 
