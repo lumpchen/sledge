@@ -72,7 +72,7 @@ public class Page extends DocObject {
 					PStream si = this.getContents((IndirectRef) item);
 					
 					if (contents == null) {
-						//need clone dict here
+						//need clone dict here?
 						contents = new PStream(si.getDict(), si.getStream());
 					} else {
 						byte[] s1 = contents.getStream();
