@@ -41,9 +41,6 @@ public class GraphicsState {
 	public PNumber smoothness;
 
 	public TextState textState;
-	public double baseFontSize;
-	
-	public PDFFont font;
 	public Font awtFont;
 	
 	public AffineTransform ctm;
@@ -68,7 +65,9 @@ public class GraphicsState {
 		if (current.ctm != null) {
 			this.ctm = new AffineTransform(current.ctm);
 		}
-		this.font = current.font;
+		
+		this.textState = current.textState;
+		
 		this.color = current.color;
 
 //		this.textState = new TextState(current.textState);
@@ -100,16 +99,19 @@ public class GraphicsState {
 	}
 	
 	public class TextState {
-		private double charSpace;
-		private double wordSpace;
-		private double scale;
-		private double leading;
-		private double fontSize;
-		private double renderMode;
-		private double rise;
-		private double adjustment;
+		public double charSpace;
+		public double wordSpace;
+		public double scale;
+		public double leading;
+		public double fontSize;
+		public double renderMode;
+		public double rise;
+		public double adjustment;
 
-		private AffineTransform lineMatrix;
+		public double scaledFontSize;
+		public PDFFont font;
+		
+		public AffineTransform textMatrix = new AffineTransform();
 		
 		public TextState() {
 			this.reset();
@@ -125,13 +127,19 @@ public class GraphicsState {
 			this.rise = 0;
 			this.adjustment = 0;
 			
-			if (this.lineMatrix != null) {
-				this.lineMatrix.setToIdentity();				
+			this.scaledFontSize = 0;
+			this.font = null;
+			
+			if (this.textMatrix != null) {
+				this.textMatrix.setToIdentity();				
 			}
 		}
 		
 		public void setTextMatrix(Matrix matrix) {
-			this.lineMatrix = new AffineTransform(matrix.flate());
+			this.textMatrix = new AffineTransform(matrix.flate());
+			
+			double sx = this.textMatrix.getScaleX();
+			double sy = this.textMatrix.getScaleY();
 		}
 		
 		public void setCharSpace(double charSpace) {
@@ -163,7 +171,7 @@ public class GraphicsState {
 		}
 		
 		public void moveTo(double tx, double ty) {
-			this.lineMatrix.concatenate(AffineTransform.getTranslateInstance(tx, ty));
+			this.textMatrix.concatenate(AffineTransform.getTranslateInstance(tx, ty));
 		}
 		
 		public void advance(double advance, char c) {

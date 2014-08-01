@@ -1,6 +1,8 @@
 package me.lumpchen.sledge.pdf.toolkit.viewer;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -10,6 +12,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
 
@@ -48,7 +51,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		this.defaultFont = new Font("Arial", Font.PLAIN, 12);
 
 		this.gstate = new GraphicsState();
-		this.gstate.ctm = this.g2.getTransform();
+//		this.gstate.ctm = this.g2.getTransform();
 	}
 
 	public void setResolutoin(float deviceRes) {
@@ -81,26 +84,39 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void beginCanvas(double width, double height) {
-		Matrix base = new Matrix(1, 0, 0, 1, 0, toPixel(height));
-		AffineTransform at = new AffineTransform(base.flate());
-		at.preConcatenate(this.gstate.ctm);
-		this.gstate.ctm = at;
+		this.gstate.ctm = AffineTransform.getTranslateInstance(0, toPixel(height));
 		this.g2.setTransform(this.gstate.ctm);
+		
+		try {
+			Font f = Font.createFont(Font.TRUETYPE_FONT, new File("c:/temp/msyh.ttf"));
+			f = f.deriveFont(36.0f);
+			this.g2.setFont(f);
+			this.g2.setColor(Color.black);
+			this.g2.drawString("AAA", 300, -300);
+		} catch (FontFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void concatenate(Matrix matrix) {
 		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
-		at.preConcatenate(this.gstate.ctm);
-		this.gstate.ctm = at;
-		this.g2.setTransform(at);
-
-		Point2D ptSrc = new Point2D.Double(0, 0);
-		Point2D ptDst = new Point2D.Double();
-		this.g2.getTransform().transform(ptSrc, ptDst);
-		// System.out.println(ptDst);
+		this.gstate.ctm.concatenate(at);
+//		this.g2.setTransform(this.gstate.ctm);
 	}
 
+	private void setTransform(AffineTransform at) {
+		double[] flatmatrix = new double[6];
+		at.getMatrix(flatmatrix);
+		flatmatrix[5] = -flatmatrix[5];
+		at = new AffineTransform(flatmatrix);
+		
+		AffineTransform curr = this.g2.getTransform();
+		curr.concatenate(at);
+		this.g2.setTransform(curr);
+	}
+	
 	@Override
 	public void setColor(me.lumpchen.sledge.pdf.graphics.PDFColor color) {
 		this.gstate.color = color.toJavaColor();
@@ -109,6 +125,7 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void beginText() {
+		this.gstate.textState.reset();
 		this.saveGraphicsState();
 	}
 
@@ -118,15 +135,18 @@ public class DefaultGraphics implements VirtualGraphics {
 			return;
 		}
 
-		this.gstate.font = font;
-		this.gstate.baseFontSize = size;
+		this.gstate.textState.font = font;
+		this.gstate.textState.fontSize = size;
+		
+//		this.gstate.font = font;
+//		this.gstate.baseFontSize = size;
 
-		if (this.textCTM != null) {
-			double sx = textCTM.getScaleX();
+//		if (this.textCTM != null) {
+//			double sx = textCTM.getScaleX();
 //			this.gstate.textState.fontSize = (float) sx * size;
-		} else {
+//		} else {
 //			this.gstate.textState.fontSize = (int) (this.toPixel(size) + 0.5);
-		}
+//		}
 
 		if (font.notEmbed()) {
 			this.gstate.awtFont = font.peerAWTFont();
@@ -140,7 +160,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void transformTextMatrix(Matrix matrix) {
-		this.textCTM = new AffineTransform(this.flateMatrix(matrix));
+		this.gstate.textState.setTextMatrix(matrix);
+//		this.textCTM = new AffineTransform(this.flateMatrix(matrix));
 	}
 
 	@Override
@@ -204,19 +225,18 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	@Override
 	public void showText(String text) {
-		if (this.gstate.font.notEmbed()) {
+		if (this.gstate.textState.font == null || this.gstate.textState.font.notEmbed()) {
+			this.gstate.awtFont = this.gstate.awtFont
+					.deriveFont((float) this.gstate.textState.fontSize);
 			this.g2.setFont(this.gstate.awtFont);
 			this.g2.drawString(text, 0, 0);
 			return;
 		}
 
+
+		
+		
 		try {
-			if (true) {
-				
-				return;
-			}
-			
-			
 			if (this.textCTM != null) {
 				double sx = textCTM.getScaleX();
 				double sy = textCTM.getScaleY();
@@ -243,7 +263,17 @@ public class DefaultGraphics implements VirtualGraphics {
 //				}
 			}
 			
-			this.gstate.font.renderText(text, this);
+//			double tx = this.gstate.textState.textMatrix.getTranslateX();
+//			double ty = this.gstate.textState.textMatrix.getTranslateY();
+//			AffineTransform at = new AffineTransform(1, 0, 0, 1, this.toPixel(tx), this.toPixel(-ty));
+//			this.gstate.ctm.concatenate(at);
+			
+//			this.g2.setTransform(this.gstate.ctm);
+			
+			this.gstate.ctm.concatenate(this.gstate.textState.textMatrix);
+			this.setTransform(this.gstate.ctm);
+			
+			this.gstate.textState.font.renderText(text, this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -264,7 +294,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	@Override
 	public void endText() {
-		this.gstate.font = null;
+		this.gstate.textState.reset();
 		this.textCTM = null;
 		this.restCTM = null;
 		this.restoreGraphicsState();

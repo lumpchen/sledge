@@ -37,7 +37,7 @@ public class JTrueTypeFont extends PDFFont {
 			color = Color.BLACK;
 		}
 		
-		this.ft.setCharSize(pt, hRes, vRes);
+		this.ft.setCharSize(pt, pt, hRes, vRes);
 
 		GlyphSlotRec[] glyphs = null;
 		if (this.encoding != null && this.encoding.getType() == PDFFontEncoding.CMAP) {
