@@ -103,7 +103,7 @@ public class GraphicsState {
 		public double wordSpace;
 		public double scale;
 		public double leading;
-		public double fontSize;
+		private double fontSize;
 		public double renderMode;
 		public double rise;
 		public double adjustment;
@@ -135,11 +135,17 @@ public class GraphicsState {
 			}
 		}
 		
+		public double scaleX = 1;
+		public double scaleY = 1;
+		
 		public void setTextMatrix(Matrix matrix) {
+			double[] m = matrix.flate();
 			this.textMatrix = new AffineTransform(matrix.flate());
 			
-			double sx = this.textMatrix.getScaleX();
-			double sy = this.textMatrix.getScaleY();
+			this.scaleX = this.textMatrix.getScaleX();
+			this.scaleY = this.textMatrix.getScaleY();
+			
+			this.textMatrix = new AffineTransform(1, 0, 0, 1, m[4], m[5]);
 		}
 		
 		public void setCharSpace(double charSpace) {
@@ -163,7 +169,7 @@ public class GraphicsState {
 		}
 		
 		public double getFontSize() {
-			return this.fontSize;
+			return this.fontSize * this.scaleX;
 		}
 		
 		public void moveToNextLine() {
@@ -171,7 +177,7 @@ public class GraphicsState {
 		}
 		
 		public void moveTo(double tx, double ty) {
-			this.textMatrix.concatenate(AffineTransform.getTranslateInstance(tx, ty));
+			this.textMatrix.concatenate(AffineTransform.getTranslateInstance(this.scale * tx, this.scale * ty));
 		}
 		
 		public void advance(double advance, char c) {

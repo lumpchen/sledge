@@ -51,7 +51,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		this.defaultFont = new Font("Arial", Font.PLAIN, 12);
 
 		this.gstate = new GraphicsState();
-//		this.gstate.ctm = this.g2.getTransform();
+		this.gstate.ctm = this.g2.getTransform();
 	}
 
 	public void setResolutoin(float deviceRes) {
@@ -84,8 +84,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void beginCanvas(double width, double height) {
-		this.gstate.ctm = AffineTransform.getTranslateInstance(0, toPixel(height));
-		this.g2.setTransform(this.gstate.ctm);
+		this.gstate.ctm = AffineTransform.getTranslateInstance(0, height);
+//		this.g2.setTransform(this.gstate.ctm);
 		
 		try {
 			Font f = Font.createFont(Font.TRUETYPE_FONT, new File("c:/temp/msyh.ttf"));
@@ -101,9 +101,10 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void concatenate(Matrix matrix) {
-		AffineTransform at = new AffineTransform(this.flateMatrix(matrix));
+		double[] m = this.flateMatrix(matrix);
+		m[5] = -m[5];
+		AffineTransform at = new AffineTransform(m);
 		this.gstate.ctm.concatenate(at);
-//		this.g2.setTransform(this.gstate.ctm);
 	}
 
 	private void setTransform(AffineTransform at) {
@@ -112,9 +113,20 @@ public class DefaultGraphics implements VirtualGraphics {
 		flatmatrix[5] = -flatmatrix[5];
 		at = new AffineTransform(flatmatrix);
 		
-		AffineTransform curr = this.g2.getTransform();
+		AffineTransform curr = new AffineTransform(this.gstate.ctm);
 		curr.concatenate(at);
+		
+		double[] m = new double[6];
+		curr.getMatrix(m);
+		curr = new AffineTransform(this.toPixel(m));
+		
 		this.g2.setTransform(curr);
+	}
+	
+	private double[] toPixel(double[] m) {
+		m[4] = this.toPixel(m[4]);
+		m[5] = this.toPixel(m[5]);
+		return m;
 	}
 	
 	@Override
@@ -136,7 +148,7 @@ public class DefaultGraphics implements VirtualGraphics {
 		}
 
 		this.gstate.textState.font = font;
-		this.gstate.textState.fontSize = size;
+		this.gstate.textState.setFontSize(size);
 		
 //		this.gstate.font = font;
 //		this.gstate.baseFontSize = size;
@@ -166,10 +178,10 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void transformTextPosition(double tx, double ty) {
-		double sx = textCTM.getScaleX();
-		double sy = textCTM.getScaleY();
-		AffineTransform at = new AffineTransform(1, 0, 0, 1, tx * sx, ty * sy);
-		this.textCTM.preConcatenate(at);
+//		double sx = textCTM.getScaleX();
+//		double sy = textCTM.getScaleY();
+//		AffineTransform at = new AffineTransform(1, 0, 0, 1, tx * sx, ty * sy);
+//		this.textCTM.preConcatenate(at);
 	}
 
 	@Override
@@ -206,16 +218,14 @@ public class DefaultGraphics implements VirtualGraphics {
 	
 	@Override
 	public double getAdjustmentH(char c) {
-		double sx = textCTM.getScaleX();
-		
-		TextState tstate = this.gstate.textState;
-		double adjustment = 0;
-		if (c == ' ') {
+//		double adjustment = 0;
+//		if (c == ' ') {
 //			adjustment += tstate.wordSpace;
-		} else {
+//		} else {
 //			adjustment += tstate.charSpace;
-		}
-		return this.toPixel(adjustment * sx);
+//		}
+//		return this.toPixel(adjustment * sx);
+		return 0;
 	}
 	
 	@Override
@@ -227,7 +237,7 @@ public class DefaultGraphics implements VirtualGraphics {
 	public void showText(String text) {
 		if (this.gstate.textState.font == null || this.gstate.textState.font.notEmbed()) {
 			this.gstate.awtFont = this.gstate.awtFont
-					.deriveFont((float) this.gstate.textState.fontSize);
+					.deriveFont((float) this.gstate.textState.getFontSize());
 			this.g2.setFont(this.gstate.awtFont);
 			this.g2.drawString(text, 0, 0);
 			return;
@@ -270,8 +280,7 @@ public class DefaultGraphics implements VirtualGraphics {
 			
 //			this.g2.setTransform(this.gstate.ctm);
 			
-			this.gstate.ctm.concatenate(this.gstate.textState.textMatrix);
-			this.setTransform(this.gstate.ctm);
+			this.setTransform(this.gstate.textState.textMatrix);
 			
 			this.gstate.textState.font.renderText(text, this);
 		} catch (IOException e) {
@@ -279,7 +288,6 @@ public class DefaultGraphics implements VirtualGraphics {
 		}
 	}
 
-	
 	AffineTransform restCTM;
 	@Override
 	public void beginTextLine() {
@@ -307,8 +315,8 @@ public class DefaultGraphics implements VirtualGraphics {
 	}
 
 	private double[] flateMatrix(Matrix matrix) {
-		double[] doubleMatrix = matrix.flate();
-		return doubleMatrix;
+		double[] m = matrix.flate();
+		return m;
 	}
 
 	@Override

@@ -46,6 +46,9 @@ public class FrameViewer extends JFrame {
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new JToolBar();
 		JButton open = new JButton("open");
+		
+		this.openPDF(new File("C:\\pdfs\\p3.pdf"));
+		
 		open.addActionListener(new ActionListener() {
 			private File lastDirectory;
 
@@ -65,18 +68,7 @@ public class FrameViewer extends JFrame {
 				if (ret == JFileChooser.APPROVE_OPTION) {
 					File file = fileopen.getSelectedFile();
 					this.lastDirectory = file.getParentFile();
-					PDFReader reader = new PDFReader();
-					try {
-						openPDF = new PDFFile(file);
-						pdf = reader.read(openPDF);
-						updatePageList();
-						setPageCanvas(1);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (PDFAuthenticationFailureException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					openPDF(file);
 				}
 			}
 		});
@@ -103,6 +95,21 @@ public class FrameViewer extends JFrame {
 		toolBar.add(this.pageList);
 		
 		return toolBar;
+	}
+	
+	private void openPDF(File f) {
+		PDFReader reader = new PDFReader();
+		try {
+			openPDF = new PDFFile(f);
+			pdf = reader.read(openPDF);
+			updatePageList();
+			setPageCanvas(1);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (PDFAuthenticationFailureException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	public void closeDocument() {
