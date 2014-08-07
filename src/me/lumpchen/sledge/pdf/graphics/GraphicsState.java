@@ -152,8 +152,24 @@ public class GraphicsState {
 			this.charSpace = charSpace;
 		}
 		
+		public double getCharSpace() {
+			return this.charSpace * this.scaleX;
+		}
+		
 		public void setWordSpace(double wordSpace) {
 			this.wordSpace = wordSpace;
+		}
+		
+		public double getWordSpace() {
+			return this.wordSpace * this.scaleX;
+		}
+		
+		public void setAdjustment(double adjustment) {
+			this.adjustment = adjustment;
+		}
+		
+		public double getAdjustment() {
+			return (this.adjustment / 1000) * this.fontSize * this.scaleX;
 		}
 		
 		public void Tr(double scale) {
@@ -177,15 +193,7 @@ public class GraphicsState {
 		}
 		
 		public void moveTo(double tx, double ty) {
-			this.textMatrix.concatenate(AffineTransform.getTranslateInstance(this.scale * tx, this.scale * ty));
-		}
-		
-		public void advance(double advance, char c) {
-			if (c == ' ') {
-				advance += this.wordSpace;
-			}
-			advance += this.charSpace;
-			this.moveTo(advance, 0);
+			this.textMatrix.concatenate(AffineTransform.getTranslateInstance(this.scaleX * tx, this.scaleY * ty));
 		}
 	}
 }

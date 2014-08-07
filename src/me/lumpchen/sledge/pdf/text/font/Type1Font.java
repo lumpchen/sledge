@@ -8,8 +8,6 @@ import java.io.IOException;
 
 import me.lumpchen.jfreetype.GlyphSlotRec;
 import me.lumpchen.jfreetype.JFreeType;
-import me.lumpchen.sledge.pdf.graphics.GraphicsState;
-import me.lumpchen.sledge.pdf.graphics.GraphicsState.TextState;
 import me.lumpchen.sledge.pdf.graphics.VirtualGraphics;
 import me.lumpchen.sledge.pdf.syntax.document.FontObject;
 
