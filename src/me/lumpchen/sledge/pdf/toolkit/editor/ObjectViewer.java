@@ -1,7 +1,7 @@
 package me.lumpchen.sledge.pdf.toolkit.editor;
 
 
-public class Main {
+public class ObjectViewer {
 
 	public static void main(String args[]) {
 		EditorFrame f = new EditorFrame();

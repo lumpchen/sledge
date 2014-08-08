@@ -77,7 +77,8 @@ public class DefaultGraphics implements VirtualGraphics {
 
 	@Override
 	public void beginCanvas(double width, double height) {
-		this.gstate.ctm = AffineTransform.getTranslateInstance(0, this.toPixel(height));
+		AffineTransform at = AffineTransform.getTranslateInstance(0, this.toPixel(height));
+		this.gstate.ctm.concatenate(at);
 	}
 
 	@Override

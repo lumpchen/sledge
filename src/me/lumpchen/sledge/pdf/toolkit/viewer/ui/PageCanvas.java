@@ -46,7 +46,7 @@ public class PageCanvas extends JPanel {
 			if (w > pw) {
 				offx = (w - pw) / 2;
 			}
-			g2.translate(offx, 0);
+			g2.translate(offx, 5);
 			
 			DefaultGraphics gd = new DefaultGraphics(g2);
 			gd.setResolutoin(this.resolution);
