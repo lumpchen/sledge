@@ -47,7 +47,6 @@ public class Type1Font extends PDFFont {
 	
 	@Override
 	public void renderText(String s, VirtualGraphics gd) {
-//		int pt = (int) Math.round(gd.currentGState().textState.fontSize);
 		int pt = (int) Math.round(gd.currentGState().textState.getFontSize());
 		int hRes = Math.round(gd.getResolution()[0]);
 		int vRes = Math.round(gd.getResolution()[1]);
@@ -79,13 +78,13 @@ public class Type1Font extends PDFFont {
 			double advance = glyph.getHAdvance();
 
 			double adjustH = gd.getAdjustmentH(glyph.getChar());
-			
 			advance += adjustH;
 			
 			gd.translate(0, -glyph.getBearingY());
 			gd.drawImage(glyph.getGlyphBitmap(color));
 			gd.translate(advance, glyph.getBearingY());
 		}
+		
 	}
 
 	@Override

@@ -169,12 +169,13 @@ public class DefaultGraphics implements VirtualGraphics {
 	@Override
 	public void setTextAdjustment(double adjustment) {
 		this.gstate.textState.setAdjustment(adjustment);
+		double ad = this.toPixel(-this.gstate.textState.getAdjustment());
+		this.translate(ad, 0);
 	}
 	
 	@Override
 	public double getAdjustmentH(char c) {
 		double adjustment = 0;
-		adjustment += this.gstate.textState.getAdjustment();
 		if (c == ' ') {
 			adjustment += this.gstate.textState.getWordSpace();
 		} else {
