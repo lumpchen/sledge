@@ -116,8 +116,10 @@ public class ObjectReader {
 		if (objLen instanceof PNumber) {
 			length = (PNumber) objLen; 	
 		} else if (objLen instanceof IndirectRef) {
+			this.tokenizer.save();
 			IndirectObject obj = pdfDoc.getObject((IndirectRef) objLen);
 			length = (PNumber) obj.insideObj();
+			this.tokenizer.restore();
 		}
 		
 		byte[] bytes = this.tokenizer.readBytes(length.intValue());

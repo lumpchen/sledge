@@ -10,7 +10,7 @@ import me.lumpchen.sledge.pdf.syntax.lang.PNumber;
 public class LZWDecode extends Decode {
 	int bytepos;
 	int bitpos;
-	byte[] dict[] = new byte[4096][];
+	byte[][] dict = new byte[4096][];
 	int dictlen = 0;
 	int bitspercode = 9;
 	static int STOP = 257;
@@ -18,6 +18,15 @@ public class LZWDecode extends Decode {
 
 	protected LZWDecode() {
 		super(PName.LZWDecode);
+		
+        for (int i = 0; i < 256; i++) {
+            dict[i] = new byte[1];
+            dict[i][0] = (byte) i;
+        }
+        dictlen = 258;
+        bitspercode = 9;
+        bytepos = 0;
+        bitpos = 0;
 	}
 
 	@Override
@@ -26,13 +35,16 @@ public class LZWDecode extends Decode {
 			ByteBuffer outBytes = this.decodeLzw(src);
 
 			// undo a predictor algorithm, if any was used
-			PNumber pd = this.decodeParms.getValueAsNumber(PName.Predictor);
-			if (pd != null) {
-				Predictor predictor = Predictor.getPredictor(this.decodeParms);
-				if (predictor != null) {
-					outBytes = predictor.unpredict(outBytes);
-				}
+			if (this.decodeParms != null) {
+				PNumber pd = this.decodeParms.getValueAsNumber(PName.Predictor);
+				if (pd != null) {
+					Predictor predictor = Predictor.getPredictor(this.decodeParms);
+					if (predictor != null) {
+						outBytes = predictor.unpredict(outBytes);
+					}
+				}	
 			}
+			
 			return outBytes;
 		} catch (IOException e) {
 			e.printStackTrace();

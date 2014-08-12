@@ -9,6 +9,8 @@ public class Tokenizer {
 	private int read = 0;
 	private byte[] buf = new byte[512];
 	
+	private long savePoint = 0;
+	
 	public Tokenizer(RandomByteReader reader) {
 		this.reader = reader;
 		try {
@@ -208,5 +210,13 @@ public class Tokenizer {
 	
 	public static boolean isSpace(byte b) {
 		return Character.isWhitespace(b);
+	}
+	
+	public void save() {
+		this.savePoint = this.reader.position();
+	}
+	
+	public void restore() {
+		this.reader.position(this.savePoint);
 	}
 }

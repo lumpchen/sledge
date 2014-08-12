@@ -131,6 +131,7 @@ public class IndirectObject extends PObject {
 
 		if (null != this.insideObj) {
 			buf.append(this.insideObj.toString());
+			buf.append('\n');
 		}
 
 		buf.append("endobj");

@@ -74,13 +74,23 @@ public class Type1Font extends PDFFont {
 			return;
 		}
 
+		int leftGlyph = 0;
+		int rightGlyph = 0;
 		for (GlyphSlotRec glyph : glyphs) {
 			double advance = glyph.getHAdvance();
 
 			double adjustH = gd.getAdjustmentH(glyph.getChar());
 			advance += adjustH;
+
+			rightGlyph = glyph.getGlyph();
+			double kerning = 0;
+			if (leftGlyph != 0) {
+				kerning = this.ft.getKerning(leftGlyph, rightGlyph);
+				System.out.println(kerning);
+			}
+			leftGlyph = rightGlyph;
 			
-			gd.translate(0, -glyph.getBearingY());
+			gd.translate(kerning, -glyph.getBearingY());
 			gd.drawImage(glyph.getGlyphBitmap(color));
 			gd.translate(advance, glyph.getBearingY());
 		}
