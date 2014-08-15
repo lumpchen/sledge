@@ -84,7 +84,7 @@ public class ColorOperator {
 
 		public OP_G_() {
 			super(new byte[] { 'G' });
-			this.operandNumber = 0;
+			this.operandNumber = 1;
 		}
 
 		@Override

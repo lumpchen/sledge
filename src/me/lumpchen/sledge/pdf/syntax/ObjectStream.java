@@ -89,6 +89,9 @@ public class ObjectStream {
 		long end = 0;
 		if (this.indexTable.containsKey(index + 1)) {
 			end = this.indexTable.get(index + 1) + this.first;
+			if (end <= start) {
+				end = this.data.length;
+			}
 		} else {
 			end = this.data.length;
 		}
