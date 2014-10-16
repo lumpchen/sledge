@@ -86,7 +86,7 @@ public class Type1Font extends PDFFont {
 			double kerning = 0;
 			if (leftGlyph != 0) {
 				kerning = this.ft.getKerning(leftGlyph, rightGlyph);
-				System.out.println(kerning);
+//				System.out.println(kerning);
 			}
 			leftGlyph = rightGlyph;
 			

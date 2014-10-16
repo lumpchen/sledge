@@ -176,10 +176,9 @@ public class DefaultGraphics implements VirtualGraphics {
 	@Override
 	public double getAdjustmentH(char c) {
 		double adjustment = 0;
+		adjustment += this.gstate.textState.getCharSpace();
 		if (c == ' ') {
 			adjustment += this.gstate.textState.getWordSpace();
-		} else {
-			adjustment += this.gstate.textState.getCharSpace();
 		}
 		
 		return this.toPixel(adjustment);
