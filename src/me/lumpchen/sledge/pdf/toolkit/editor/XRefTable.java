@@ -2,6 +2,8 @@ package me.lumpchen.sledge.pdf.toolkit.editor;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -19,6 +21,10 @@ public class XRefTable extends JTable {
 	
 	private PropertyTableModel propTableModel;
 	private JTextArea textarea;
+	
+	private int selRow = -1;
+	private List<Integer> historyList;
+	private int historyCursor = -1;
 
 	public XRefTable(XRefTableModel model, PropertyTableModel propTableModel, 
 			JTextArea textarea) {
@@ -32,12 +38,29 @@ public class XRefTable extends JTable {
 		
 		this.getSelectionModel().addListSelectionListener(new XTListSelectionListener());
 		this.addMouseListener(new XTMouseListener());
+		
+		this.historyList = new ArrayList<Integer>();
 	}
 	
 	public void setSelectedRef(IndirectRef ref) {
 		XRefTableModel model = (XRefTableModel) this.getModel();
 		int row = model.getRowIndex(ref);
+		this.updateRow(row, false);
+	}
+	
+	private void updateRow(int row, boolean historyBack) {
 		if (row >= 0) {
+			if (this.selRow == row) {
+				return;
+			}
+			
+			if (!historyBack) {
+				this.historyList.add(row);
+				this.historyCursor = this.historyList.size() - 1;
+			}
+			
+			this.selRow = row;
+			
 			this.setRowSelectionInterval(row, row);
 			this.updateTextArea(row);
 		}
@@ -71,6 +94,32 @@ public class XRefTable extends JTable {
 				}
 			}
 		});
+	}
+	
+	public boolean hasPrev() {
+		return this.historyCursor > 0;
+	}
+	
+	public boolean hasNext() {
+		return this.historyCursor < this.historyList.size() - 1;
+	}
+	
+	public void gotoPrev() {
+		if (!this.hasPrev()) {
+			return;
+		}
+
+		int row = this.historyList.get(--this.historyCursor);
+		this.updateRow(row, true);
+	}
+	
+	public void gotoNext() {
+		if (!this.hasNext()) {
+			return;
+		}
+		
+		int row = this.historyList.get(++this.historyCursor);
+		this.updateRow(row, true);
 	}
 	
 	class XTListSelectionListener implements ListSelectionListener {

@@ -36,6 +36,7 @@ public class EditorFrame extends JFrame {
 	private JScrollPane leftScrollPane;
 	private JScrollPane rightScrollPane;
 
+	private XRefTable xRefTable;
 	private JTextArea textarea;
 	
 	private PDFFile openPDF;
@@ -84,6 +85,14 @@ public class EditorFrame extends JFrame {
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new JToolBar();
+		
+		toolBar.add(this.createFileOpenButton());
+		
+		toolBar.add(this.createPrevButton());
+		return toolBar;
+	}
+
+	private JButton createFileOpenButton() {
 		JButton open = new JButton("open");
 		open.addActionListener(new ActionListener() {
 			private File lastDirectory;
@@ -108,11 +117,28 @@ public class EditorFrame extends JFrame {
 				}
 			}
 		});
-		
-		toolBar.add(open);
-		return toolBar;
+		return open;
 	}
-
+	
+	private JButton createPrevButton() {
+		final JButton prevBtn = new JButton("<--");
+		
+		if (this.xRefTable == null) {
+			prevBtn.setEnabled(false);
+		}
+		prevBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!xRefTable.hasPrev()) {
+					prevBtn.setEnabled(false);
+					return;
+				}
+				
+				xRefTable.gotoPrev();
+			}
+		});
+		return prevBtn;
+	}
 	
 	public void openDocument(File f) {
 		PDFReader reader = new PDFReader();
@@ -143,11 +169,10 @@ public class EditorFrame extends JFrame {
 
 		PropertyTableModel propTableModel = new PropertyTableModel(doc);
 
-		XRefTable table = new XRefTable(tableModel, propTableModel,
-				this.textarea);
-		this.leftScrollPane.setViewportView(table);
+		this.xRefTable = new XRefTable(tableModel, propTableModel, this.textarea);
+		this.leftScrollPane.setViewportView(xRefTable);
 
-		PropertyTable propTable = new PropertyTable(propTableModel, table);
+		PropertyTable propTable = new PropertyTable(propTableModel, xRefTable);
 		this.rightScrollPane.setViewportView(propTable);
 	}
 
