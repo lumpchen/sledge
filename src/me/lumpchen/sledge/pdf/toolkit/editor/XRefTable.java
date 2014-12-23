@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
@@ -25,6 +26,8 @@ public class XRefTable extends JTable {
 	private int selRow = -1;
 	private List<Integer> historyList;
 	private int historyCursor = -1;
+	private JButton prevBtn;
+	private JButton nextBtn;
 
 	public XRefTable(XRefTableModel model, PropertyTableModel propTableModel, 
 			JTextArea textarea) {
@@ -37,7 +40,7 @@ public class XRefTable extends JTable {
 		this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		
 		this.getSelectionModel().addListSelectionListener(new XTListSelectionListener());
-		this.addMouseListener(new XTMouseListener());
+//		this.addMouseListener(new XTMouseListener());
 		
 		this.historyList = new ArrayList<Integer>();
 	}
@@ -57,12 +60,17 @@ public class XRefTable extends JTable {
 			if (!historyBack) {
 				this.historyList.add(row);
 				this.historyCursor = this.historyList.size() - 1;
+				this.updateHistoryButton();
 			}
 			
 			this.selRow = row;
 			
-			this.setRowSelectionInterval(row, row);
+			XRefTableModel model = (XRefTableModel) getModel();
+			PObject selObj = model.getRowObject(row);
+			this.updatePropTable(selObj);
 			this.updateTextArea(row);
+			
+			this.setRowSelectionInterval(row, row);
 		}
 	}
 	
@@ -96,6 +104,19 @@ public class XRefTable extends JTable {
 		});
 	}
 	
+	private void updateHistoryButton() {
+		this.prevBtn.setEnabled(this.hasPrev());
+		this.nextBtn.setEnabled(this.hasNext());
+	}
+	
+	public void setPrevButton(JButton prevBtn) {
+		this.prevBtn = prevBtn;
+	}
+	
+	public void setNextBtn(JButton nextBtn) {
+		this.nextBtn = nextBtn;
+	}
+	
 	public boolean hasPrev() {
 		return this.historyCursor > 0;
 	}
@@ -111,6 +132,7 @@ public class XRefTable extends JTable {
 
 		int row = this.historyList.get(--this.historyCursor);
 		this.updateRow(row, true);
+		this.updateHistoryButton();
 	}
 	
 	public void gotoNext() {
@@ -120,6 +142,7 @@ public class XRefTable extends JTable {
 		
 		int row = this.historyList.get(++this.historyCursor);
 		this.updateRow(row, true);
+		this.updateHistoryButton();
 	}
 	
 	class XTListSelectionListener implements ListSelectionListener {
@@ -129,9 +152,7 @@ public class XRefTable extends JTable {
 			if (row < 0) {
 				return;
 			}
-			XRefTableModel model = (XRefTableModel) getModel();
-			PObject selObj = model.getRowObject(row);
-			updatePropTable(selObj);
+			updateRow(row, false);
 		}
 	}
 	

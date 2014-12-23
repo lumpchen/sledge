@@ -39,6 +39,9 @@ public class EditorFrame extends JFrame {
 	private XRefTable xRefTable;
 	private JTextArea textarea;
 	
+	private JButton prevBtn;
+	private JButton nextBtn;
+	
 	private PDFFile openPDF;
 	
 	public EditorFrame() {
@@ -89,6 +92,7 @@ public class EditorFrame extends JFrame {
 		toolBar.add(this.createFileOpenButton());
 		
 		toolBar.add(this.createPrevButton());
+		toolBar.add(this.createNextButton());
 		return toolBar;
 	}
 
@@ -121,23 +125,37 @@ public class EditorFrame extends JFrame {
 	}
 	
 	private JButton createPrevButton() {
-		final JButton prevBtn = new JButton("<--");
+		this.prevBtn = new JButton("<<<<");
+		this.prevBtn.setToolTipText("back");
 		
 		if (this.xRefTable == null) {
 			prevBtn.setEnabled(false);
 		}
+		
 		prevBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!xRefTable.hasPrev()) {
-					prevBtn.setEnabled(false);
-					return;
-				}
-				
 				xRefTable.gotoPrev();
 			}
 		});
 		return prevBtn;
+	}
+	
+	private JButton createNextButton() {
+		this.nextBtn = new JButton(">>>>");
+		this.nextBtn.setToolTipText("forward");
+		
+		if (this.xRefTable == null) {
+			nextBtn.setEnabled(false);
+		}
+		
+		nextBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				xRefTable.gotoNext();
+			}
+		});
+		return nextBtn;
 	}
 	
 	public void openDocument(File f) {
@@ -153,7 +171,6 @@ public class EditorFrame extends JFrame {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		} catch (PDFAuthenticationFailureException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -171,6 +188,8 @@ public class EditorFrame extends JFrame {
 
 		this.xRefTable = new XRefTable(tableModel, propTableModel, this.textarea);
 		this.leftScrollPane.setViewportView(xRefTable);
+		this.xRefTable.setPrevButton(this.prevBtn);
+		this.xRefTable.setNextBtn(this.nextBtn);
 
 		PropertyTable propTable = new PropertyTable(propTableModel, xRefTable);
 		this.rightScrollPane.setViewportView(propTable);
