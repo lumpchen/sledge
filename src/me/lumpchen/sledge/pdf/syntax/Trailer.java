@@ -47,7 +47,8 @@ public class Trailer {
 	public IndirectRef getInfo() {
 		PObject info = this.dict.get(PName.Info);
 		if (info == null || !(info instanceof IndirectRef)) {
-			throw new InvalidElementException(PName.Info.getName());
+//			throw new InvalidElementException(PName.Info.getName());
+			return null;
 		}
 		return (IndirectRef) info;
 	}

@@ -160,15 +160,17 @@ public class PDFReader implements PageContentsLoader {
 		}
 
 		Trailer trailer = pdfDoc.getTrailer();
-		IndirectRef ref = trailer.getInfo();
 		XRef xref = pdfDoc.getXRef();
 
-		XRef.XRefEntry entry = xref.getRefEntry(ref);
+		IndirectRef ref = trailer.getInfo();
+		if (ref != null) {
+			XRef.XRefEntry entry = xref.getRefEntry(ref);
 
-		IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
-		if (null != iobj) {
-			DocumentInfo docInfo = new DocumentInfo(iobj, pdfDoc);
-			pdfDoc.setDocumentInfo(docInfo);
+			IndirectObject iobj = this.readIndirectObject(entry, pdfDoc);
+			if (null != iobj) {
+				DocumentInfo docInfo = new DocumentInfo(iobj, pdfDoc);
+				pdfDoc.setDocumentInfo(docInfo);
+			}			
 		}
 	}
 
