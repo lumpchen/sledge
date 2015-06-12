@@ -1,5 +1,8 @@
 package me.lumpchen.sledge.pdf.syntax.lang;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+
 public abstract class PString extends PObject {
 
 	public static final byte LF = '\n';
@@ -33,16 +36,21 @@ public abstract class PString extends PObject {
 	}
 
 	public String toJavaString() {
-		if (charSequence != null) {
-			return new String(charSequence);
+		try {
+			return new String(this.getBytes(), "UTF-16BE");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
-
 		return "";
 	}
 
 	public String toString() {
 		if (charSequence != null) {
-			return new String(charSequence);
+			try {
+				return new String(this.getBytes(), "UTF-16BE");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return "";

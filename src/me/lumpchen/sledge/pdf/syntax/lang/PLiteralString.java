@@ -15,15 +15,15 @@ public class PLiteralString extends PString {
 		this.encode(bytes);
 	}
 
-	public String toString() {
-		StringBuilder buf = new StringBuilder();
-		buf.append("(");
-		if (charSequence != null) {
-			buf.append(new String(charSequence));
-		}
-		buf.append(")");
-		return buf.toString();
-	}
+//	public String toString() {
+//		StringBuilder buf = new StringBuilder();
+//		buf.append("(");
+//		if (charSequence != null) {
+//			buf.append(new String(charSequence));
+//		}
+//		buf.append(")");
+//		return buf.toString();
+//	}
 	
 	@Override
 	public void encode(byte[] bytes) {
