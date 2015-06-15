@@ -159,19 +159,43 @@ public class EditorFrame extends JFrame {
 	}
 	
 	public void openDocument(File f) {
-		PDFReader reader = new PDFReader();
+		
 		if (!f.exists()) {
 			JOptionPane.showMessageDialog(this, "File not found.");
 		}
 		try {
 			this.openPDF = new PDFFile(f);
-			PDFDocument doc = reader.read(this.openPDF);
-			this.createXRefTable(doc);
+			this.openPDFFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		} catch (PDFAuthenticationFailureException e) {
-			e.printStackTrace();
+			this.showPasswordDlg();
+		}
+	}
+	
+	private void openPDFFile() throws IOException, PDFAuthenticationFailureException {
+		PDFReader reader = new PDFReader();
+		PDFDocument doc = reader.read(this.openPDF);
+		this.createXRefTable(doc);
+	}
+	
+	private void showPasswordDlg() {
+		PasswordDlg dlg = new PasswordDlg(this, true);
+		dlg.setVisible(true);
+		if (dlg.isOk()) {
+			try {
+				char[] pwd = dlg.getPassword();
+				this.openPDF.setPassword(new String(pwd));
+				this.openPDFFile();				
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			} catch (PDFAuthenticationFailureException e) {
+				JOptionPane.showMessageDialog(this, "The password is incorrect.", 
+						"Password", JOptionPane.WARNING_MESSAGE, null);
+				this.showPasswordDlg();
+			}
 		}
 	}
 
@@ -193,6 +217,7 @@ public class EditorFrame extends JFrame {
 
 		PropertyTable propTable = new PropertyTable(propTableModel, xRefTable);
 		this.rightScrollPane.setViewportView(propTable);
+		this.textarea.setText("");
 	}
 
 }

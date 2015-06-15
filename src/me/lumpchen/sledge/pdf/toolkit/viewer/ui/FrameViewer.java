@@ -107,7 +107,6 @@ public class FrameViewer extends JFrame {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (PDFAuthenticationFailureException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
