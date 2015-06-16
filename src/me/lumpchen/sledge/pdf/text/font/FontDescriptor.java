@@ -32,15 +32,15 @@ public class FontDescriptor {
 
 	public FontDescriptor(FontDescriptorObj obj) {
 		if (obj.getFontName() != null) {
-			this.fontName = obj.getFontName().toJavaString();
+			this.fontName = obj.getFontName().toString();
 		}
 		
 		if (obj.getFontFamily() != null) {
-			this.fontFamily = obj.getFontFamily().toJavaString();
+			this.fontFamily = obj.getFontFamily().toString();
 		}
 		
 		if (obj.getFontStrech() != null) {
-			this.fontStrech = obj.getFontStrech().toJavaString();
+			this.fontStrech = obj.getFontStrech().toString();
 		}
 		
 		if (obj.getFontWeight() != null) {
@@ -117,7 +117,7 @@ public class FontDescriptor {
 		}
 		
 		if (obj.getCharSet() != null) {
-			this.charset = obj.getCharSet().toJavaString();
+			this.charset = obj.getCharSet().toString();
 		}
 	}
 

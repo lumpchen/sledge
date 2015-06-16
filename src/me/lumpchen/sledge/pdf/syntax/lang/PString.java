@@ -1,7 +1,6 @@
 package me.lumpchen.sledge.pdf.syntax.lang;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 public abstract class PString extends PObject {
 
@@ -15,8 +14,11 @@ public abstract class PString extends PObject {
 	public static final byte RIGHT_PARENTHESIS = ')'; // Right parenthesis
 	public static final byte SPACE = ' ';
 
-	protected char[] charSequence;
-	private byte[] bytes;
+	protected byte[] bytes;
+
+	public enum StringType {
+		string, text_string, PDFDocEncoded_string, ASCII_string, byte_string
+	};
 
 	protected PString() {
 		super.classType = ClassType.String;
@@ -25,34 +27,43 @@ public abstract class PString extends PObject {
 	abstract public void encode(byte[] bytes);
 
 	public byte[] getBytes() {
-		if (this.bytes != null) {
-			return this.bytes;
-		}
-		this.bytes = new byte[this.charSequence.length];
-		for (int i = 0; i < this.charSequence.length; i++) {
-			this.bytes[i] = (byte) this.charSequence[i];
-		}
 		return this.bytes;
 	}
 
-	public String toJavaString() {
-		try {
-			return new String(this.getBytes(), "UTF-16BE");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return "";
-	}
-
 	public String toString() {
-		if (charSequence != null) {
+		if (this.bytes != null) {
 			try {
-				return new String(this.getBytes(), "UTF-16BE");
+				return new String(this.bytes, "ISO-8859-1");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
 
+		return "";
+	}
+	
+	public String encodeString(StringType type) {
+		String charsetName = "ISO-8859-1";
+		switch (type) {
+		case string:
+		case PDFDocEncoded_string:
+		case ASCII_string:
+		case byte_string:
+			charsetName = "ISO-8859-1";
+			break;
+		case text_string:
+			charsetName = "UTF-16BE";
+			break;
+		default:
+			charsetName = "ISO-8859-1";
+			break;
+		}
+		
+		try {
+			return new String(this.bytes, charsetName);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return "";
 	}
 }

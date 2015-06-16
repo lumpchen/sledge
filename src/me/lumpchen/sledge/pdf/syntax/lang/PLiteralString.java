@@ -14,16 +14,6 @@ public class PLiteralString extends PString {
 		super();
 		this.encode(bytes);
 	}
-
-//	public String toString() {
-//		StringBuilder buf = new StringBuilder();
-//		buf.append("(");
-//		if (charSequence != null) {
-//			buf.append(new String(charSequence));
-//		}
-//		buf.append(")");
-//		return buf.toString();
-//	}
 	
 	@Override
 	public void encode(byte[] bytes) {
@@ -32,7 +22,7 @@ public class PLiteralString extends PString {
 
 	private void escape(byte[] data) {
 		int size = data.length;
-		char[] chars = new char[size];
+		byte[] chars = new byte[size];
 
 		boolean bsFound = false;
 		int skip = 0;
@@ -54,7 +44,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = LF;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -63,7 +53,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = CR;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -72,7 +62,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = TAB;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -81,7 +71,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = BS;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -90,7 +80,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = FF;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -99,7 +89,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = LEFT_PARENTHESIS;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -108,7 +98,7 @@ public class PLiteralString extends PString {
 					chars[i - skip] = RIGHT_PARENTHESIS;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -118,7 +108,7 @@ public class PLiteralString extends PString {
 					skip++;
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;
+					chars[i - skip] = b;
 				}
 				break;
 			}
@@ -155,22 +145,22 @@ public class PLiteralString extends PString {
 					
 					String s = "" + b2 + b1 + b0;
 					int dec = Integer.parseInt(s, 8);
-					chars[i - skip] = (char) dec;
+					chars[i - skip] = (byte) (dec & 0xFF);
 					bsFound = false;
 				} else {
-					chars[i - skip] = (char) b;	
+					chars[i - skip] = b;	
 				}
 				break;
 			}
 			default:
-				chars[i - skip] = (char) b;
+				chars[i - skip] = b;
 				break;
 			}
 		}
 
 		if (chars.length > 0) {
-			this.charSequence = new char[size - skip];
-			System.arraycopy(chars, 0, this.charSequence, 0, size - skip);
+			this.bytes = new byte[size - skip];
+			System.arraycopy(chars, 0, this.bytes, 0, size - skip);
 		}
 	}
 	

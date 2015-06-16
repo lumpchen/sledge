@@ -36,7 +36,7 @@ public class PDEncryptionDictionary {
 	}
 
 	public String getSubFilter() {
-		return this.dict.getValueAsString(PName.SubFilter).toJavaString();
+		return this.dict.getValueAsString(PName.SubFilter).toString();
 	}
 
 	public int getVersion() {
@@ -115,7 +115,7 @@ public class PDEncryptionDictionary {
 		if (stmF == null) {
 			return "Identity";
 		}
-		return stmF.toJavaString();
+		return stmF.toString();
 	}
 
 	public String getStringFilterName() {
@@ -123,6 +123,6 @@ public class PDEncryptionDictionary {
 		if (strF == null) {
 			return "Identity";
 		}
-		return strF.toJavaString();
+		return strF.toString();
 	}
 }

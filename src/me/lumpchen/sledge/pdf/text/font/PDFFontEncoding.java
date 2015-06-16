@@ -84,7 +84,7 @@ public class PDFFontEncoding {
 				if (item.getClassType() == PObject.ClassType.Number) {
 					pos = ((PNumber) item).intValue();
 				} else if (item.getClassType() == PObject.ClassType.String) {
-					this.differences.put(pos, ((PString) item).toJavaString());
+					this.differences.put(pos, ((PString) item).toString());
 					pos++;
 				} else if (item.getClassType() == PObject.ClassType.Name) {
 					this.differences.put(pos, ((PName) item).toString());

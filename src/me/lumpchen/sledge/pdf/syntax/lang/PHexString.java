@@ -1,6 +1,5 @@
 package me.lumpchen.sledge.pdf.syntax.lang;
 
-
 public class PHexString extends PString {
 
 	public static final byte BEGIN = '<';
@@ -18,9 +17,9 @@ public class PHexString extends PString {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("<");
-		if (charSequence != null) {
-			for (int i = 0; i < this.charSequence.length; i++) {
-				String s = Integer.toHexString(this.charSequence[i]);
+		if (this.bytes != null) {
+			for (int i = 0; i < this.bytes.length; i++) {
+				String s = Integer.toHexString(this.bytes[i] & 0xFF);
 				if (s.length() == 1) {
 					s = "0" + s;
 				}
@@ -30,7 +29,7 @@ public class PHexString extends PString {
 		buf.append(">");
 		return buf.toString();
 	}
-	
+
 	@Override
 	public void encode(byte[] bytes) {
 		int n = bytes.length;
@@ -40,17 +39,17 @@ public class PHexString extends PString {
 		char[] cs = new char[n];
 		for (int i = 0; i < bytes.length; i++) {
 			cs[i] = 0;
-			cs[i] = (char) bytes[i]; 
+			cs[i] = (char) bytes[i];
 		}
-		
-		this.charSequence = new char[n / 2];
+
+		this.bytes = new byte[n / 2];
 		int i = 0;
 		while (i < n) {
 			String s = "" + cs[i];
 			i++;
 			s += cs[i];
 			int hex = Integer.parseInt(s, 16);
-			this.charSequence[i / 2] = (char) (hex & 0xFF);
+			this.bytes[i / 2] = (byte) (hex & 0xFF);
 			i++;
 		}
 	}

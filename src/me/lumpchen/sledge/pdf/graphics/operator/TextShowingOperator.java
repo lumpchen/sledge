@@ -25,7 +25,7 @@ public class TextShowingOperator {
 			PString s = operand.asString();
 
 			g2d.beginTextLine();
-			g2d.showText(s.toJavaString());
+			g2d.showText(s.toString());
 			g2d.endTextLine();
 		}
 	}
@@ -48,7 +48,7 @@ public class TextShowingOperator {
 			for (int i = 0; i < arr.size(); i++) {
 				PObject obj = arr.get(i);
 				if (obj instanceof PString) {
-					text = ((PString) obj).toJavaString();
+					text = ((PString) obj).toString();
 					g2d.showText(text);
 				} else if (obj instanceof PNumber) {
 					g2d.setTextAdjustment(((PNumber) obj).doubleValue());
