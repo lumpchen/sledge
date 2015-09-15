@@ -12,7 +12,7 @@ public abstract class PObject {
 		Number("Number"), 
 		Null("Null"), 
 		Stream("Stream"),
-		IndirectObject("Indirect Object"), 
+		IndirectObject("Indirect Object"),
 		IndirectRef("Indirect Ref");
 
 		private String typeString;

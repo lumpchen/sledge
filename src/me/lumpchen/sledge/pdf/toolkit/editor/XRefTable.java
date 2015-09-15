@@ -51,6 +51,18 @@ public class XRefTable extends JTable {
 		this.updateRow(row, false);
 	}
 	
+	public void clearAllRows() {
+		XRefTableModel model = (XRefTableModel) this.getModel();
+		int n = this.getRowCount();
+		for (int i = n - 1; i >= 0; i--) {
+			model.removeRow(i);
+		}
+		this.propTableModel.removeAllRows();
+		this.prevBtn.setEnabled(false);
+		this.nextBtn.setEnabled(false);
+		this.historyList.clear();
+	}
+	
 	private void updateRow(int row, boolean historyBack) {
 		if (row >= 0) {
 			if (this.selRow == row) {

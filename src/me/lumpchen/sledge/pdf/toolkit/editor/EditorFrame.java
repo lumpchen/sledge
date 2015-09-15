@@ -90,6 +90,7 @@ public class EditorFrame extends JFrame {
 		JToolBar toolBar = new JToolBar();
 		
 		toolBar.add(this.createFileOpenButton());
+		toolBar.add(this.createFileCloseButton());
 		
 		toolBar.add(this.createPrevButton());
 		toolBar.add(this.createNextButton());
@@ -119,6 +120,17 @@ public class EditorFrame extends JFrame {
 					this.lastDirectory = file.getParentFile();
 					openDocument(file);
 				}
+			}
+		});
+		return open;
+	}
+	
+	private JButton createFileCloseButton() {
+		JButton open = new JButton("close");
+		open.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				closeDocument();
 			}
 		});
 		return open;
@@ -169,6 +181,7 @@ public class EditorFrame extends JFrame {
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, e.getMessage());
+			closeDocument();
 		} catch (PDFAuthenticationFailureException e) {
 			this.showPasswordDlg();
 		}
@@ -191,17 +204,27 @@ public class EditorFrame extends JFrame {
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, e.getMessage());
+				closeDocument();
 			} catch (PDFAuthenticationFailureException e) {
 				JOptionPane.showMessageDialog(this, "The password is incorrect.", 
 						"Password", JOptionPane.WARNING_MESSAGE, null);
 				this.showPasswordDlg();
 			}
+		} else {
+			this.closeDocument();
 		}
 	}
 
 	public void closeDocument() {
 		if (this.openPDF != null) {
 			this.openPDF.close();
+			
+			if (this.xRefTable != null) {
+				this.xRefTable.clearAllRows();
+			}
+			if (this.textarea != null) {
+				this.textarea.setText("");				
+			}
 		}
 	}
 	

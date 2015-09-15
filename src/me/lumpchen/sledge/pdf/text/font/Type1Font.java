@@ -24,19 +24,6 @@ public class Type1Font extends PDFFont {
 		}
 		if (fontFile != null) {
 			this.parse(fontFile.getBytes());
-			
-			try {
-				byte[] data = fontFile.getBytes();
-				FileOutputStream fos = new FileOutputStream(new File("c:/temp/t1/" + fontObj.getBaseFont().toString()));
-				fos.write(data, 0, data.length);
-				fos.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}    
 	}
 

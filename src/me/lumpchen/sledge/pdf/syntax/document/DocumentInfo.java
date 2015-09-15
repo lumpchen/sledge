@@ -10,6 +10,30 @@ public class DocumentInfo extends DocObject {
 		super(obj, owner);
 	}
 
+	public PString getTitle() {
+		return this.getValueAsString(PName.Title);
+	}
+	
+	public PString getAuthor() {
+		return this.getValueAsString(PName.Author);
+	}
+	
+	public PString getSubject() {
+		return this.getValueAsString(PName.Subject);
+	}
+	
+	public PString getKeywords() {
+		return this.getValueAsString(PName.Keywords);
+	}
+
+	public PString getCreationDate() {
+		return this.getValueAsString(PName.CreationDate);
+	}
+	
+	public PString getModDate() {
+		return this.getValueAsString(PName.ModDate);
+	}
+	
 	public PString getCreator() {
 		return this.getValueAsString(PName.Creator);
 	}
@@ -17,10 +41,14 @@ public class DocumentInfo extends DocObject {
 	public PString getProducer() {
 		return this.getValueAsString(PName.Producer);
 	}
+	
+	public PName getTrapped() {
+		return this.getValueAsName(PName.Trapped);
+	}
 
 	@Override
 	public PName getType() {
-		return null;
+		return PName.Info;
 	}
 	
 }

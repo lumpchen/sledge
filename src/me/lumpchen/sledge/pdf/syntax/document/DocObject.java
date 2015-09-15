@@ -21,12 +21,10 @@ public abstract class DocObject {
 			throw new InvalidTypeException("inside object is null.");
 		}
 		PName type = getType();
-		if (null == type) {
-			this.insideObj = obj;
-			return;
-		}
-		if (!type.equals(obj.getValue(PName.Type))) {
-			throw new InvalidTypeException(obj.toString());
+		if (type != null && obj.getValue(PName.Type) != null) {
+			if (!type.equals(obj.getValue(PName.Type))) {
+				throw new InvalidTypeException(obj.toString());
+			}
 		}
 		this.insideObj = obj;
 		this.owner = owner;
