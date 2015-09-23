@@ -119,6 +119,7 @@ public class EditorFrame extends JFrame {
 					File file = fileopen.getSelectedFile();
 					this.lastDirectory = file.getParentFile();
 					openDocument(file);
+					setTitle(file.getName());
 				}
 			}
 		});
@@ -131,6 +132,7 @@ public class EditorFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				closeDocument();
+				setTitle("");
 			}
 		});
 		return open;
