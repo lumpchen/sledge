@@ -103,6 +103,10 @@ public class PName extends PObject {
 	public static final PName N = new PName("N");
 	public static final PName Extends = new PName("Extends");
 	
+	public static final PName AcroForm = new PName("AcroForm");
+	public static final PName Fields = new PName("Fields");
+	public static final PName Annot = new PName("Annot");
+	
 	private static Map<String, PName> nameMap = new HashMap<String, PName>();
 	
 	static {
@@ -191,6 +195,9 @@ public class PName extends PObject {
 		nameMap.put("N", N);
 		nameMap.put("Extends", Extends);
 		nameMap.put("Parent", Parent);
+		nameMap.put("AcroForm", AcroForm);
+		nameMap.put("Fields", Fields);
+		nameMap.put("Annot", Annot);
 	}
 
 	private PName(byte[] name) {
