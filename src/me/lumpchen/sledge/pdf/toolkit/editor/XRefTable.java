@@ -1,5 +1,7 @@
 package me.lumpchen.sledge.pdf.toolkit.editor;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -12,8 +14,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 
+import me.lumpchen.sledge.pdf.syntax.IndirectObject;
 import me.lumpchen.sledge.pdf.syntax.IndirectRef;
+import me.lumpchen.sledge.pdf.syntax.lang.PName;
 import me.lumpchen.sledge.pdf.syntax.lang.PObject;
 
 public class XRefTable extends JTable {
@@ -28,7 +33,10 @@ public class XRefTable extends JTable {
 	private int historyCursor = -1;
 	private JButton prevBtn;
 	private JButton nextBtn;
+	private String filterObjectType;
 
+	private static final Color HIGHLIGHT = Color.LIGHT_GRAY;
+	
 	public XRefTable(XRefTableModel model, PropertyTableModel propTableModel, 
 			JTextArea textarea) {
 		super(model);
@@ -43,6 +51,31 @@ public class XRefTable extends JTable {
 //		this.addMouseListener(new XTMouseListener());
 		
 		this.historyList = new ArrayList<Integer>();
+		
+		this.setDefaultRenderer(Object.class, new FilterTableCellRenderer());
+	}
+	
+	static class FilterTableCellRenderer extends DefaultTableCellRenderer {
+		private static final long serialVersionUID = -4081405131073038855L;
+
+		@Override
+	    public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+			Component c = super.getTableCellRendererComponent(table, value, isSelected, 
+					hasFocus, row, column);
+			
+			XRefTableModel model = (XRefTableModel) table.getModel();
+			if (model.isHighlightRow(row)) {
+				c.setBackground(HIGHLIGHT);
+			} else {
+				if (isSelected) {
+					c.setBackground(table.getSelectionBackground());
+				} else {
+					c.setBackground(Color.WHITE);					
+				}
+			}
+			return c;
+	    }
 	}
 	
 	public void setSelectedRef(IndirectRef ref) {
@@ -84,6 +117,37 @@ public class XRefTable extends JTable {
 			
 			this.setRowSelectionInterval(row, row);
 		}
+	}
+	
+	private int filterRows() {
+		if (this.filterObjectType == null || this.filterObjectType.equalsIgnoreCase("All")) {
+			XRefTableModel model = (XRefTableModel) this.getModel();
+			model.clearHighlightRows();	
+			this.repaint();
+			return this.getRowCount();
+		}
+		XRefTableModel model = (XRefTableModel) this.getModel();
+		model.clearHighlightRows();
+		int n = this.getRowCount();
+		for (int i = 0; i < n; i++) {
+			PObject obj = model.getRowObject(i);
+			if (obj != null) {
+				PObject.ClassType classType = obj.getClassType();
+				if (PObject.ClassType.IndirectObject == classType) {
+					IndirectObject iobj = (IndirectObject) obj;
+					if (iobj.getStream() != null && this.filterObjectType.equalsIgnoreCase("Stream")) {
+						model.addHighlightRows(i);	
+					} else if (iobj.getValueAsName(PName.Type) != null) {
+						String type = iobj.getValueAsName(PName.Type).getName();
+						if (type != null && this.filterObjectType.equalsIgnoreCase(type)) {
+							model.addHighlightRows(i);
+						}						
+					}
+				}
+			}
+		}
+		this.repaint();
+		return model.getHighlightRowCount();
 	}
 	
 	private void updateTextArea(final int row) {
@@ -179,5 +243,13 @@ public class XRefTable extends JTable {
 				target.updateTextArea(row);
 			}
 		}
+	}
+	
+	public int updateFilterObjectType(String filterType) {
+		if (filterType.equals(this.filterObjectType)) {
+			return -1;
+		}
+		this.filterObjectType = filterType;
+		return this.filterRows();
 	}
 }

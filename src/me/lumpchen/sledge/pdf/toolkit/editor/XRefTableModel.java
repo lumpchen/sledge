@@ -1,6 +1,8 @@
 package me.lumpchen.sledge.pdf.toolkit.editor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -19,6 +21,8 @@ public class XRefTableModel extends DefaultTableModel {
 	
 	private List<XRefEntry> entryList;
 	private PDFDocument pdf;
+	
+	private Set<Integer> highlightRows = new HashSet<Integer>();
 	
 	public XRefTableModel(PDFDocument pdf) {
 		super(COLUMNS, 0);
@@ -86,5 +90,21 @@ public class XRefTableModel extends DefaultTableModel {
 	
 	public boolean isCellEditable(int row, int col) {
 		return false;
+	}
+	
+	public void addHighlightRows(int row) {
+		this.highlightRows.add(row);
+	}
+	
+	public int getHighlightRowCount() {
+		return this.highlightRows.size();
+	}
+	
+	public void clearHighlightRows() {
+		this.highlightRows.clear();
+	}
+	
+	public boolean isHighlightRow(int row) {
+		return this.highlightRows.contains(row);
 	}
 }

@@ -1,15 +1,19 @@
 package me.lumpchen.sledge.pdf.toolkit.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -39,10 +43,17 @@ public class EditorFrame extends JFrame {
 	private XRefTable xRefTable;
 	private JTextArea textarea;
 	
+	private PDFFile openPDF;
+	
 	private JButton prevBtn;
 	private JButton nextBtn;
 	
-	private PDFFile openPDF;
+	private static final String[] OBJECT_TYPES = new String[]{
+		"All", "Font", "Page", "Stream"
+	};
+	private String selFilterType = OBJECT_TYPES[0];
+	private JLabel filterCountLabel = new JLabel();
+	private JComboBox<String> typeComboBox;
 	
 	public EditorFrame() {
 		super();
@@ -94,6 +105,13 @@ public class EditorFrame extends JFrame {
 		
 		toolBar.add(this.createPrevButton());
 		toolBar.add(this.createNextButton());
+		
+		this.filterCountLabel.setMaximumSize(new Dimension(50, 160));
+		this.filterCountLabel.setToolTipText("found object count");
+		this.filterCountLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		toolBar.add(this.createTypeComboBox());
+		toolBar.add(this.filterCountLabel);
+		
 		return toolBar;
 	}
 
@@ -120,6 +138,9 @@ public class EditorFrame extends JFrame {
 					this.lastDirectory = file.getParentFile();
 					openDocument(file);
 					setTitle(file.getName());
+					
+					typeComboBox.setSelectedIndex(0);
+					filterCountLabel.setText("");
 				}
 			}
 		});
@@ -140,7 +161,7 @@ public class EditorFrame extends JFrame {
 	
 	private JButton createPrevButton() {
 		this.prevBtn = new JButton("<<<<");
-		this.prevBtn.setToolTipText("back");
+		prevBtn.setToolTipText("back");
 		
 		if (this.xRefTable == null) {
 			prevBtn.setEnabled(false);
@@ -157,7 +178,7 @@ public class EditorFrame extends JFrame {
 	
 	private JButton createNextButton() {
 		this.nextBtn = new JButton(">>>>");
-		this.nextBtn.setToolTipText("forward");
+		nextBtn.setToolTipText("forward");
 		
 		if (this.xRefTable == null) {
 			nextBtn.setEnabled(false);
@@ -170,6 +191,33 @@ public class EditorFrame extends JFrame {
 			}
 		});
 		return nextBtn;
+	}
+	
+	private JComboBox<String> createTypeComboBox() {
+		this.typeComboBox = new JComboBox<String>(OBJECT_TYPES);
+		typeComboBox.setSelectedIndex(0);
+		typeComboBox.setMaximumSize(new Dimension(100, 160));
+		typeComboBox.setToolTipText("select object type");
+		
+		typeComboBox.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String sel = ((JComboBox<?>) e.getSource()).getSelectedItem().toString();
+				if (sel.equals(selFilterType)) {
+					return;
+				}
+				selFilterType = sel;
+				
+				if (xRefTable != null) {
+					int count = xRefTable.updateFilterObjectType(sel);
+					if (count >= 0) {
+						filterCountLabel.setText(" " + count);
+					}
+				}
+			}
+		});
+
+		return typeComboBox;
 	}
 	
 	public void openDocument(File f) {
@@ -227,6 +275,8 @@ public class EditorFrame extends JFrame {
 			if (this.textarea != null) {
 				this.textarea.setText("");				
 			}
+			this.typeComboBox.setSelectedIndex(0);
+			this.filterCountLabel.setText("");
 		}
 	}
 	
